@@ -12,14 +12,14 @@ export function FeeStatusCards() {
   return (
     <div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-emerald-200 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+        <Card className="border-emerald-200 bg-emerald-50/60">
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-zinc-950 dark:text-white">
+                <p className="text-sm font-extrabold text-blue-950">
                   Paid
                 </p>
-                <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <p className="mt-1 text-sm text-blue-900/70">
                   Last receipt: #RCI-0001 (demo)
                 </p>
               </div>
@@ -27,16 +27,18 @@ export function FeeStatusCards() {
                 Paid
               </span>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-2">
               <Button
                 variant="outline"
                 onClick={() => setNotice("Receipt download will be available in the full system.")}
+                className="w-full sm:w-auto"
               >
                 Download Receipt
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => setNotice("Receipt details will be available in the full system.")}
+                className="w-full sm:w-auto"
               >
                 View Receipt
               </Button>
@@ -44,14 +46,14 @@ export function FeeStatusCards() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10">
+        <Card className="border-amber-200 bg-amber-50/60">
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-zinc-950 dark:text-white">
+                <p className="text-sm font-extrabold text-blue-950">
                   Pending
                 </p>
-                <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <p className="mt-1 text-sm text-blue-900/70">
                   Next due: ₹— (demo)
                 </p>
               </div>
@@ -59,13 +61,17 @@ export function FeeStatusCards() {
                 Pending
               </span>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button onClick={() => setNotice("Online payment will be available in the full system.")}>
+            <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-2">
+              <Button
+                onClick={() => setNotice("Online payment will be available in the full system.")}
+                className="w-full sm:w-auto"
+              >
                 Pay Now
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setNotice("Fee breakdown will be available in the full system.")}
+                className="w-full sm:w-auto"
               >
                 View Details
               </Button>
@@ -75,11 +81,11 @@ export function FeeStatusCards() {
       </div>
 
       {notice ? (
-        <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-medium text-zinc-900 dark:border-white/10 dark:bg-white/5 dark:text-white">
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950">
           {notice || MSG}
         </div>
       ) : (
-        <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-300">
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900/70">
           Click any button to see the demo message.
         </div>
       )}

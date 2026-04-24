@@ -10,7 +10,7 @@ export function PageShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+    <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6 py-8 sm:py-12">
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-extrabold tracking-tight text-blue-950 sm:text-3xl">
           {title}

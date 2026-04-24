@@ -26,6 +26,13 @@ export function AdmissionForm() {
         setSubmitted(true);
       }}
     >
+      <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
+        <p className="font-extrabold">Online Admission (Demo)</p>
+        <p className="mt-1 text-blue-900/70">
+          Fill your details. Submission is disabled in demo mode.
+        </p>
+      </div>
+
       <Field label="Name" htmlFor="name">
         <Input id="name" name="name" placeholder="Enter full name" required />
       </Field>
@@ -53,16 +60,18 @@ export function AdmissionForm() {
         </Select>
       </Field>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit">Submit</Button>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="grid gap-3 sm:flex sm:items-center">
+        <Button type="submit" className="w-full sm:w-auto">
+          Submit
+        </Button>
+        <p className="text-sm font-semibold text-blue-900/70">
           This feature will be activated in the full system.
         </p>
       </div>
 
       {submitted ? (
         <div
-          className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-medium text-zinc-900 dark:border-white/10 dark:bg-white/5 dark:text-white"
+          className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950"
           role="status"
         >
           This feature will be activated in the full system.

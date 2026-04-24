@@ -16,12 +16,19 @@ export function CertificatePanel() {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardContent className="p-6">
-          <p className="text-base font-semibold text-zinc-950 dark:text-white">
-            Certificate Apply
-          </p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Submit details to request certificate.
-          </p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+              📄
+            </div>
+            <div>
+              <p className="text-base font-extrabold text-blue-950">
+                Certificate Apply
+              </p>
+              <p className="mt-1 text-sm text-blue-900/70">
+                Submit details to request certificate (demo UI).
+              </p>
+            </div>
+          </div>
 
           <form
             className="mt-6 grid gap-5"
@@ -55,9 +62,11 @@ export function CertificatePanel() {
               />
             </Field>
 
-            <div className="flex items-center gap-3">
-              <Button type="submit">Apply</Button>
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="grid gap-2 sm:flex sm:items-center">
+              <Button type="submit" className="w-full sm:w-auto">
+                Apply
+              </Button>
+              <span className="text-sm font-semibold text-blue-900/70">
                 This feature will be activated in the full system.
               </span>
             </div>
@@ -65,7 +74,7 @@ export function CertificatePanel() {
 
           {applyDone ? (
             <div
-              className="mt-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm font-medium text-zinc-900 dark:border-white/10 dark:bg-white/5 dark:text-white"
+              className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950"
               role="status"
             >
               This feature will be activated in the full system.
@@ -76,12 +85,19 @@ export function CertificatePanel() {
 
       <Card>
         <CardContent className="p-6">
-          <p className="text-base font-semibold text-zinc-950 dark:text-white">
-            Certificate Verification
-          </p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Enter certificate number to verify.
-          </p>
+          <div className="flex items-start gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+              🔎
+            </div>
+            <div>
+              <p className="text-base font-extrabold text-blue-950">
+                Certificate Verification
+              </p>
+              <p className="mt-1 text-sm text-blue-900/70">
+                Enter certificate number to verify (demo UI).
+              </p>
+            </div>
+          </div>
 
           <form
             className="mt-6 grid gap-5"
@@ -99,20 +115,27 @@ export function CertificatePanel() {
               />
             </Field>
 
-            <div className="flex items-center gap-3">
-              <Button type="submit">Verify</Button>
-              <Button type="button" variant="outline" onClick={() => setVerifyDone(true)}>
+            <div className="grid gap-2 sm:flex sm:items-center">
+              <Button type="submit" className="w-full sm:w-auto">
+                Verify
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setVerifyDone(true)}
+                className="w-full sm:w-auto"
+              >
                 Demo Result
               </Button>
             </div>
           </form>
 
           {verifyDone ? (
-            <div className="mt-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+              <p className="text-sm font-extrabold text-blue-950">
                 Verification Result (Demo)
               </p>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 text-sm font-semibold text-blue-900/70">
                 This feature will be activated in the full system.
               </p>
             </div>

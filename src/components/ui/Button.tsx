@@ -32,7 +32,7 @@ function buttonClasses(opts: Pick<CommonProps, "variant" | "size" | "className">
 
   const variants: Record<string, string> = {
     primary:
-      "bg-blue-600 text-white hover:bg-blue-700",
+      "bg-blue-900 text-white hover:bg-blue-950",
     secondary:
       "bg-blue-50 text-blue-900 hover:bg-blue-100",
     outline:

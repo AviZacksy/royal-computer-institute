@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
 
@@ -9,9 +10,22 @@ export function ExamLoginCard() {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="sm:max-w-xl">
+    <Card className="overflow-hidden">
+      <CardContent className="p-6 sm:p-7">
+        <div className="flex items-start gap-3">
+          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+            📝
+          </div>
+          <div>
+            <p className="text-base font-extrabold text-blue-950">Exam Login</p>
+            <p className="mt-1 text-sm text-blue-900/70">
+              Online exam portal UI (demo). Login is disabled.
+            </p>
+          </div>
+        </div>
+
       <form
-        className="grid gap-5"
+        className="mt-6 grid gap-5"
         onSubmit={(e) => {
           e.preventDefault();
           setShow(true);
@@ -35,25 +49,33 @@ export function ExamLoginCard() {
           />
         </Field>
 
-        <div className="flex items-center gap-3">
-          <Button type="submit">Login</Button>
-          <Button type="button" variant="outline" onClick={() => setShow(true)}>
+        <div className="grid gap-2 sm:flex sm:items-center">
+          <Button type="submit" className="w-full sm:w-auto">
+            Login
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShow(true)}
+            className="w-full sm:w-auto"
+          >
             Check Status
           </Button>
         </div>
       </form>
 
       {show ? (
-        <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-white/10 dark:bg-white/5">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+          <p className="text-sm font-extrabold text-blue-950">
             Online Exam System will be activated after full development
           </p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-1 text-sm font-semibold text-blue-900/70">
             This feature will be activated in the full system.
           </p>
         </div>
       ) : null}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 

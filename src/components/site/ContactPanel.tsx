@@ -1,6 +1,8 @@
 import { ButtonAnchor, ButtonLink } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { DemoAction } from "@/components/demo/DemoAction";
 import { DemoNotice } from "@/components/demo/DemoNotice";
+import { INSTITUTE, WHATSAPP_LINK } from "@/config/institute";
 
 export function ContactPanel() {
   return (
@@ -8,46 +10,51 @@ export function ContactPanel() {
       <Card>
         <CardContent className="p-6">
           <p className="text-base font-extrabold text-blue-950">
-            Royal Computer Institute
+            {INSTITUTE.name}
           </p>
-          <div className="mt-4 grid gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+          <p className="mt-1 text-sm font-semibold text-blue-900/70">
+            Director: {INSTITUTE.directorName}
+          </p>
+          <div className="mt-4 grid gap-3 text-sm text-blue-900/75">
             <p>
               <span className="font-extrabold text-blue-950">
                 Address:
               </span>{" "}
-              Your institute address here (demo)
+              {INSTITUTE.addressLines.join(", ")}
             </p>
             <p>
               <span className="font-extrabold text-blue-950">
                 Phone:
               </span>{" "}
-              +91-XXXXXXXXXX
+              {INSTITUTE.phoneDisplay}
             </p>
             <p>
               <span className="font-extrabold text-blue-950">
                 Email:
               </span>{" "}
-              info@example.com
+              {INSTITUTE.email}
             </p>
             <p>
               <span className="font-extrabold text-blue-950">Timing:</span>{" "}
-              Mon–Sat, 10:00 AM – 6:00 PM
+              {INSTITUTE.timingDisplay}
+            </p>
+            <p>
+              <span className="font-extrabold text-blue-950">Instagram:</span>{" "}
+              {INSTITUTE.instagramHandle}
             </p>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
             <ButtonLink href="/query">Send Query</ButtonLink>
             <ButtonAnchor
-              href="https://wa.me/910000000000"
+              href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               variant="whatsapp"
             >
               WhatsApp
             </ButtonAnchor>
-            <ButtonLink href="#" variant="secondary">
-              Call Now
-            </ButtonLink>
+            <DemoAction label="Call Now" variant="secondary" fullWidthOnMobile={false} />
           </div>
 
           <DemoNotice />

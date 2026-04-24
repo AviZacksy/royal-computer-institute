@@ -107,7 +107,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-4">
                 {[
                   { t: "Practical Training", d: "Hands-on lab practice & projects", i: "🧑‍💻" },
                   { t: "Online Admission", d: "Simple online admission form (demo)", i: "🧾" },
@@ -121,7 +121,7 @@ export default function Home() {
                           {b.i}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-extrabold text-blue-950 break-words">
+                          <p className="text-sm font-extrabold text-blue-950 break-words leading-tight">
                             {b.t}
                           </p>
                           <p className="mt-1 text-xs leading-5 text-blue-900/70">
@@ -227,7 +227,7 @@ export default function Home() {
         </div>
 
         <div className="mt-6 sm:hidden">
-          <ButtonLink href="/courses" variant="outline" className="w-full">
+          <ButtonLink href="/courses" variant="outline" className="w-full whitespace-nowrap">
             View all courses
           </ButtonLink>
         </div>

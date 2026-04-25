@@ -13,12 +13,12 @@ export function StudentLoginCard() {
     <Card className="overflow-hidden">
       <CardContent className="p-6 sm:p-7">
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+          <div className="grid h-11 w-11 place-items-center rounded-[var(--radius-control)] bg-gold/15 text-xl">
             🔐
           </div>
           <div>
-            <p className="text-base font-extrabold text-blue-950">Student Login</p>
-            <p className="mt-1 text-sm text-blue-900/70">
+            <p className="text-base font-extrabold text-royal">Student Login</p>
+            <p className="mt-1 text-sm text-muted">
               Portal login UI (demo). Authentication is disabled.
             </p>
           </div>
@@ -60,11 +60,11 @@ export function StudentLoginCard() {
       </form>
 
       {show ? (
-        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
-          <p className="text-sm font-extrabold text-blue-950">
+        <div className="mt-6 rounded-[var(--radius-card)] border border-gold/20 bg-section p-5">
+          <p className="text-sm font-extrabold text-royal">
             Student Dashboard Coming in Full Version
           </p>
-          <p className="mt-1 text-sm font-semibold text-blue-900/70">
+          <p className="mt-1 text-sm font-semibold text-muted">
             This feature will be activated in the full system.
           </p>
         </div>

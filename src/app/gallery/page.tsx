@@ -33,7 +33,7 @@ export default function GalleryPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {PHOTOS.map((p) => (
           <Card key={p.id} className="overflow-hidden hover:shadow-md transition-shadow">
-            <div className="relative aspect-[4/3] w-full bg-blue-50">
+            <div className="relative aspect-[4/3] w-full bg-section">
               <Image
                 src={`/images/gallery/${p.id}.jpg`}
                 alt={p.title}
@@ -41,18 +41,18 @@ export default function GalleryPage() {
                 className="object-cover"
                 sizes="(max-width: 1024px) 50vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-950/55 via-blue-950/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-royal/65 via-royal/15 to-transparent" />
               <div className="absolute left-3 top-3">
-                <span className="rounded-full bg-white/85 px-3 py-1 text-[11px] font-extrabold text-blue-900 backdrop-blur">
+                <span className="rounded-full bg-white/85 px-3 py-1 text-[11px] font-extrabold text-royal backdrop-blur">
                   RCI Gallery
                 </span>
               </div>
             </div>
             <CardContent className="p-4">
-              <p className="text-sm font-extrabold text-blue-950">
+              <p className="text-sm font-extrabold text-royal">
                 {p.title}
               </p>
-              <p className="mt-1 text-xs text-blue-900/70">
+              <p className="mt-1 text-xs text-muted">
                 Institute activity / lab / class photo (demo)
               </p>
             </CardContent>
@@ -63,13 +63,13 @@ export default function GalleryPage() {
       <div className="mt-10">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-widest text-blue-900/70">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-muted">
               Video Gallery
             </p>
-            <p className="mt-2 text-lg font-extrabold text-blue-950 sm:text-xl">
+            <p className="mt-2 text-lg font-extrabold text-royal sm:text-xl">
               Institute Videos
             </p>
-            <p className="mt-1 text-sm text-blue-900/70">
+            <p className="mt-1 text-sm text-muted">
               Official institute videos and coaching promos (embedded).
             </p>
           </div>

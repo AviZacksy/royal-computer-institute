@@ -36,7 +36,7 @@ export function DemoAction({
       {open ? (
         <div
           id={panelId}
-          className="mt-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-950"
+          className="mt-3 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-semibold text-royal"
           role="status"
         >
           {message}

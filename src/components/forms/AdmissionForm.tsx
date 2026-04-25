@@ -26,9 +26,9 @@ export function AdmissionForm() {
         setSubmitted(true);
       }}
     >
-      <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-950">
+      <div className="rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm text-royal">
         <p className="font-extrabold">Online Admission (Demo)</p>
-        <p className="mt-1 text-blue-900/70">
+        <p className="mt-1 text-muted">
           Fill your details. Submission is disabled in demo mode.
         </p>
       </div>
@@ -64,14 +64,14 @@ export function AdmissionForm() {
         <Button type="submit" className="w-full sm:w-auto">
           Submit
         </Button>
-        <p className="text-sm font-semibold text-blue-900/70">
+        <p className="text-sm font-semibold text-muted">
           This feature will be activated in the full system.
         </p>
       </div>
 
       {submitted ? (
         <div
-          className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950"
+          className="rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-extrabold text-royal"
           role="status"
         >
           This feature will be activated in the full system.

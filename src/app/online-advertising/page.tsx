@@ -23,8 +23,8 @@ export default function OnlineAdvertisingPage() {
     >
       <div className="grid gap-4 lg:grid-cols-2">
         {ADS.map((x) => (
-          <Card key={x.t} className="overflow-hidden border border-blue-100 bg-white">
-            <div className="relative aspect-video w-full bg-blue-950">
+          <Card key={x.t} className="overflow-hidden bg-white">
+            <div className="relative aspect-video w-full bg-royal">
               <video
                 className="h-full w-full object-contain"
                 src={x.src}
@@ -34,8 +34,8 @@ export default function OnlineAdvertisingPage() {
               />
             </div>
             <CardContent className="p-5">
-              <p className="text-sm font-extrabold text-blue-950">{x.t}</p>
-              <p className="mt-1 text-sm text-blue-900/70">{x.d}</p>
+              <p className="text-sm font-extrabold text-royal">{x.t}</p>
+              <p className="mt-1 text-sm text-muted">{x.d}</p>
               <div className="mt-4">
                 <DemoAction label="Boost / Promote" variant="secondary" />
               </div>

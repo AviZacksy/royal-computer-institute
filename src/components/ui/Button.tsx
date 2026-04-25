@@ -22,7 +22,7 @@ function buttonClasses(opts: Pick<CommonProps, "variant" | "size" | "className">
   const size = opts.size ?? "md";
 
   const base =
-    "inline-flex items-center justify-center rounded-full font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/25 disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center font-semibold transition-colors focus-visible:outline-none disabled:opacity-50 disabled:pointer-events-none rounded-[var(--radius-control)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--ui-primary),transparent_80%)]";
 
   const sizes: Record<string, string> = {
     sm: "h-9 px-4 text-sm",
@@ -32,15 +32,15 @@ function buttonClasses(opts: Pick<CommonProps, "variant" | "size" | "className">
 
   const variants: Record<string, string> = {
     primary:
-      "bg-blue-900 text-white hover:bg-blue-950",
+      "bg-[var(--ui-primary)] text-white hover:bg-[#0f1424]",
     secondary:
-      "bg-blue-50 text-blue-900 hover:bg-blue-100",
+      "bg-[var(--ui-surface)] text-[var(--ui-primary)] hover:bg-[#f3f4f6]",
     outline:
-      "border border-blue-200 text-blue-900 hover:bg-blue-50",
+      "border border-[var(--ui-border)] text-[var(--ui-primary)] hover:bg-[var(--ui-surface)]",
     ghost:
-      "text-blue-900 hover:bg-blue-50",
+      "text-[var(--ui-primary)] hover:bg-[var(--ui-surface)]",
     accent:
-      "bg-amber-400 text-amber-950 hover:bg-amber-500 focus-visible:ring-amber-400/30",
+      "bg-[var(--ui-accent)] text-[var(--ui-primary)] hover:bg-[#b89436]",
     whatsapp:
       "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-600/25",
   };

@@ -11,7 +11,7 @@ export function Card({ className, children }: Props) {
   return (
     <div
       className={cx(
-        "rounded-2xl border border-blue-100 bg-white shadow-sm ring-1 ring-transparent transition-shadow hover:shadow-md",
+        "rounded-[var(--radius-card)] border border-[var(--ui-border)] bg-white shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)]",
         className,
       )}
     >

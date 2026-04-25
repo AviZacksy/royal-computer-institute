@@ -13,13 +13,13 @@ export function DemoNotice({
   const noticeId = `notice-${id}`;
 
   return (
-    <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+    <div className="mt-6 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-extrabold text-blue-950">
+          <p className="text-sm font-extrabold text-royal">
             Demo Mode
           </p>
-          <p className="text-sm font-semibold text-blue-900/70">
+          <p className="text-sm font-semibold text-muted">
             Buttons/forms are UI-only in this demo.
           </p>
         </div>
@@ -38,7 +38,7 @@ export function DemoNotice({
         className={open ? "mt-4" : "sr-only"}
         aria-live="polite"
       >
-        <div className="rounded-2xl border border-blue-100 bg-white p-4 text-sm font-extrabold text-blue-950 shadow-sm">
+        <div className="rounded-[var(--radius-card)] border border-black/5 bg-white p-4 text-sm font-extrabold text-royal shadow-[var(--shadow-card)]">
           {message}
         </div>
       </div>

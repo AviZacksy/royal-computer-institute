@@ -17,14 +17,14 @@ export function CertificatePanel() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+            <div className="grid h-11 w-11 place-items-center rounded-[var(--radius-control)] bg-gold/15 text-xl">
               📄
             </div>
             <div>
-              <p className="text-base font-extrabold text-blue-950">
+              <p className="text-base font-extrabold text-royal">
                 Certificate Apply
               </p>
-              <p className="mt-1 text-sm text-blue-900/70">
+              <p className="mt-1 text-sm text-muted">
                 Submit details to request certificate (demo UI).
               </p>
             </div>
@@ -66,7 +66,7 @@ export function CertificatePanel() {
               <Button type="submit" className="w-full sm:w-auto">
                 Apply
               </Button>
-              <span className="text-sm font-semibold text-blue-900/70">
+              <span className="text-sm font-semibold text-muted">
                 This feature will be activated in the full system.
               </span>
             </div>
@@ -74,7 +74,7 @@ export function CertificatePanel() {
 
           {applyDone ? (
             <div
-              className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950"
+              className="mt-5 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-extrabold text-royal"
               role="status"
             >
               This feature will be activated in the full system.
@@ -86,14 +86,14 @@ export function CertificatePanel() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-xl">
+            <div className="grid h-11 w-11 place-items-center rounded-[var(--radius-control)] bg-gold/15 text-xl">
               🔎
             </div>
             <div>
-              <p className="text-base font-extrabold text-blue-950">
+              <p className="text-base font-extrabold text-royal">
                 Certificate Verification
               </p>
-              <p className="mt-1 text-sm text-blue-900/70">
+              <p className="mt-1 text-sm text-muted">
                 Enter certificate number to verify (demo UI).
               </p>
             </div>
@@ -131,11 +131,11 @@ export function CertificatePanel() {
           </form>
 
           {verifyDone ? (
-            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-              <p className="text-sm font-extrabold text-blue-950">
+            <div className="mt-5 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4">
+              <p className="text-sm font-extrabold text-royal">
                 Verification Result (Demo)
               </p>
-              <p className="mt-1 text-sm font-semibold text-blue-900/70">
+              <p className="mt-1 text-sm font-semibold text-muted">
                 This feature will be activated in the full system.
               </p>
             </div>

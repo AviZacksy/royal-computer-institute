@@ -11,10 +11,10 @@ export default function AdmissionLoginPage() {
       subtitle="Demo login UI for admission portal access."
     >
       <div className="mx-auto w-full max-w-md">
-        <Card className="border border-blue-100 bg-white">
+        <Card className="bg-white">
           <CardContent className="p-6 sm:p-7">
-            <p className="text-sm font-extrabold text-blue-950">Login Details</p>
-            <p className="mt-1 text-sm text-blue-900/70">
+            <p className="text-sm font-extrabold text-royal">Login Details</p>
+            <p className="mt-1 text-sm text-muted">
               Use your admission ID and password (demo).
             </p>
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 
 type Item = { href: string; label: string };
 
@@ -16,10 +16,6 @@ export function MobileNav({ items }: { items: Item[] }) {
   const id = useId();
   const menuId = `mobile-nav-${id}`;
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   return (
     <div className="lg:hidden">
       <button
@@ -27,25 +23,25 @@ export function MobileNav({ items }: { items: Item[] }) {
         aria-controls={menuId}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-blue-200 bg-white text-blue-900 shadow-sm hover:bg-blue-50 transition-colors"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-control)] border border-white/20 bg-white/5 text-white shadow-sm hover:bg-white/10 transition-colors"
       >
         <span className="sr-only">Open menu</span>
         <span className="relative block h-4 w-5" aria-hidden="true">
           <span
             className={cx(
-              "absolute left-0 top-0 h-0.5 w-5 rounded bg-blue-900 transition-transform duration-200",
+              "absolute left-0 top-0 h-0.5 w-5 rounded bg-[#e8b84b] transition-transform duration-200",
               open ? "translate-y-[7px] rotate-45" : "translate-y-0 rotate-0",
             )}
           />
           <span
             className={cx(
-              "absolute left-0 top-[7px] h-0.5 w-5 rounded bg-blue-900 transition-opacity duration-200",
+              "absolute left-0 top-[7px] h-0.5 w-5 rounded bg-[#e8b84b] transition-opacity duration-200",
               open ? "opacity-0" : "opacity-100",
             )}
           />
           <span
             className={cx(
-              "absolute left-0 top-[14px] h-0.5 w-5 rounded bg-blue-900 transition-transform duration-200",
+              "absolute left-0 top-[14px] h-0.5 w-5 rounded bg-[#e8b84b] transition-transform duration-200",
               open ? "translate-y-[-7px] -rotate-45" : "translate-y-0 rotate-0",
             )}
           />
@@ -60,7 +56,7 @@ export function MobileNav({ items }: { items: Item[] }) {
         aria-hidden="true"
         onClick={() => setOpen(false)}
       >
-        <div className="absolute inset-0 bg-blue-950/30 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[#1a1a2e]/50 backdrop-blur-[2px]" />
       </div>
 
       <div
@@ -73,7 +69,7 @@ export function MobileNav({ items }: { items: Item[] }) {
         )}
       >
         <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6">
-          <div className="rounded-3xl border border-blue-100 bg-white shadow-sm overflow-hidden">
+          <div className="rounded-3xl border border-[#e8b84b]/15 bg-[#1a1a2e]/95 backdrop-blur shadow-[var(--shadow-card)] overflow-hidden">
             <div className="p-4">
               <div className="grid grid-cols-2 gap-2">
                 {items.map((item) => {
@@ -82,11 +78,12 @@ export function MobileNav({ items }: { items: Item[] }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => setOpen(false)}
                       className={cx(
-                        "rounded-2xl border px-3 py-3 text-sm font-semibold",
+                        "rounded-[var(--radius-control)] border px-3 py-3 text-sm font-semibold",
                         active
-                          ? "border-blue-200 bg-blue-50 text-blue-950"
-                          : "border-blue-100 bg-white text-blue-900 hover:bg-blue-50",
+                          ? "border-[#e8b84b]/35 bg-white/10 text-[#e8b84b]"
+                          : "border-white/10 bg-white/5 text-white/85 hover:bg-white/10",
                       )}
                     >
                       {item.label}
@@ -98,13 +95,15 @@ export function MobileNav({ items }: { items: Item[] }) {
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Link
                   href="/admission"
-                  className="rounded-2xl bg-amber-400 px-3 py-3 text-center text-sm font-extrabold text-amber-950 hover:bg-amber-500"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[var(--radius-control)] bg-gradient-to-br from-[#e8b84b] to-[#c49a2a] px-3 py-3 text-center text-sm font-extrabold text-[#1a1a2e] hover:from-[#f5d080] hover:to-[#c49a2a]"
                 >
-                  Admission Open
+                  Enroll Now
                 </Link>
                 <Link
                   href="/contact"
-                  className="rounded-2xl border border-blue-200 bg-white px-3 py-3 text-center text-sm font-semibold text-blue-900 hover:bg-blue-50"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[var(--radius-control)] border border-white/20 bg-white/5 px-3 py-3 text-center text-sm font-semibold text-white/85 hover:bg-white/10"
                 >
                   Contact
                 </Link>

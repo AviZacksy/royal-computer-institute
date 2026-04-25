@@ -18,7 +18,7 @@ export function SmartBackButton() {
         }
         router.push("/");
       }}
-      className="sm:hidden inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-blue-200 bg-white text-blue-900 shadow-sm hover:bg-blue-50 transition-colors"
+      className="sm:hidden inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-control)] border border-white/20 bg-white/5 text-white shadow-sm hover:bg-white/10 transition-colors"
       aria-label="Go back"
     >
       <span aria-hidden="true" className="text-lg leading-none">

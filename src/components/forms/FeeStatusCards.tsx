@@ -16,10 +16,10 @@ export function FeeStatusCards() {
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-extrabold text-blue-950">
+                <p className="text-sm font-extrabold text-royal">
                   Paid
                 </p>
-                <p className="mt-1 text-sm text-blue-900/70">
+                <p className="mt-1 text-sm text-muted">
                   Last receipt: #RCI-0001 (demo)
                 </p>
               </div>
@@ -46,18 +46,18 @@ export function FeeStatusCards() {
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200 bg-amber-50/60">
+        <Card className="border-gold/35 bg-section">
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-extrabold text-blue-950">
+                <p className="text-sm font-extrabold text-royal">
                   Pending
                 </p>
-                <p className="mt-1 text-sm text-blue-900/70">
+                <p className="mt-1 text-sm text-muted">
                   Next due: ₹— (demo)
                 </p>
               </div>
-              <span className="rounded-full bg-amber-600 px-3 py-1 text-xs font-semibold text-white">
+              <span className="rounded-full bg-gold-dark px-3 py-1 text-xs font-semibold text-royal">
                 Pending
               </span>
             </div>
@@ -81,11 +81,11 @@ export function FeeStatusCards() {
       </div>
 
       {notice ? (
-        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-950">
+        <div className="mt-6 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-extrabold text-royal">
           {notice || MSG}
         </div>
       ) : (
-        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900/70">
+        <div className="mt-6 rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-semibold text-muted">
           Click any button to see the demo message.
         </div>
       )}

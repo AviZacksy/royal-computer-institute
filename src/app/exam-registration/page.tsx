@@ -11,7 +11,7 @@ export default function ExamRegistrationPage() {
       subtitle="Demo registration form for online exams."
     >
       <div className="mx-auto w-full max-w-2xl">
-        <Card className="border border-blue-100 bg-white">
+        <Card className="bg-white">
           <CardContent className="p-6 sm:p-7">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Student Name" htmlFor="exam-reg-name">

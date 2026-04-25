@@ -10,7 +10,7 @@ export function Input({
     <input
       {...props}
       className={cx(
-        "h-11 w-full rounded-2xl border border-blue-200 bg-white px-4 text-sm text-blue-950 shadow-sm outline-none placeholder:text-blue-900/45 focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
+        "h-11 w-full rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-[var(--ui-muted)] focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
         className,
       )}
     />
@@ -25,7 +25,7 @@ export function Select({
     <select
       {...props}
       className={cx(
-        "h-11 w-full rounded-2xl border border-blue-200 bg-white px-4 text-sm text-blue-950 shadow-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
+        "h-11 w-full rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 text-sm text-[var(--ui-text)] shadow-sm outline-none focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
         className,
       )}
     />
@@ -40,7 +40,7 @@ export function Textarea({
     <textarea
       {...props}
       className={cx(
-        "min-h-[110px] w-full resize-y rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm text-blue-950 shadow-sm outline-none placeholder:text-blue-900/45 focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
+        "min-h-[110px] w-full resize-y rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 py-3 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-[var(--ui-muted)] focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
         className,
       )}
     />

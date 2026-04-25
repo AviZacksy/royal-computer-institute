@@ -2,7 +2,6 @@ import { ButtonAnchor, ButtonLink } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { DemoAction } from "@/components/demo/DemoAction";
 import { WHATSAPP_LINK } from "@/config/institute";
-import Image from "next/image";
 import { VideoStrip } from "@/components/media/VideoStrip";
 import { INSTITUTE } from "@/config/institute";
 
@@ -28,29 +27,27 @@ export default function Home() {
   return (
     <div>
       <section className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6 py-10 sm:py-14">
-        <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-sm">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 via-white to-white" />
-          <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-amber-200/30 blur-2xl" />
-          <div className="absolute -bottom-12 -right-10 h-48 w-48 rounded-full bg-blue-200/35 blur-2xl" />
+        <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-[var(--ui-border)] bg-white shadow-[var(--shadow-card)]">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[var(--ui-surface)] via-white to-white" />
           <div className="relative p-6 sm:p-10">
             <div className="flex justify-center">
               <div className="flex w-full max-w-3xl flex-col gap-4 lg:max-w-4xl">
-                <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-semibold text-blue-900">
+                <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-[var(--ui-border)] bg-white px-3 py-1 text-xs font-semibold text-[var(--ui-primary)]">
                   <span>🎓</span>
                   <span className="whitespace-normal break-words leading-tight">
                     {INSTITUTE.name}, {INSTITUTE.city}
                   </span>
                 </div>
 
-                <h1 className="text-3xl font-extrabold tracking-tight text-blue-950 sm:text-5xl">
+                <h1 className="font-display text-3xl font-extrabold tracking-tight text-[var(--ui-text)] sm:text-5xl">
                   Computer Courses &amp; Practical Training
                 </h1>
-                <p className="max-w-2xl text-sm leading-6 text-blue-900/70 sm:text-base">
+                <p className="max-w-2xl text-sm leading-6 text-[var(--ui-muted)] sm:text-base">
                   Online admission, student login, exam support and certificate services — all
                   in one professional institute website (demo).
                 </p>
 
-                <div className="grid gap-2 text-sm text-blue-950 sm:grid-cols-2">
+                <div className="grid gap-2 text-sm text-[var(--ui-text)] sm:grid-cols-2">
                   {[
                     "Job-oriented courses",
                     "Practical lab training",
@@ -59,7 +56,7 @@ export default function Home() {
                   ].map((x) => (
                     <div key={x} className="flex items-start gap-2">
                       <span className="mt-0.5">✅</span>
-                      <span className="text-blue-900/85">{x}</span>
+                      <span className="text-[var(--ui-text)]/80">{x}</span>
                     </div>
                   ))}
                 </div>
@@ -98,10 +95,10 @@ export default function Home() {
             <div className="mt-8">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-blue-900/70">
+                  <p className="text-xs font-extrabold uppercase tracking-widest text-[var(--ui-muted)]">
                     Highlights
                   </p>
-                  <p className="mt-2 text-lg font-extrabold text-blue-950 sm:text-xl">
+                  <p className="mt-2 text-lg font-extrabold text-[var(--ui-text)] sm:text-xl">
                     What you get at Royal Computer Institute
                   </p>
                 </div>
@@ -114,17 +111,17 @@ export default function Home() {
                   { t: "Online Exam", d: "Exam login portal (demo)", i: "📝" },
                   { t: "Certificates", d: "Apply & verify certificates (demo)", i: "📄" },
                 ].map((b) => (
-                  <Card key={b.t} className="hover:shadow-md transition-shadow">
+                  <Card key={b.t}>
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <div className="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-lg">
+                        <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-control)] bg-[var(--ui-surface)] text-lg">
                           {b.i}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-extrabold text-blue-950 break-words leading-tight">
+                          <p className="text-sm font-extrabold text-[var(--ui-text)] break-words leading-tight">
                             {b.t}
                           </p>
-                          <p className="mt-1 text-xs leading-5 text-blue-900/70">
+                          <p className="mt-1 text-xs leading-5 text-[var(--ui-muted)]">
                             {b.d}
                           </p>
                         </div>
@@ -141,10 +138,10 @@ export default function Home() {
       <section className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6 py-10 sm:py-14">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-extrabold text-blue-950 sm:text-2xl">
+            <h2 className="font-display text-xl font-extrabold text-royal sm:text-2xl">
               Popular Courses
             </h2>
-            <p className="mt-1 text-sm text-blue-900/70">
+            <p className="mt-1 text-sm text-muted">
               Job-focused computer courses for students and beginners.
             </p>
           </div>
@@ -192,29 +189,29 @@ export default function Home() {
               fee: { monthly: "₹—/month", total: "₹— total" },
             },
           ].map((c) => (
-            <Card className="border border-blue-100 bg-white transition-shadow hover:shadow-md" key={c.name}>
+            <Card className="bg-white transition-shadow hover:shadow-md" key={c.name}>
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="grid h-9 w-9 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-blue-900">
+                      <span className="grid h-9 w-9 place-items-center rounded-xl border border-black/5 bg-section text-royal">
                         💻
                       </span>
-                      <p className="text-base font-extrabold text-blue-950">{c.name}</p>
+                      <p className="text-base font-extrabold text-royal">{c.name}</p>
                     </div>
-                    <p className="mt-2 text-sm text-blue-900/70 break-words">{c.desc}</p>
+                    <p className="mt-2 text-sm text-muted break-words">{c.desc}</p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <span className="inline-flex rounded-full border border-blue-100 bg-white px-3 py-1 text-[11px] font-extrabold text-blue-900">
+                    <span className="inline-flex rounded-full border border-black/5 bg-white px-3 py-1 text-[11px] font-extrabold text-royal">
                       {c.dur}
                     </span>
                   </div>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-blue-900/70">
-                  <span className="rounded-full border border-blue-100 bg-white px-3 py-1">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
+                  <span className="rounded-full border border-black/5 bg-white px-3 py-1">
                     Fee: {c.fee.monthly}
                   </span>
-                  <span className="rounded-full border border-blue-100 bg-white px-3 py-1">
+                  <span className="rounded-full border border-black/5 bg-white px-3 py-1">
                     {c.fee.total}
                   </span>
                 </div>
@@ -237,10 +234,10 @@ export default function Home() {
         <div className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardContent className="p-6 sm:p-8">
-              <h2 className="text-xl font-extrabold text-blue-950 sm:text-2xl">
+              <h2 className="font-display text-xl font-extrabold text-royal sm:text-2xl">
                 Why Choose Us
               </h2>
-              <p className="mt-2 text-sm leading-6 text-blue-900/70">
+              <p className="mt-2 text-sm leading-6 text-muted">
                 Trustworthy, local-institute friendly learning with clear guidance
                 for students and parents.
               </p>
@@ -253,17 +250,17 @@ export default function Home() {
                 ].map((x) => (
                   <div
                     key={x.t}
-                    className="rounded-2xl border border-blue-100 bg-white p-4"
+                    className="rounded-[var(--radius-card)] border border-black/5 bg-white p-4"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-lg">
+                      <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-control)] bg-section text-lg">
                         {x.i}
                       </div>
                       <div>
-                        <p className="text-sm font-extrabold text-blue-950">
+                        <p className="text-sm font-extrabold text-royal">
                           {x.t}
                         </p>
-                        <p className="mt-1 text-xs leading-5 text-blue-900/70">
+                        <p className="mt-1 text-xs leading-5 text-muted">
                           {x.d}
                         </p>
                       </div>
@@ -276,10 +273,10 @@ export default function Home() {
 
           <Card>
             <CardContent className="p-6 sm:p-8">
-              <h2 className="text-xl font-extrabold text-blue-950 sm:text-2xl">
+              <h2 className="font-display text-xl font-extrabold text-royal sm:text-2xl">
                 Online Services
               </h2>
-              <p className="mt-2 text-sm leading-6 text-blue-900/70">
+              <p className="mt-2 text-sm leading-6 text-muted">
                 Quick access (demo).
               </p>
 
@@ -293,14 +290,14 @@ export default function Home() {
                   <Card key={s.t} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-5">
                       <div className="flex items-start gap-3">
-                        <div className="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-lg">
+                        <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-control)] bg-section text-lg">
                           {s.i}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-extrabold text-blue-950">
+                          <p className="text-sm font-extrabold text-royal">
                             {s.t}
                           </p>
-                          <p className="mt-1 text-xs leading-5 text-blue-900/70">
+                          <p className="mt-1 text-xs leading-5 text-muted">
                             {s.d}
                           </p>
                         </div>
@@ -324,10 +321,10 @@ export default function Home() {
           <div className="p-6 sm:p-10">
             <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
-                <h2 className="text-xl font-extrabold text-blue-950 sm:text-2xl">
+                <h2 className="font-display text-xl font-extrabold text-royal sm:text-2xl">
                   Start Your Computer Learning Journey Today
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-blue-900/70">
+                <p className="mt-2 text-sm leading-6 text-muted">
                   Talk to us for course guidance, admission details, fee status, and
                   certificate support.
                 </p>
@@ -368,13 +365,13 @@ export default function Home() {
       <section className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6 pb-14 sm:pb-16">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-widest text-blue-900/70">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-muted">
               Video Gallery
             </p>
-            <h2 className="mt-2 text-xl font-extrabold text-blue-950 sm:text-2xl">
+            <h2 className="mt-2 font-display text-xl font-extrabold text-royal sm:text-2xl">
               Institute Videos
             </h2>
-            <p className="mt-1 text-sm text-blue-900/70">
+            <p className="mt-1 text-sm text-muted">
               Official institute videos and coaching promos (embedded).
             </p>
           </div>

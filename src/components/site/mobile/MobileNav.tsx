@@ -94,18 +94,18 @@ export function MobileNav({ items }: { items: Item[] }) {
 
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Link
-                  href="/admission"
-                  onClick={() => setOpen(false)}
-                  className="rounded-[var(--radius-control)] bg-gradient-to-br from-[#e8b84b] to-[#c49a2a] px-3 py-3 text-center text-sm font-extrabold text-[#1a1a2e] hover:from-[#f5d080] hover:to-[#c49a2a]"
-                >
-                  Enroll Now
-                </Link>
-                <Link
-                  href="/contact"
+                  href="/student-login"
                   onClick={() => setOpen(false)}
                   className="rounded-[var(--radius-control)] border border-white/20 bg-white/5 px-3 py-3 text-center text-sm font-semibold text-white/85 hover:bg-white/10"
                 >
-                  Contact
+                  Student Login
+                </Link>
+                <Link
+                  href="/student/register"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[var(--radius-control)] bg-gradient-to-br from-[#e8b84b] to-[#c49a2a] px-3 py-3 text-center text-sm font-extrabold text-[#1a1a2e] hover:from-[#f5d080] hover:to-[#c49a2a]"
+                >
+                  Apply Now
                 </Link>
               </div>
             </div>

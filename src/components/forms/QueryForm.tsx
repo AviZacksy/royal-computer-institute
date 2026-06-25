@@ -16,55 +16,23 @@ export function QueryForm() {
         setSubmitted(true);
       }}
     >
-      <div className="rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm text-royal">
-        <p className="font-extrabold">Special Online Query (Demo)</p>
-        <p className="mt-1 text-muted">
-          Send your message. Submission is disabled in demo mode.
-        </p>
-      </div>
-
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Name" htmlFor="qName">
           <Input id="qName" name="qName" placeholder="Your name" required />
         </Field>
         <Field label="Phone" htmlFor="qPhone">
-          <Input
-            id="qPhone"
-            name="qPhone"
-            placeholder="Mobile number"
-            inputMode="numeric"
-            required
-          />
+          <Input id="qPhone" name="qPhone" placeholder="Mobile number" inputMode="numeric" required />
         </Field>
       </div>
-
       <Field label="Your Query" htmlFor="qMessage">
-        <Textarea
-          id="qMessage"
-          name="qMessage"
-          placeholder="Write your message..."
-          required
-        />
+        <Textarea id="qMessage" name="qMessage" placeholder="Write your message..." required />
       </Field>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" className="w-full sm:w-auto">
-          Submit Query
-        </Button>
-        <p className="text-sm font-semibold text-muted">
-          This feature will be activated in the full system.
-        </p>
-      </div>
-
+      <Button type="submit" className="w-fit">Submit Enquiry</Button>
       {submitted ? (
-        <div
-          className="rounded-[var(--radius-card)] border border-gold/20 bg-section p-4 text-sm font-extrabold text-royal"
-          role="status"
-        >
-          This feature will be activated in the full system.
-        </div>
+        <p className="rounded-[var(--radius-card)] border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 text-sm text-[var(--ui-primary)]" role="status">
+          Thank you. Enquiry submission will be connected in a later update.
+        </p>
       ) : null}
     </form>
   );
 }
-

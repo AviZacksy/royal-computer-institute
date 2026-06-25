@@ -32,7 +32,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
               </div>
 
               <nav className="hidden lg:flex items-center gap-6">
-                {NAV_ITEMS.slice(0, 5).map((item) => (
+                {NAV_ITEMS.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -45,16 +45,16 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
 
               <div className="flex items-center gap-2 shrink-0">
                 <Link
-                  href="/admission"
-                  className="hidden sm:inline-flex rounded-[var(--radius-control)] bg-[var(--ui-accent)] px-4 py-2 text-sm font-semibold text-[var(--ui-primary)] hover:bg-[#b89436]"
-                >
-                  Enroll Now →
-                </Link>
-                <Link
-                  href="/contact"
+                  href="/student-login"
                   className="hidden sm:inline-flex rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--ui-primary)] hover:bg-[var(--ui-surface)]"
                 >
-                  Contact
+                  Student Login
+                </Link>
+                <Link
+                  href="/student/register"
+                  className="hidden sm:inline-flex rounded-[var(--radius-control)] bg-[var(--ui-accent)] px-4 py-2 text-sm font-semibold text-[var(--ui-primary)] hover:bg-[#b89436]"
+                >
+                  Apply Now →
                 </Link>
                 <MobileNav items={NAV_ITEMS} />
               </div>
@@ -109,7 +109,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
                     Quick Links
                   </p>
                   <ul className="mt-4 grid gap-2 text-sm">
-                    {NAV_ITEMS.slice(0, 5).map((i) => (
+                    {NAV_ITEMS.map((i) => (
                       <li key={i.href}>
                         <Link className="text-white/75 hover:text-white" href={i.href}>
                           {i.label}
@@ -121,16 +121,24 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
 
                 <div>
                   <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">
-                    Services
+                    Portal
                   </p>
                   <ul className="mt-4 grid gap-2 text-sm">
-                    {NAV_ITEMS.slice(5, 10).map((i) => (
-                      <li key={i.href}>
-                        <Link className="text-white/75 hover:text-white" href={i.href}>
-                          {i.label}
-                        </Link>
-                      </li>
-                    ))}
+                    <li>
+                      <Link className="text-white/75 hover:text-white" href="/student/register">
+                        Admission
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white/75 hover:text-white" href="/student-login">
+                        Student Login
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white/75 hover:text-white" href="/admin/login">
+                        Admin Login
+                      </Link>
+                    </li>
                   </ul>
                 </div>
 

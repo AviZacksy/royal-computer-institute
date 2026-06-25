@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { SiteLayout } from "@/components/site/SiteLayout";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -22,8 +21,8 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Royal Computer Institute (Demo)",
-  description: "Royal Computer Institute demo UI (frontend only).",
+  title: "Royal Computer Institute",
+  description: "Royal Computer Institute — courses, admission, exams, and certificates.",
 };
 
 export default function RootLayout({
@@ -36,9 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${playfair.variable} ${bebas.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-body">
-        <SiteLayout>{children}</SiteLayout>
-      </body>
+      <body className="min-h-full flex flex-col font-body">{children}</body>
     </html>
   );
 }

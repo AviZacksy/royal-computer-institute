@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { INSTITUTE } from "@/config/institute";
 import { SectionHeading } from "@/components/site/SectionHeading";
 
@@ -34,9 +35,17 @@ export default function AboutPage() {
             </div>
             
             <div className="mt-16 pt-12 border-t border-[var(--ui-border)] flex flex-col sm:flex-row items-center justify-center gap-12 sm:gap-24 text-center">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--ui-secondary)] mb-3">Director</p>
-                <p className="font-display text-2xl font-extrabold text-[var(--ui-primary)]">👨‍💼 {INSTITUTE.directorName}</p>
+              <div className="flex flex-col items-center">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 sm:mb-6 rounded-full overflow-hidden shadow-lg border-4 border-white ring-1 ring-gray-100">
+                  <Image 
+                    src="/about/Director.jpeg" 
+                    alt={INSTITUTE.directorName} 
+                    fill 
+                    className="object-cover" 
+                  />
+                </div>
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--ui-secondary)] mb-2 sm:mb-3">Director</p>
+                <p className="font-display text-xl sm:text-2xl font-extrabold text-[var(--ui-primary)]">{INSTITUTE.directorName}</p>
               </div>
 
               <div className="hidden sm:block w-px h-16 bg-[var(--ui-border)]"></div>

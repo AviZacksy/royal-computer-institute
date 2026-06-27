@@ -6,9 +6,9 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Input, Select } from "@/components/ui/Input";
 
-const COURSES = ["ADCA", "DCA", "Tally", "DTP", "Typing", "CCC", "Graphic Designing"];
+type CourseOption = { id: string; name: string };
 
-export function CertificatePanel() {
+export function CertificatePanel({ courses }: { courses: CourseOption[] }) {
   const [applyDone, setApplyDone] = useState(false);
   const [verifyDone, setVerifyDone] = useState(false);
 
@@ -40,14 +40,14 @@ export function CertificatePanel() {
             <Field label="Name" htmlFor="certName">
               <Input id="certName" name="certName" placeholder="Student name" required />
             </Field>
-            <Field label="Course" htmlFor="certCourse">
-              <Select id="certCourse" name="certCourse" defaultValue="" required>
+            <Field label="Course" htmlFor="certCourseId">
+              <Select id="certCourseId" name="certCourseId" defaultValue="" required>
                 <option value="" disabled>
                   Select course
                 </option>
-                {COURSES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
                   </option>
                 ))}
               </Select>
@@ -63,7 +63,7 @@ export function CertificatePanel() {
             </Field>
 
             <div className="grid gap-2 sm:flex sm:items-center">
-              <Button type="submit" className="w-full sm:w-auto">
+              <Button type="submit" className="w-full sm:w-auto" disabled={courses.length === 0}>
                 Apply
               </Button>
               <span className="text-sm font-semibold text-muted">
@@ -145,4 +145,3 @@ export function CertificatePanel() {
     </div>
   );
 }
-

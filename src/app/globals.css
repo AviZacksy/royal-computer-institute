@@ -2,29 +2,28 @@
 
 /* UI tokens (used via CSS vars in components) */
 :root {
-  /* Color palette (Clean Academic Professional) */
+  /* Color palette (Modern Educational Dashboard) */
   --ui-bg: #ffffff;
-  --ui-surface: #f8f9fb;
-  --ui-border: #e5e7eb;
-  --ui-primary: #1a1a2e;
-  --ui-accent: #c9a84c;
-  --ui-text: #111827;
-  --ui-muted: #6b7280;
+  --ui-surface: #f8fafc;
+  --ui-bg-subtle: #f1f5f9;
+  --ui-border: #e2e8f0;
+  --ui-primary: #0f172a;      /* Navy Blue */
+  --ui-secondary: #2563eb;    /* Royal Blue */
+  --ui-accent: #eab308;       /* Gold/Yellow */
+  --ui-text: #1e293b;
+  --ui-muted: #64748b;
   --ui-success: #16a34a;
 
   /* Radii & shadows */
-  --radius-card: 12px;      /* rounded-xl */
-  --radius-control: 10px;   /* rounded-lg */
-  --shadow-card: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-card-hover: 0 4px 10px rgba(0,0,0,0.08);
+  --radius-card: 0.75rem;     /* 12px */
+  --radius-control: 0.75rem; /* 12px */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card: 0 10px 24px -20px rgb(15 23 42 / 0.45), 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-card-hover: 0 18px 38px -24px rgb(15 23 42 / 0.45), 0 4px 10px rgb(15 23 42 / 0.06);
 
   color-scheme: light;
 }
 
-html,
-body {
-  height: 100%;
-}
 
 body {
   overflow-x: hidden;
@@ -38,8 +37,24 @@ body {
     Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 .font-display {
-  font-family: var(--font-playfair), ui-serif, Georgia, "Times New Roman", serif;
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 .font-metric {
   font-family: var(--font-bebas), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+@keyframes marquee2 {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-slow {
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee2-slow {
+  animation: marquee2 30s linear infinite;
 }

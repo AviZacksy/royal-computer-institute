@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdminSession } from "@/lib/auth";
@@ -8,6 +9,7 @@ import { CourseForm } from "@/components/admin/CourseForm";
 import { DeleteCourseButton } from "@/components/admin/DeleteCourseButton";
 import { ToggleCourseButton } from "@/components/admin/ToggleCourseButton";
 import { formatCurrency } from "@/lib/format";
+import { resolveCourseImageUrl } from "@/lib/public-content";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +28,16 @@ export default async function AdminCoursesPage({
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: { _count: { select: { students: true } } },
   });
+  const coursesWithImages = await Promise.all(
+    courses.map(async (course) => ({
+      ...course,
+      imageUrl: await resolveCourseImageUrl(course),
+    })),
+  );
 
   let editCourse = null;
   if (edit) {
-    editCourse = courses.find((c) => c.id === edit);
+    editCourse = coursesWithImages.find((c) => c.id === edit);
     if (!editCourse) notFound();
   }
 
@@ -44,6 +52,11 @@ export default async function AdminCoursesPage({
                 description: editCourse.description,
                 duration: editCourse.duration,
                 totalFee: editCourse.totalFee,
+                actualFee: editCourse.actualFee,
+                installmentFee: editCourse.installmentFee,
+                oneTimeFee: editCourse.oneTimeFee,
+                imageUrl: editCourse.imageUrl,
+                imagePath: editCourse.imagePath,
                 isActive: editCourse.isActive,
               }
             : undefined
@@ -57,11 +70,25 @@ export default async function AdminCoursesPage({
       ) : null}
 
       <DataTable
-        headers={["Title", "Duration", "Fee", "Status", "Enrolled", "Actions"]}
-        rows={courses.map((c) => [
-          c.name,
+        headers={["Course", "Duration", "Actual", "Installment", "One Time", "Status", "Enrolled", "Actions"]}
+        rows={coursesWithImages.map((c) => [
+          <div key={`course-${c.id}`} className="flex items-center gap-3">
+            {c.imageUrl ? (
+              <Image
+                src={c.imageUrl}
+                alt={c.name}
+                width={64}
+                height={48}
+                unoptimized={c.imageUrl.startsWith("http")}
+                className="h-12 w-16 rounded-md border border-[var(--ui-border)] object-cover"
+              />
+            ) : null}
+            <span className="font-semibold">{c.name}</span>
+          </div>,
           c.duration,
-          formatCurrency(c.totalFee),
+          formatCurrency(c.actualFee || c.totalFee),
+          formatCurrency(c.installmentFee || c.totalFee),
+          formatCurrency(c.oneTimeFee || c.totalFee),
           <ActiveBadge key={`ab-${c.id}`} active={c.isActive} />,
           c._count.students,
           <div key={`act-${c.id}`} className="flex flex-wrap gap-2">

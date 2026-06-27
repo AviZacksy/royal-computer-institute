@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
 import { courseFormSchema } from "@/lib/validations";
+import { getStorageProvider, STORAGE_BUCKETS, uploadFile } from "@/lib/storage";
 import type { ActionState } from "./types";
 
 function parseCourseForm(formData: FormData) {
@@ -13,8 +14,30 @@ function parseCourseForm(formData: FormData) {
     description: formData.get("description"),
     duration: formData.get("duration"),
     totalFee: formData.get("totalFee"),
+    actualFee: formData.get("actualFee"),
+    installmentFee: formData.get("installmentFee"),
+    oneTimeFee: formData.get("oneTimeFee"),
+    imagePath: formData.get("imagePath") || undefined,
     isActive: formData.get("isActive") ?? "true",
   });
+}
+
+function revalidateCourseConsumers() {
+  [
+    "/",
+    "/courses",
+    "/query",
+    "/student/register",
+    "/admin/courses",
+    "/admin/dashboard",
+    "/admin/students",
+    "/admin/students/approval",
+    "/admin/questions",
+    "/admin/exams",
+    "/admin/notes",
+    "/admin/fees",
+    "/admin/documents",
+  ].forEach((path) => revalidatePath(path));
 }
 
 export async function saveCourseAction(
@@ -28,8 +51,32 @@ export async function saveCourseAction(
       return { error: parsed.error.errors[0]?.message ?? "Invalid course data" };
     }
 
-    const { id, name, description, duration, totalFee, isActive } = parsed.data;
+    const {
+      id,
+      name,
+      description,
+      duration,
+      actualFee,
+      installmentFee,
+      oneTimeFee,
+      imagePath,
+      isActive,
+    } = parsed.data;
+    const totalFee = oneTimeFee;
     const active = isActive !== "false";
+    const imageFile = formData.get("courseImage");
+    const removeImage = formData.get("removeImage") === "true";
+    const hasUpload =
+      imageFile instanceof File && imageFile.size > 0 && imageFile.name.trim().length > 0;
+    const uploadImageFile = hasUpload ? imageFile : null;
+
+    if (uploadImageFile && !uploadImageFile.type.startsWith("image/")) {
+      return { error: "Course image must be an image file" };
+    }
+
+    if (uploadImageFile && uploadImageFile.size > 5 * 1024 * 1024) {
+      return { error: "Course image must be 5MB or smaller" };
+    }
 
     if (id) {
       const existing = await db.course.findFirst({
@@ -50,9 +97,46 @@ export async function saveCourseAction(
         return { error: "A course with this title already exists" };
       }
 
+      let imageStorageKey = existing.imageStorageKey;
+      let nextImagePath = imagePath ?? null;
+
+      if (removeImage || hasUpload) {
+        if (existing.imageStorageKey) {
+          await getStorageProvider()
+            .delete(STORAGE_BUCKETS.gallery, existing.imageStorageKey)
+            .catch(() => undefined);
+        }
+        imageStorageKey = null;
+      }
+
+      if (uploadImageFile) {
+        const stored = await uploadFile({
+          instituteId: session.instituteId,
+          bucket: STORAGE_BUCKETS.gallery,
+          category: "course-images",
+          file: uploadImageFile,
+        });
+        imageStorageKey = stored.key;
+      }
+
+      if (removeImage) {
+        nextImagePath = null;
+      }
+
       await db.course.update({
         where: { id },
-        data: { name, description, duration, totalFee, isActive: active },
+        data: {
+          name,
+          description,
+          duration,
+          totalFee,
+          actualFee,
+          installmentFee,
+          oneTimeFee,
+          imageStorageKey,
+          imagePath: nextImagePath,
+          isActive: active,
+        },
       });
     } else {
       const duplicate = await db.course.findFirst({
@@ -63,6 +147,17 @@ export async function saveCourseAction(
       });
       if (duplicate) {
         return { error: "A course with this title already exists" };
+      }
+
+      let imageStorageKey = null;
+      if (uploadImageFile) {
+        const stored = await uploadFile({
+          instituteId: session.instituteId,
+          bucket: STORAGE_BUCKETS.gallery,
+          category: "course-images",
+          file: uploadImageFile,
+        });
+        imageStorageKey = stored.key;
       }
 
       const maxSort = await db.course.aggregate({
@@ -77,15 +172,18 @@ export async function saveCourseAction(
           description,
           duration,
           totalFee,
+          actualFee,
+          installmentFee,
+          oneTimeFee,
+          imageStorageKey,
+          imagePath: removeImage ? null : (imagePath ?? null),
           isActive: active,
           sortOrder: (maxSort._max.sortOrder ?? 0) + 1,
         },
       });
     }
 
-    revalidatePath("/admin/courses");
-    revalidatePath("/admin/dashboard");
-    revalidatePath("/courses");
+    revalidateCourseConsumers();
     return { success: id ? "Course updated" : "Course created" };
   } catch {
     return { error: "Something went wrong. Please try again." };
@@ -116,10 +214,15 @@ export async function deleteCourseAction(
       };
     }
 
+    if (course.imageStorageKey) {
+      await getStorageProvider()
+        .delete(STORAGE_BUCKETS.gallery, course.imageStorageKey)
+        .catch(() => undefined);
+    }
+
     await db.course.delete({ where: { id } });
 
-    revalidatePath("/admin/courses");
-    revalidatePath("/admin/dashboard");
+    revalidateCourseConsumers();
     return { success: "Course deleted" };
   } catch {
     return { error: "Something went wrong. Please try again." };
@@ -141,6 +244,5 @@ export async function toggleCourseStatusAction(formData: FormData): Promise<void
     data: { isActive: !course.isActive },
   });
 
-  revalidatePath("/admin/courses");
-  revalidatePath("/admin/dashboard");
+  revalidateCourseConsumers();
 }

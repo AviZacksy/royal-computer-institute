@@ -1,167 +1,194 @@
 import Link from "next/link";
+import Image from "next/image";
+import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
 import { NAV_ITEMS } from "@/components/site/nav";
 import { MobileNav } from "@/components/site/mobile/MobileNav";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
-import { INSTITUTE } from "@/config/institute";
-import { SmartBackButton } from "@/components/site/mobile/SmartBackButton";
-import { MobileBottomCTA } from "@/components/site/mobile/MobileBottomCTA";
+import { INSTITUTE, WHATSAPP_LINK } from "@/config/institute";
 
 export function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-full flex flex-col">
-      <header className="fixed top-0 inset-x-0 z-50 sm:sticky">
+    <div className="min-h-screen flex-1 w-full flex flex-col bg-white">
+      <header className="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white shadow-md border-b border-gray-200">
         <AnnouncementBar />
-        <div className="border-b border-[var(--ui-border)] bg-white">
-          <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6">
-            <div className="flex min-h-[72px] items-center justify-between gap-2 py-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <SmartBackButton />
-                <Link href="/" className="flex min-w-0 items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-surface)] text-lg">
-                    👑
+        <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-8">
+          <div className="flex h-[88px] items-center justify-between gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+              <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                <Image src="/logo/logo.jpeg" alt={INSTITUTE.name} width={48} height={48} className="rounded-full shadow-sm border border-white/20 object-cover" />
+                <span className="min-w-0 hidden sm:block">
+                  <span className="block font-display text-[22px] font-black leading-tight text-gray-900 tracking-normal">
+                    {INSTITUTE.name}
                   </span>
-                  <span className="min-w-0">
-                    <span className="block font-display text-[15px] font-extrabold leading-tight text-[var(--ui-primary)] sm:text-base">
-                      {INSTITUTE.name}
-                    </span>
-                    <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--ui-muted)] sm:text-[12px]">
-                      Bihar&apos;s Premier Training Center
-                    </span>
+                  <span className="flex items-center gap-1 text-[13px] font-medium text-gray-500 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    Bhawanipur Zirat, infront of stone clinic motihari
                   </span>
-                </Link>
-              </div>
+                </span>
+              </Link>
+            </div>
 
-              <nav className="hidden lg:flex items-center gap-6">
-                {NAV_ITEMS.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="text-sm font-semibold tracking-wide text-[var(--ui-text)]/80 transition-colors hover:text-[var(--ui-primary)]"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
+            <nav className="hidden lg:flex items-center gap-8">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900 relative group py-2"
+                >
+                  {item.label}
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
+                </Link>
+              ))}
+            </nav>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  href="/student-login"
-                  className="hidden sm:inline-flex rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--ui-primary)] hover:bg-[var(--ui-surface)]"
-                >
-                  Student Login
-                </Link>
-                <Link
-                  href="/student/register"
-                  className="hidden sm:inline-flex rounded-[var(--radius-control)] bg-[var(--ui-accent)] px-4 py-2 text-sm font-semibold text-[var(--ui-primary)] hover:bg-[#b89436]"
-                >
-                  Apply Now →
-                </Link>
-                <MobileNav items={NAV_ITEMS} />
-              </div>
+            <div className="flex items-center gap-4 shrink-0">
+              <Link
+                href="/student-login"
+                className="hidden sm:inline-flex items-center justify-center h-12 px-6 rounded-full bg-gray-100 text-[15px] font-bold text-gray-900 hover:bg-gray-200 transition-all"
+              >
+                Student Login
+              </Link>
+              <Link
+                href="/student/register"
+                className="hidden sm:inline-flex items-center justify-center h-12 px-7 rounded-full bg-[var(--ui-accent)] text-[15px] font-extrabold text-[var(--ui-primary)] shadow-xl shadow-[var(--ui-accent)]/20 hover:scale-105 transition-all"
+              >
+                Apply Now
+              </Link>
+              <MobileNav items={NAV_ITEMS} />
             </div>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 bg-white pt-20 pb-24 sm:pt-0 sm:pb-0">
+      <main className="flex-1 w-full flex flex-col pt-[88px] sm:pt-[124px]">
         {children}
       </main>
 
-      <MobileBottomCTA />
-
-      <footer className="border-t border-[var(--ui-border)] bg-[var(--ui-primary)] text-white">
-        <div className="relative">
-          <div className="relative mx-auto w-full max-w-screen-2xl px-4 lg:px-6 py-10">
-            <div className="grid gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-4">
-                <div className="flex items-start gap-3">
-                  <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/10 text-lg">
-                    👑
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-display text-base font-extrabold tracking-tight text-white">
-                      {INSTITUTE.name}
-                    </p>
-                    <p className="mt-1 text-sm text-white/75">{INSTITUTE.city}</p>
-                  </div>
-                </div>
-
-                <p className="mt-4 text-sm leading-6 text-white/75">
-                  Job-oriented computer courses with practical lab training, online
-                  admission, exam support and certificate services.
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {["Practical Training", "Online Services", "Certificate Support"].map((x) => (
-                    <span
-                      key={x}
-                      className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white/85"
-                    >
-                      {x}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid gap-8 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">
-                    Quick Links
-                  </p>
-                  <ul className="mt-4 grid gap-2 text-sm">
-                    {NAV_ITEMS.map((i) => (
-                      <li key={i.href}>
-                        <Link className="text-white/75 hover:text-white" href={i.href}>
-                          {i.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">
-                    Portal
-                  </p>
-                  <ul className="mt-4 grid gap-2 text-sm">
-                    <li>
-                      <Link className="text-white/75 hover:text-white" href="/student/register">
-                        Admission
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white/75 hover:text-white" href="/student-login">
-                        Student Login
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white/75 hover:text-white" href="/admin/login">
-                        Admin Login
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">
-                    Contact
-                  </p>
-                  <div className="mt-4 grid gap-2 text-sm text-white/80 break-words">
-                    <p className="leading-6">📞 {INSTITUTE.phoneDisplay}</p>
-                    <p className="leading-6 break-all">✉️ {INSTITUTE.email}</p>
-                    <p className="leading-6">🕒 {INSTITUTE.timingDisplay}</p>
-                    <p className="leading-6 break-words">📍 {INSTITUTE.addressLines.join(", ")}</p>
-                    <p className="leading-6">📷 {INSTITUTE.instagramHandle}</p>
-                  </div>
-                </div>
+      <footer className="bg-[#0f172a] text-slate-300 border-t border-slate-800">
+        <div className="mx-auto w-full max-w-screen-2xl px-4 py-12 lg:px-8 lg:py-16">
+          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.25fr]">
+            <div className="space-y-5">
+              <Link href="/" className="inline-flex items-center gap-3">
+                <Image
+                  src="/logo/logo.jpeg"
+                  alt={INSTITUTE.name}
+                  width={52}
+                  height={52}
+                  className="rounded-full border border-white/10 object-cover"
+                />
+                <span>
+                  <span className="block font-display text-xl font-black text-white">
+                    {INSTITUTE.name}
+                  </span>
+                  <span className="block text-sm font-semibold text-[var(--ui-accent)]">
+                    Computer education in {INSTITUTE.city}
+                  </span>
+                </span>
+              </Link>
+              <p className="max-w-md text-sm leading-7 text-slate-400">
+                Practical computer training, career-focused courses, exam support,
+                and student services from admission to certification.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm font-bold">
+                <Link
+                  href="/student/register"
+                  className="rounded-md bg-[var(--ui-accent)] px-4 py-2 text-[var(--ui-primary)] transition hover:bg-yellow-400"
+                >
+                  Apply Now
+                </Link>
+                <Link
+                  href="/student-login"
+                  className="rounded-md border border-slate-700 px-4 py-2 text-white transition hover:border-slate-500 hover:bg-white/5"
+                >
+                  Student Login
+                </Link>
               </div>
             </div>
 
-            <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-white/70">
-                © {new Date().getFullYear()} {INSTITUTE.name}. All rights reserved.
-              </p>
-              <p className="text-xs text-white/70">Developed by Avi Razput</p>
+            <div>
+              <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-white">
+                Quick Links
+              </h3>
+              <ul className="space-y-3 text-sm font-semibold">
+                {[
+                  { label: "Home", href: "/" },
+                  { label: "About", href: "/about" },
+                  { label: "Courses", href: "/courses" },
+                  { label: "Gallery", href: "/gallery" },
+                  { label: "Contact", href: "/contact" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="transition hover:text-white">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-white">
+                Student Services
+              </h3>
+              <ul className="space-y-3 text-sm font-semibold">
+                {[
+                  { label: "Admission", href: "/admission" },
+                  { label: "Exam Registration", href: "/exam-registration" },
+                  { label: "Fee Payment", href: "/fee-paid" },
+                  { label: "Certificate", href: "/certificate" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="transition hover:text-white">
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-white">
+                Contact
+              </h3>
+              <ul className="space-y-4 text-sm text-slate-400">
+                <li className="flex gap-3">
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[var(--ui-accent)]" />
+                  <span>{INSTITUTE.addressLines.join(", ")}</span>
+                </li>
+                <li className="flex gap-3">
+                  <Phone className="h-5 w-5 shrink-0 text-[var(--ui-accent)]" />
+                  <a href={`tel:${INSTITUTE.phoneE164}`} className="transition hover:text-white">
+                    {INSTITUTE.phoneDisplay}
+                  </a>
+                </li>
+                <li className="flex gap-3">
+                  <MessageCircle className="h-5 w-5 shrink-0 text-[var(--ui-accent)]" />
+                  <a href={WHATSAPP_LINK} className="transition hover:text-white">
+                    {INSTITUTE.whatsappDisplay}
+                  </a>
+                </li>
+                <li className="flex gap-3">
+                  <Mail className="h-5 w-5 shrink-0 text-[var(--ui-accent)]" />
+                  <a href={`mailto:${INSTITUTE.email}`} className="break-all transition hover:text-white">
+                    {INSTITUTE.email}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-4 border-t border-slate-800 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>&copy; {new Date().getFullYear()} {INSTITUTE.name}. All rights reserved.</p>
+            <div className="flex flex-wrap gap-4 font-semibold">
+              <Link href="https://www.facebook.com/share/1HGd4tLzyo/" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                Facebook
+              </Link>
+              <Link href="https://www.instagram.com/royal_computer_institute.01?igsh=eDFqam5obW5hd3V6" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                Instagram
+              </Link>
+              <Link href="https://youtube.com/@royal.computer_motihari?si=t_13Zejkgau3AqDy" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                YouTube
+              </Link>
             </div>
           </div>
         </div>
@@ -169,4 +196,3 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-

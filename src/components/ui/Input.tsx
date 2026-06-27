@@ -10,7 +10,7 @@ export function Input({
     <input
       {...props}
       className={cx(
-        "h-11 w-full rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-[var(--ui-muted)] focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
+        "h-10 w-full rounded-[var(--radius-control)] border border-slate-200 bg-white px-3 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-slate-400 transition-all focus:border-[var(--ui-secondary)] focus:ring-2 focus:ring-blue-100",
         className,
       )}
     />
@@ -25,7 +25,7 @@ export function Select({
     <select
       {...props}
       className={cx(
-        "h-11 w-full rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 text-sm text-[var(--ui-text)] shadow-sm outline-none focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
+        "h-10 w-full rounded-[var(--radius-control)] border border-slate-200 bg-white px-3 text-sm text-[var(--ui-text)] shadow-sm outline-none transition-all focus:border-[var(--ui-secondary)] focus:ring-2 focus:ring-blue-100",
         className,
       )}
     />
@@ -40,10 +40,9 @@ export function Textarea({
     <textarea
       {...props}
       className={cx(
-        "min-h-[110px] w-full resize-y rounded-[var(--radius-control)] border border-[var(--ui-border)] bg-white px-4 py-3 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-[var(--ui-muted)] focus:border-[var(--ui-accent)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ui-accent),transparent_85%)]",
+        "min-h-[112px] w-full resize-y rounded-[var(--radius-control)] border border-slate-200 bg-white px-3 py-2.5 text-sm text-[var(--ui-text)] shadow-sm outline-none placeholder:text-slate-400 transition-all focus:border-[var(--ui-secondary)] focus:ring-2 focus:ring-blue-100",
         className,
       )}
     />
   );
 }
-

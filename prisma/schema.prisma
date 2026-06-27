@@ -10,6 +10,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -130,6 +131,11 @@ model Course {
   description String   @db.Text
   duration    String
   totalFee    Int      @default(0)
+  actualFee   Int      @default(0)
+  installmentFee Int   @default(0)
+  oneTimeFee  Int      @default(0)
+  imageStorageKey String?
+  imagePath    String?
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now()) @db.Timestamptz(6)

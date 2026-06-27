@@ -11,7 +11,7 @@ export function Card({ className, children }: Props) {
   return (
     <div
       className={cx(
-        "rounded-[var(--radius-card)] border border-[var(--ui-border)] bg-white shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)]",
+        "rounded-xl border border-slate-200 bg-white shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -27,4 +27,3 @@ export function CardHeader({ className, children }: Props) {
 export function CardContent({ className, children }: Props) {
   return <div className={cx("p-6", className)}>{children}</div>;
 }
-

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import Image from "next/image";
 import { saveCourseAction } from "@/actions/admin/courses";
 import type { ActionState } from "@/actions/admin/types";
 import { Button } from "@/components/ui/Button";
@@ -14,6 +15,11 @@ export type CourseFormValues = {
   description: string;
   duration: string;
   totalFee: number;
+  actualFee: number;
+  installmentFee: number;
+  oneTimeFee: number;
+  imageUrl?: string | null;
+  imagePath?: string | null;
   isActive: boolean;
 };
 
@@ -39,10 +45,16 @@ export function CourseForm({ initial }: { initial?: CourseFormValues }) {
           <Input id="name" name="name" required defaultValue={initial?.name} />
         </Field>
         <Field label="Duration" htmlFor="duration">
-          <Input id="duration" name="duration" required placeholder="e.g. 6 Months" defaultValue={initial?.duration} />
+          <Input id="duration" name="duration" required placeholder="e.g. 3 MONTH" defaultValue={initial?.duration} />
         </Field>
-        <Field label="Fee (₹)" htmlFor="totalFee">
-          <Input id="totalFee" name="totalFee" type="number" min={0} required defaultValue={initial?.totalFee ?? 0} />
+        <Field label="Actual Fee (Rs.)" htmlFor="actualFee">
+          <Input id="actualFee" name="actualFee" type="number" min={0} required defaultValue={initial?.actualFee ?? initial?.totalFee ?? 0} />
+        </Field>
+        <Field label="Installment Fee (Rs.)" htmlFor="installmentFee">
+          <Input id="installmentFee" name="installmentFee" type="number" min={0} required defaultValue={initial?.installmentFee ?? initial?.totalFee ?? 0} />
+        </Field>
+        <Field label="One Time Fee (Rs.)" htmlFor="oneTimeFee">
+          <Input id="oneTimeFee" name="oneTimeFee" type="number" min={0} required defaultValue={initial?.oneTimeFee ?? initial?.totalFee ?? 0} />
         </Field>
         <Field label="Status" htmlFor="isActive">
           <Select id="isActive" name="isActive" defaultValue={initial?.isActive === false ? "false" : "true"}>
@@ -50,6 +62,31 @@ export function CourseForm({ initial }: { initial?: CourseFormValues }) {
             <option value="false">Inactive</option>
           </Select>
         </Field>
+        <Field label="Fallback Image Path" htmlFor="imagePath">
+          <Input id="imagePath" name="imagePath" placeholder="/courses/adca.png" defaultValue={initial?.imagePath ?? ""} />
+        </Field>
+        <Field label="Upload Course Image" htmlFor="courseImage">
+          <Input id="courseImage" name="courseImage" type="file" accept="image/*" />
+        </Field>
+        {initial?.imageUrl ? (
+          <div className="sm:col-span-2">
+            <p className="mb-2 text-sm font-semibold text-[var(--ui-text)]">Current image</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Image
+                src={initial.imageUrl}
+                alt={initial.name}
+                width={144}
+                height={96}
+                unoptimized={initial.imageUrl.startsWith("http")}
+                className="h-24 w-36 rounded-md border border-[var(--ui-border)] object-cover"
+              />
+              <label className="flex items-center gap-2 text-sm font-semibold text-red-700">
+                <input type="checkbox" name="removeImage" value="true" className="h-4 w-4" />
+                Remove course image
+              </label>
+            </div>
+          </div>
+        ) : null}
         <Field label="Description" htmlFor="description">
           <Textarea id="description" name="description" required rows={3} defaultValue={initial?.description} className="sm:col-span-2" />
         </Field>
@@ -61,7 +98,7 @@ export function CourseForm({ initial }: { initial?: CourseFormValues }) {
         ) : null}
         <div className="sm:col-span-2">
           <Button type="submit" disabled={pending}>
-            {pending ? "Saving…" : isEdit ? "Update course" : "Add course"}
+            {pending ? "Saving..." : isEdit ? "Update course" : "Add course"}
           </Button>
         </div>
       </form>

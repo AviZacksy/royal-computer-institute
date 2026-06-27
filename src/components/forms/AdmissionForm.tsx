@@ -5,17 +5,9 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Input, Select } from "@/components/ui/Input";
 
-const COURSES = [
-  "ADCA",
-  "DCA",
-  "Tally",
-  "DTP",
-  "Typing",
-  "CCC",
-  "Graphic Designing",
-];
+type CourseOption = { id: string; name: string };
 
-export function AdmissionForm() {
+export function AdmissionForm({ courses }: { courses: CourseOption[] }) {
   const [submitted, setSubmitted] = useState(false);
 
   return (
@@ -47,21 +39,21 @@ export function AdmissionForm() {
         />
       </Field>
 
-      <Field label="Course" htmlFor="course">
-        <Select id="course" name="course" required defaultValue="">
+      <Field label="Course" htmlFor="courseId">
+        <Select id="courseId" name="courseId" required defaultValue="">
           <option value="" disabled>
             Select course
           </option>
-          {COURSES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+          {courses.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
             </option>
           ))}
         </Select>
       </Field>
 
       <div className="grid gap-3 sm:flex sm:items-center">
-        <Button type="submit" className="w-full sm:w-auto">
+        <Button type="submit" className="w-full sm:w-auto" disabled={courses.length === 0}>
           Submit
         </Button>
         <p className="text-sm font-semibold text-muted">
@@ -80,4 +72,3 @@ export function AdmissionForm() {
     </form>
   );
 }
-

@@ -5,6 +5,16 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+export const adminAccountSettingsSchema = z.object({
+  currentPassword: z.string().min(1, "Enter your current password"),
+  newEmail: z.string().email("Enter a valid new email"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  confirmNewPassword: z.string(),
+}).refine((d) => d.newPassword === d.confirmNewPassword, {
+  message: "New passwords do not match",
+  path: ["confirmNewPassword"],
+});
+
 export const registerSchema = z.object({
   name: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email"),
@@ -67,7 +77,11 @@ export const courseFormSchema = z.object({
   name: z.string().min(2, "Title must be at least 2 characters").max(120),
   description: z.string().min(5, "Description must be at least 5 characters").max(2000),
   duration: z.string().min(2, "Enter duration").max(64),
-  totalFee: z.coerce.number().min(0, "Fee cannot be negative"),
+  totalFee: z.coerce.number().min(0, "Fee cannot be negative").optional(),
+  actualFee: z.coerce.number().min(0, "Actual fee cannot be negative"),
+  installmentFee: z.coerce.number().min(0, "Installment fee cannot be negative"),
+  oneTimeFee: z.coerce.number().min(0, "One-time fee cannot be negative"),
+  imagePath: z.string().max(2048).optional(),
   isActive: z.enum(["true", "false"]).optional(),
 });
 
@@ -125,4 +139,3 @@ export const examQuestionSchema = z.object({
   questionId: z.string(),
   sortOrder: z.number().default(0).optional(),
 });
-

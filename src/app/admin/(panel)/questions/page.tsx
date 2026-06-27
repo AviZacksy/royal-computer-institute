@@ -4,6 +4,7 @@ import { PanelPage, DataTable } from "@/components/panels/PanelPage";
 import { QuestionForm } from "@/components/admin/QuestionForm";
 import { BulkImportForm } from "@/components/admin/BulkImportForm";
 import { Modal } from "@/components/ui/Modal";
+import { Badge } from "@/components/ui/Badge";
 
 export default async function AdminQuestionsPage(props: { searchParams: Promise<{ courseId?: string }> }) {
   const session = await requireAdminSession();
@@ -26,14 +27,14 @@ export default async function AdminQuestionsPage(props: { searchParams: Promise<
     orderBy: { createdAt: "desc" },
   });
 
-  const tableData = questions.map((q) => ({
-    Course: q.course.name,
-    Question: q.questionText.length > 50 ? q.questionText.slice(0, 50) + "..." : q.questionText,
-    Correct: `Option ${q.correctOption}`,
-    Marks: q.marks,
-    Status: q.isActive ? "Active" : "Inactive",
-    Added: q.createdAt.toLocaleDateString("en-IN"),
-  }));
+  const tableData = questions.map((q) => [
+    q.course.name,
+    q.questionText.length > 50 ? q.questionText.slice(0, 50) + "..." : q.questionText,
+    `Option ${q.correctOption}`,
+    q.marks,
+    <Badge key="status" variant={q.isActive ? "success" : "default"}>{q.isActive ? "Active" : "Inactive"}</Badge>,
+    q.createdAt.toLocaleDateString("en-IN"),
+  ]);
 
   return (
     <PanelPage
@@ -55,7 +56,7 @@ export default async function AdminQuestionsPage(props: { searchParams: Promise<
       <div className="mb-6 flex gap-2">
         <a 
           href="/admin/questions"
-          className={`px-3 py-1.5 text-sm rounded-full ${!courseFilter ? "bg-[var(--ui-primary)] text-white" : "bg-[var(--ui-bg-subtle)] text-[var(--ui-text)]"}`}
+          className={`px-3 py-1.5 text-sm rounded-full font-medium transition-colors ${!courseFilter ? "bg-[var(--ui-primary)] text-white shadow-sm" : "bg-white border border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface)]"}`}
         >
           All Courses
         </a>
@@ -63,14 +64,14 @@ export default async function AdminQuestionsPage(props: { searchParams: Promise<
           <a
             key={c.id}
             href={`/admin/questions?courseId=${c.id}`}
-            className={`px-3 py-1.5 text-sm rounded-full ${courseFilter === c.id ? "bg-[var(--ui-primary)] text-white" : "bg-[var(--ui-bg-subtle)] text-[var(--ui-text)] hover:bg-[var(--ui-border)]"}`}
+            className={`px-3 py-1.5 text-sm rounded-full font-medium transition-colors ${courseFilter === c.id ? "bg-[var(--ui-primary)] text-white shadow-sm" : "bg-white border border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface)]"}`}
           >
             {c.name}
           </a>
         ))}
       </div>
 
-      <DataTable headers={["Course", "Question", "Correct", "Marks", "Status", "Added"]} rows={tableData.map(Object.values)} />
+      <DataTable headers={["Course", "Question", "Correct", "Marks", "Status", "Added"]} rows={tableData} />
     </PanelPage>
   );
 }

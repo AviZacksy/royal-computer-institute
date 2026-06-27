@@ -1,3 +1,4 @@
+import { BookOpen, FileText, Library } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireStudentSession } from "@/lib/auth";
 import { PanelPage } from "@/components/panels/PanelPage";
@@ -11,7 +12,6 @@ export default async function StudentNotesPage() {
   const session = await requireStudentSession();
   if (!session) return null;
 
-  // Fetch the student's profile to find their assigned course
   const profile = await db.studentProfile.findFirst({
     where: { userId: session.userId, status: "APPROVED" },
     include: { course: true },
@@ -52,27 +52,28 @@ export default async function StudentNotesPage() {
       subtitle={`PDF notes for ${profile.course?.name ?? "your course"}`}
     >
       {notes.length === 0 ? (
-        <Card className="p-10 text-center space-y-2">
-          <p className="text-3xl">📭</p>
-          <p className="font-semibold text-[var(--ui-text)]">No notes available yet</p>
-          <p className="text-sm text-[var(--ui-muted)]">
+        <Card className="p-10 text-center">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-[var(--ui-secondary)]">
+            <Library className="h-7 w-7" />
+          </div>
+          <p className="mt-4 font-semibold text-[var(--ui-primary)]">No notes available yet</p>
+          <p className="mt-1 text-sm text-[var(--ui-muted)]">
             Your instructor hasn&apos;t uploaded any notes for your course yet. Check back later.
           </p>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {notes.map((note) => (
-            <Card key={note.id} className="p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
-              {/* Icon + title */}
+            <Card key={note.id} className="flex flex-col gap-4 p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-xl">
-                  📄
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-[var(--ui-secondary)]">
+                  <FileText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[var(--ui-text)] leading-tight break-words">
+                  <p className="font-extrabold leading-tight text-[var(--ui-primary)]">
                     {note.title}
                   </p>
-                  <p className="text-xs text-[var(--ui-muted)] mt-0.5">
+                  <p className="mt-1 text-xs font-medium text-[var(--ui-muted)]">
                     {note.createdAt.toLocaleDateString("en-IN", {
                       day: "2-digit",
                       month: "short",
@@ -82,18 +83,20 @@ export default async function StudentNotesPage() {
                 </div>
               </div>
 
-              {/* Description */}
-              {note.description && (
-                <p className="text-sm text-[var(--ui-muted)] leading-relaxed line-clamp-2">
+              {note.description ? (
+                <p className="line-clamp-2 text-sm leading-6 text-[var(--ui-muted)]">
                   {note.description}
                 </p>
-              )}
+              ) : null}
 
-              {/* Download button */}
-              <div className="pt-1">
+              <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                <span className="flex items-center gap-1.5 text-xs font-bold text-[var(--ui-muted)]">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Course material
+                </span>
                 <DownloadDocumentButton
                   storageKey={note.storageKey}
-                  label="⬇ Download PDF"
+                  label="Download PDF"
                   filename={`${note.title}.pdf`}
                   getUrl={getNoteUrlAction}
                 />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Download } from "lucide-react";
 import { getDocumentUrlAction } from "@/actions/admin/documents";
 import { Button } from "@/components/ui/Button";
 
@@ -43,9 +44,10 @@ export function DownloadDocumentButton({
         onClick={handleDownload}
         disabled={isPending}
         variant="outline"
-        className="text-xs px-3 py-1.5"
+        className="gap-2 text-xs"
       >
-        {isPending ? "..." : (label ?? "Download")}
+        <Download className="h-3.5 w-3.5" />
+        {isPending ? "Preparing..." : (label ?? "Download")}
       </Button>
       {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
     </div>

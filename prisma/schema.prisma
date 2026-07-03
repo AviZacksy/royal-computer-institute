@@ -36,6 +36,11 @@ enum PaymentStatus {
   REJECTED
 }
 
+enum PaymentType {
+  ADMISSION
+  EXAM
+}
+
 enum ExamType {
   MOCK
   FINAL
@@ -46,6 +51,18 @@ enum CorrectOption {
   B
   C
   D
+}
+
+enum MockTopic {
+  FUNDAMENTAL
+  WINDOWS
+  MS_WORD
+  MS_EXCEL
+  MS_POWERPOINT
+  TALLY
+  PHOTOSHOP
+  CORELDRAW
+  PAGEMAKER
 }
 
 enum GalleryMediaType {
@@ -71,9 +88,11 @@ model Institute {
   exams            Exam[]
   questions        Question[]
   receipts         Receipt[]
+  studentIdCards   StudentIdCard[]
   admitCards       AdmitCard[]
   certificates     Certificate[]
   marksheets       Marksheet[]
+  examRegistrations ExamRegistration[]
 }
 
 model User {
@@ -100,9 +119,24 @@ model StudentProfile {
   userId           String        @unique
   user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   name             String
+  fatherName       String?
+  motherName       String?
+  gender           String?
+  dateOfBirth      DateTime?     @db.Date
+  email            String?
   phone            String
+  qualification    String?
+  permanentAddress String?       @db.Text
+  currentAddress   String?       @db.Text
   address          String?       @db.Text
   photoStorageKey  String?
+  marksheetStorageKey String?
+  aadhaarStorageKey String?
+  signatureStorageKey String?
+  admissionFormStorageKey String?
+  admissionNumber String?
+  admissionDate   DateTime?      @db.Timestamptz(6)
+  admissionDetails Json?
   enrollmentNumber String?
   status           StudentStatus @default(PENDING)
   rejectionReason  String?       @db.Text
@@ -115,11 +149,14 @@ model StudentProfile {
   feeRecord    FeeRecord?
   payments     PaymentSubmission[]
   examAttempts ExamAttempt[]
+  studentIdCards StudentIdCard[]
   admitCards   AdmitCard[]
   certificates Certificate[]
   marksheets   Marksheet[]
+  examRegistrations ExamRegistration[]
 
   @@unique([instituteId, enrollmentNumber])
+  @@unique([instituteId, admissionNumber])
   @@index([instituteId, status])
 }
 
@@ -129,6 +166,9 @@ model Course {
   institute   Institute @relation(fields: [instituteId], references: [id], onDelete: Cascade)
   name        String
   description String   @db.Text
+  syllabus    String?  @db.Text
+  eligibility String?  @db.Text
+  careerScope String?  @db.Text
   duration    String
   totalFee    Int      @default(0)
   actualFee   Int      @default(0)
@@ -217,6 +257,7 @@ model PaymentSubmission {
   amount            Int
   transactionId     String?
   screenshotStorageKey String?
+  paymentType       PaymentType   @default(ADMISSION)
   status            PaymentStatus @default(PENDING)
   adminNotes        String?       @db.Text
   verifiedById      String?
@@ -225,6 +266,7 @@ model PaymentSubmission {
   createdAt         DateTime      @default(now()) @db.Timestamptz(6)
 
   receipt Receipt?
+  examRegistration ExamRegistration?
 
   @@index([studentId, status])
 }
@@ -250,6 +292,7 @@ model Exam {
   course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title           String
   type            ExamType
+  topic           MockTopic?
   durationMinutes Int      @default(60)
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now()) @db.Timestamptz(6)
@@ -258,8 +301,10 @@ model Exam {
   attempts   ExamAttempt[]
   admitCards AdmitCard[]
   marksheets Marksheet[]
+  registrations ExamRegistration[]
 
   @@index([instituteId, courseId])
+  @@index([instituteId, type, topic])
 }
 
 model Question {
@@ -268,6 +313,7 @@ model Question {
   institute     Institute     @relation(fields: [instituteId], references: [id], onDelete: Cascade)
   courseId      String
   course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  topic         MockTopic?
   questionText  String        @db.Text
   optionA       String
   optionB       String
@@ -282,6 +328,7 @@ model Question {
   examQuestions ExamQuestion[]
 
   @@index([instituteId, courseId])
+  @@index([instituteId, topic])
 }
 
 model ExamQuestion {
@@ -307,6 +354,20 @@ model ExamAttempt {
   submittedAt DateTime?      @db.Timestamptz(6)
 
   @@unique([examId, studentId])
+}
+
+model StudentIdCard {
+  id          String         @id @default(cuid())
+  instituteId String
+  institute   Institute      @relation(fields: [instituteId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  batchTime   String?
+  storageKey  String
+  generatedAt DateTime       @default(now()) @db.Timestamptz(6)
+
+  @@unique([studentId])
+  @@index([instituteId])
 }
 
 model AdmitCard {
@@ -354,4 +415,22 @@ model Marksheet {
   generatedAt   DateTime       @default(now()) @db.Timestamptz(6)
 
   @@unique([studentId, examId])
+}
+
+model ExamRegistration {
+  id                  String            @id @default(cuid())
+  instituteId         String
+  institute           Institute         @relation(fields: [instituteId], references: [id], onDelete: Cascade)
+  studentId           String
+  student             StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  examId              String
+  exam                Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  paymentSubmissionId String?           @unique
+  paymentSubmission   PaymentSubmission? @relation(fields: [paymentSubmissionId], references: [id])
+  isAccessEnabled     Boolean           @default(false)
+  createdAt           DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime          @updatedAt @db.Timestamptz(6)
+
+  @@unique([studentId, examId])
+  @@index([instituteId])
 }

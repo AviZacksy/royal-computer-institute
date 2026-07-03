@@ -62,6 +62,31 @@ export async function getPublicCourses() {
   }
 }
 
+export async function getPublicCourseById(id: string) {
+  try {
+    const course = await db.course.findFirst({
+      where: {
+        id,
+        isActive: true,
+        institute: {
+          slug: process.env.DEFAULT_INSTITUTE_SLUG ?? "royal-ci",
+          isActive: true,
+        },
+      },
+    });
+
+    if (!course) return null;
+
+    return {
+      ...course,
+      imageUrl: await resolveCourseImageUrl(course),
+    };
+  } catch (error) {
+    console.error("Database connection error in getPublicCourseById:", error);
+    return null;
+  }
+}
+
 export async function getPublicGalleryItems() {
   try {
     return await db.galleryItem.findMany({

@@ -12,6 +12,9 @@ function parseCourseForm(formData: FormData) {
     id: formData.get("id") || undefined,
     name: formData.get("name"),
     description: formData.get("description"),
+    syllabus: formData.get("syllabus") || undefined,
+    eligibility: formData.get("eligibility") || undefined,
+    careerScope: formData.get("careerScope") || undefined,
     duration: formData.get("duration"),
     totalFee: formData.get("totalFee"),
     actualFee: formData.get("actualFee"),
@@ -27,7 +30,7 @@ function revalidateCourseConsumers() {
     "/",
     "/courses",
     "/query",
-    "/student/register",
+    "/admission",
     "/admin/courses",
     "/admin/dashboard",
     "/admin/students",
@@ -55,6 +58,9 @@ export async function saveCourseAction(
       id,
       name,
       description,
+      syllabus,
+      eligibility,
+      careerScope,
       duration,
       actualFee,
       installmentFee,
@@ -128,6 +134,9 @@ export async function saveCourseAction(
         data: {
           name,
           description,
+          syllabus: syllabus?.trim() || null,
+          eligibility: eligibility?.trim() || null,
+          careerScope: careerScope?.trim() || null,
           duration,
           totalFee,
           actualFee,
@@ -170,6 +179,9 @@ export async function saveCourseAction(
           instituteId: session.instituteId,
           name,
           description,
+          syllabus: syllabus?.trim() || null,
+          eligibility: eligibility?.trim() || null,
+          careerScope: careerScope?.trim() || null,
           duration,
           totalFee,
           actualFee,
@@ -184,6 +196,7 @@ export async function saveCourseAction(
     }
 
     revalidateCourseConsumers();
+    if (id) revalidatePath(`/courses/${id}`);
     return { success: id ? "Course updated" : "Course created" };
   } catch {
     return { error: "Something went wrong. Please try again." };
@@ -223,6 +236,7 @@ export async function deleteCourseAction(
     await db.course.delete({ where: { id } });
 
     revalidateCourseConsumers();
+    revalidatePath(`/courses/${id}`);
     return { success: "Course deleted" };
   } catch {
     return { error: "Something went wrong. Please try again." };
@@ -245,4 +259,5 @@ export async function toggleCourseStatusAction(formData: FormData): Promise<void
   });
 
   revalidateCourseConsumers();
+  revalidatePath(`/courses/${id}`);
 }

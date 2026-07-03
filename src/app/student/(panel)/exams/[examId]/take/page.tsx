@@ -42,6 +42,16 @@ export default async function TakeExamPage(props: { params: Promise<{ examId: st
     redirect("/student/exams");
   }
 
+  // Check if final exam access is enabled
+  if (exam.type === "FINAL") {
+    const registration = await db.examRegistration.findUnique({
+      where: { studentId_examId: { studentId: profile.id, examId: exam.id } },
+    });
+    if (!registration || !registration.isAccessEnabled) {
+      redirect("/student/exams");
+    }
+  }
+
   const questions = exam.examQuestions.map((eq) => ({
     id: eq.question.id,
     questionText: eq.question.questionText,

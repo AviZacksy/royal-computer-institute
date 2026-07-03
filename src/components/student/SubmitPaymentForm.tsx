@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import { QrCode } from "lucide-react";
 import { submitPaymentAction } from "@/actions/student/payments";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
@@ -43,7 +44,13 @@ export function SubmitPaymentForm({ dueAmount }: Props) {
 
   return (
     <Card className="p-5">
-      <p className="mb-1 font-extrabold text-[var(--ui-primary)]">Submit Payment for Verification</p>
+      <div className="mb-6 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+        <QrCode className="h-24 w-24 text-[var(--ui-primary)] mb-3 opacity-80" />
+        <p className="font-bold text-[var(--ui-primary)]">Scan to Pay via UPI</p>
+        <p className="text-sm text-[var(--ui-muted)] mt-1">UPI ID: royalcomputer@upi</p>
+      </div>
+
+      <p className="mb-1 font-extrabold text-[var(--ui-primary)]">Submit Payment Details</p>
       <p className="mb-4 text-sm text-[var(--ui-muted)]">
         Balance due: <span className="font-semibold text-[var(--ui-text)]">₹{dueAmount.toLocaleString("en-IN")}</span>
       </p>

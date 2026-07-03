@@ -7,17 +7,24 @@ import { Button } from "./Button";
 type ModalProps = {
   triggerText: string;
   triggerVariant?: "primary" | "secondary" | "outline" | "accent";
+  triggerClassName?: string;
   children: React.ReactNode;
 };
 
-export function Modal({ triggerText, triggerVariant = "primary", children }: ModalProps) {
+export function Modal({ triggerText, triggerVariant = "primary", triggerClassName, children }: ModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <Button variant={triggerVariant} onClick={() => setIsOpen(true)}>
-        {triggerText}
-      </Button>
+      {triggerClassName ? (
+        <button type="button" className={triggerClassName} onClick={() => setIsOpen(true)}>
+          {triggerText}
+        </button>
+      ) : (
+        <Button variant={triggerVariant} onClick={() => setIsOpen(true)}>
+          {triggerText}
+        </Button>
+      )}
 
       {isOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/45 p-4 backdrop-blur-sm">

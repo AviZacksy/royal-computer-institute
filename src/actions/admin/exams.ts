@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
 import { examSchema } from "@/lib/validations";
+import { isFinalExamCourse } from "@/config/exam-topics";
 import type { ActionState } from "./types";
 
 export async function upsertExamAction(
@@ -18,6 +19,7 @@ export async function upsertExamAction(
       courseId: formData.get("courseId"),
       title: formData.get("title"),
       type: formData.get("type"),
+      topic: formData.get("topic") || undefined,
       durationMinutes: formData.get("durationMinutes"),
     });
 
@@ -32,6 +34,17 @@ export async function upsertExamAction(
       where: { id: data.courseId, instituteId: session.instituteId },
     });
     if (!course) return { error: "Course not found" };
+    if (data.type === "FINAL" && !isFinalExamCourse(course.name)) {
+      return { error: "Final exams can only be created for DCA, DTP, or Tally courses" };
+    }
+
+    const examData = {
+      courseId: data.courseId,
+      title: data.title,
+      type: data.type,
+      topic: data.type === "MOCK" ? (data.topic || "FUNDAMENTAL") : null,
+      durationMinutes: data.durationMinutes,
+    };
 
     if (id) {
       const existing = await db.exam.findFirst({
@@ -41,12 +54,12 @@ export async function upsertExamAction(
 
       await db.exam.update({
         where: { id },
-        data: { ...data, isActive },
+        data: { ...examData, isActive },
       });
     } else {
       await db.exam.create({
         data: {
-          ...data,
+          ...examData,
           isActive,
           instituteId: session.instituteId,
         },
@@ -91,6 +104,9 @@ export async function updateExamQuestionsAction(
       where: { id: examId, instituteId: session.instituteId },
     });
     if (!exam) return { error: "Exam not found" };
+    if (exam.type === "FINAL" && questionIds.length !== 60) {
+      return { error: "Final exams must contain exactly 60 questions" };
+    }
 
     // Transaction to safely update questions
     await db.$transaction(async (tx) => {

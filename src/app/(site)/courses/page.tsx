@@ -17,6 +17,24 @@ function getCourseInitials(name: string): string {
   return initials || "RC";
 }
 
+function getCourseDropdownDetails(name: string) {
+  const key = name.trim().toUpperCase();
+  const details: Record<string, string[]> = {
+    ADCA: ["Fundamentals of Computer", "Microsoft Windows", "Microsoft Office", "DTP", "Tally Prime", "HTML Basics", "Internet & Multimedia"],
+    DCA: ["Fundamentals of Computer", "Microsoft Windows", "Microsoft Office", "HTML Basics", "Internet & Multimedia", "File & Folder Management"],
+    DTP: ["Adobe PageMaker", "Adobe Photoshop", "Adobe Illustrator", "CorelDRAW", "Canva", "Album, poster, card and certificate design"],
+    CFA: ["Computer Fundamentals", "Accounting Fundamentals", "Tally Prime", "GST Basics", "Microsoft Excel", "Practical Business Accounting"],
+    DFA: ["Fundamentals of Computer", "Microsoft Office", "Accounting Fundamentals", "Tally Prime", "Taxation", "Advanced Excel", "Banking & Finance", "Practical Training"],
+    CCC: ["Introduction to Computer", "Computer Fundamentals", "Operating System (Windows)", "Internet & Multimedia", "Practical Training"],
+    "MS OFFICE": ["Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint", "Microsoft Access", "Microsoft Outlook"],
+    TYPING: ["English Typing", "Hindi Typing", "Remington Gail Layout", "Typing speed improvement", "Accuracy and productivity practice"],
+    ACCOUNTING: ["Basic Accounting", "Tally Prime", "GST & TDS", "Voucher Creation", "Stock Maintenance", "Reports & Financial Statements"],
+    GRAPHICS: ["Photoshop", "CorelDRAW", "Illustrator", "Canva", "Poster and banner design", "Certificate and card design"],
+  };
+
+  return details[key] ?? [];
+}
+
 export default async function CoursesPage() {
   const courses = await getPublicCourses();
 
@@ -38,6 +56,21 @@ export default async function CoursesPage() {
             Job-oriented courses designed for practical lab training, exam support,
             and certificate-ready learning.
           </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <ButtonLink
+              href="/query"
+              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[var(--ui-accent)] px-8 text-sm font-extrabold text-[var(--ui-primary)] shadow-lg transition-all hover:scale-105 sm:w-auto"
+            >
+              Course Enquiry
+            </ButtonLink>
+            <ButtonLink
+              href="/admission"
+              variant="outline"
+              className="inline-flex h-12 w-full items-center justify-center rounded-full border-white/30 bg-white/10 px-8 text-sm font-bold text-white backdrop-blur transition-all hover:bg-white/20 sm:w-auto"
+            >
+              Student Admission
+            </ButtonLink>
+          </div>
         </div>
       </section>
 
@@ -66,7 +99,7 @@ export default async function CoursesPage() {
                 />
               </div>
 
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid items-start gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {courses.map((course) => (
                   <div
                     key={course.id}
@@ -114,12 +147,40 @@ export default async function CoursesPage() {
                           </div>
                         </div>
                       </div>
+                      <details className="group/details">
+                        <summary className="mt-2 flex h-12 w-full cursor-pointer list-none items-center justify-center rounded-xl bg-[var(--ui-secondary)] text-sm font-bold text-white transition-all hover:bg-blue-700 group-hover:shadow-lg group-hover:shadow-[var(--ui-primary)]/10">
+                          View More
+                        </summary>
+                        <div className="mt-4 rounded-2xl border border-[var(--ui-border)] bg-blue-50 p-4">
+                          <p className="mb-3 text-xs font-black uppercase tracking-wide text-[var(--ui-primary)]">
+                            Course Details
+                          </p>
+                          <ul className="mb-4 grid gap-2 text-sm font-semibold leading-snug text-slate-700">
+                            {getCourseDropdownDetails(course.name).map((item) => (
+                              <li key={item} className="flex gap-2">
+                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ui-secondary)]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="mt-3 grid gap-2 text-sm">
+                            <div className="flex justify-between gap-3">
+                              <span className="font-semibold text-[var(--ui-muted)]">Duration</span>
+                              <span className="font-bold text-[var(--ui-primary)]">{course.duration}</span>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                              <span className="font-semibold text-[var(--ui-muted)]">One Time Fee</span>
+                              <span className="font-bold text-[var(--ui-secondary)]">{formatCurrency(course.oneTimeFee || course.totalFee)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </details>
                       <ButtonLink
                         href={`/query?courseId=${course.id}`}
-                        variant="primary"
-                        className="mt-2 flex h-12 w-full items-center justify-center rounded-xl text-sm font-bold transition-all group-hover:shadow-lg group-hover:shadow-[var(--ui-primary)]/10"
+                        variant="outline"
+                        className="flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-bold"
                       >
-                        Enquire About This Course
+                        Enquire
                       </ButtonLink>
                     </div>
                   </div>
@@ -147,11 +208,11 @@ export default async function CoursesPage() {
               Book Free Counseling
             </ButtonLink>
             <ButtonLink
-              href="/student/register"
+              href="/admission"
               variant="outline"
               className="inline-flex h-14 w-full items-center justify-center rounded-full border-2 bg-white px-10 text-base font-bold transition-all hover:bg-[var(--ui-surface)] sm:w-auto"
             >
-              Apply for Admission
+              Student Admission
             </ButtonLink>
           </div>
         </div>

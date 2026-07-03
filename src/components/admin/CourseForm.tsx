@@ -13,6 +13,9 @@ export type CourseFormValues = {
   id?: string;
   name: string;
   description: string;
+  syllabus?: string | null;
+  eligibility?: string | null;
+  careerScope?: string | null;
   duration: string;
   totalFee: number;
   actualFee: number;
@@ -87,9 +90,44 @@ export function CourseForm({ initial }: { initial?: CourseFormValues }) {
             </div>
           </div>
         ) : null}
-        <Field label="Description" htmlFor="description">
-          <Textarea id="description" name="description" required rows={3} defaultValue={initial?.description} className="sm:col-span-2" />
-        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Description" htmlFor="description">
+            <Textarea id="description" name="description" required rows={3} defaultValue={initial?.description} />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Syllabus" htmlFor="syllabus">
+            <Textarea
+              id="syllabus"
+              name="syllabus"
+              rows={6}
+              placeholder="Paste the client-provided syllabus here. Leave blank if not provided yet."
+              defaultValue={initial?.syllabus ?? ""}
+            />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Eligibility" htmlFor="eligibility">
+            <Textarea
+              id="eligibility"
+              name="eligibility"
+              rows={3}
+              placeholder="Paste eligibility details here. Leave blank if not provided yet."
+              defaultValue={initial?.eligibility ?? ""}
+            />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Career Scope" htmlFor="careerScope">
+            <Textarea
+              id="careerScope"
+              name="careerScope"
+              rows={4}
+              placeholder="Paste career scope details here. Leave blank if not provided yet."
+              defaultValue={initial?.careerScope ?? ""}
+            />
+          </Field>
+        </div>
         {state?.error ? (
           <p className="sm:col-span-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>
         ) : null}

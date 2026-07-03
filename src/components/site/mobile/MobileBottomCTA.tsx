@@ -8,7 +8,7 @@ export function MobileBottomCTA() {
       <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-6 py-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
         <div className="grid grid-cols-2 gap-2">
           <ButtonLink href="/admission" variant="accent" className="w-full">
-            Apply Now
+            Student Admission
           </ButtonLink>
           <ButtonAnchor
             href="https://wa.me/910000000000"

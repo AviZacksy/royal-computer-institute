@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useId, useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
-type Item = { href: string; label: string };
+type Item = { href: string; label: string; children?: Item[] };
 
 function cx(...parts: Array<string | undefined | false>) {
   return parts.filter(Boolean).join(" ");
@@ -77,19 +77,34 @@ export function MobileNav({ items }: { items: Item[] }) {
               {items.map((item) => {
                 const active = pathname === item.href;
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={cx(
-                      "rounded-lg px-4 py-3.5 text-base font-bold transition-colors",
-                      active
-                        ? "bg-blue-50 text-[var(--ui-secondary)]"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
+                  <div key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={cx(
+                        "block rounded-lg px-4 py-3.5 text-base font-bold transition-colors",
+                        active
+                          ? "bg-blue-50 text-[var(--ui-secondary)]"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                    {item.children?.length ? (
+                      <div className="mt-1 grid gap-1 border-l-2 border-blue-100 pl-3">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setOpen(false)}
+                            className="rounded-lg px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-blue-50 hover:text-[var(--ui-secondary)]"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
@@ -105,11 +120,11 @@ export function MobileNav({ items }: { items: Item[] }) {
                 Student Login
               </Link>
               <Link
-                href="/student/register"
+                href="/admission"
                 onClick={() => setOpen(false)}
                 className="flex h-12 w-full items-center justify-center rounded-full bg-[var(--ui-accent)] text-[15px] font-extrabold text-[var(--ui-primary)] shadow-md transition-all hover:scale-[1.02]"
               >
-                Apply Now
+                Student Admission
               </Link>
             </div>
           </div>

@@ -24,6 +24,7 @@ export type UploadInput = {
 
 export interface StorageProvider {
   upload(input: UploadInput): Promise<StoredObject>;
+  read(bucket: StorageBucket, key: string): Promise<Buffer>;
   getSignedUrl(bucket: StorageBucket, key: string, expiresInSeconds?: number): Promise<string>;
   delete(bucket: StorageBucket, key: string): Promise<void>;
 }

@@ -5,13 +5,15 @@ import { upsertQuestionAction } from "@/actions/admin/questions";
 import type { ActionState } from "@/actions/admin/types";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
-import { Input, Textarea } from "@/components/ui/Input";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { MOCK_TOPICS } from "@/config/exam-topics";
 
 type Props = {
   courses: { id: string; name: string }[];
   initialData?: {
     id: string;
     courseId: string;
+    topic: string | null;
     questionText: string;
     optionA: string;
     optionB: string;
@@ -54,6 +56,16 @@ export function QuestionForm({ courses, initialData, onSuccess }: Props) {
             </option>
           ))}
         </select>
+      </Field>
+
+      <Field label="Topic" htmlFor="topic">
+        <Select id="topic" name="topic" defaultValue={initialData?.topic ?? "FUNDAMENTAL"} required>
+          {MOCK_TOPICS.map((topic) => (
+            <option key={topic.value} value={topic.value}>
+              {topic.label}
+            </option>
+          ))}
+        </Select>
       </Field>
 
       <Field label="Question Text" htmlFor="questionText">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { ChevronDown, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
 import { NAV_ITEMS } from "@/components/site/nav";
 import { MobileNav } from "@/components/site/mobile/MobileNav";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
@@ -30,14 +30,37 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
 
             <nav className="hidden lg:flex items-center gap-8">
               {NAV_ITEMS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900 relative group py-2"
-                >
-                  {item.label}
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
-                </Link>
+                item.children?.length ? (
+                  <div key={item.href} className="group relative py-2">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-1 text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900"
+                    >
+                      {item.label}
+                      <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                    </Link>
+                    <div className="invisible absolute left-0 top-full z-50 min-w-56 translate-y-2 rounded-xl border border-gray-100 bg-white p-2 opacity-0 shadow-xl transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="block rounded-lg px-4 py-3 text-sm font-bold text-gray-700 transition hover:bg-blue-50 hover:text-[var(--ui-secondary)]"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900 relative group py-2"
+                  >
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
+                  </Link>
+                )
               ))}
             </nav>
 
@@ -49,10 +72,10 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
                 Student Login
               </Link>
               <Link
-                href="/student/register"
+                href="/admission"
                 className="hidden sm:inline-flex items-center justify-center h-12 px-7 rounded-full bg-[var(--ui-accent)] text-[15px] font-extrabold text-[var(--ui-primary)] shadow-xl shadow-[var(--ui-accent)]/20 hover:scale-105 transition-all"
               >
-                Apply Now
+                Student Admission
               </Link>
               <MobileNav items={NAV_ITEMS} />
             </div>
@@ -93,10 +116,10 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
               </p>
               <div className="flex flex-wrap gap-3 text-sm font-bold">
                 <Link
-                  href="/student/register"
+                  href="/admission"
                   className="rounded-md bg-[var(--ui-accent)] px-4 py-2 text-[var(--ui-primary)] transition hover:bg-yellow-400"
                 >
-                  Apply Now
+                  Student Admission
                 </Link>
                 <Link
                   href="/student-login"
@@ -117,6 +140,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
                   { label: "About", href: "/about" },
                   { label: "Courses", href: "/courses" },
                   { label: "Gallery", href: "/gallery" },
+                  { label: "Verification", href: "/verification" },
                   { label: "Contact", href: "/contact" },
                 ].map((item) => (
                   <li key={item.href}>
@@ -134,8 +158,8 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
               </h3>
               <ul className="space-y-3 text-sm font-semibold">
                 {[
-                  { label: "Admission", href: "/admission" },
-                  { label: "Exam Registration", href: "/exam-registration" },
+                  { label: "Student Admission", href: "/admission" },
+                  { label: "Student Registration", href: "/student/exams" },
                   { label: "Fee Payment", href: "/fee-paid" },
                   { label: "Certificate", href: "/certificate" },
                 ].map((item) => (

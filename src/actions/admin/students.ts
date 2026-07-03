@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
-import { generateEnrollmentNumber } from "@/lib/format";
+import { generateEnrollmentNumber, generateAdmissionNumber } from "@/lib/format";
 import { assignCourseSchema, studentApprovalSchema } from "@/lib/validations";
 
 import type { ActionState } from "./types";
@@ -60,16 +60,41 @@ export async function reviewStudentAction(
         enrollment = generateEnrollmentNumber();
       }
 
+      let admissionNum = generateAdmissionNumber();
+      const admTaken = await db.studentProfile.findFirst({
+        where: { instituteId: session.instituteId, admissionNumber: admissionNum },
+      });
+      if (admTaken) {
+        admissionNum = generateAdmissionNumber();
+      }
+
       await db.studentProfile.update({
         where: { id: studentId },
         data: {
           status: "APPROVED",
           approvedAt: new Date(),
           enrollmentNumber: enrollment,
+          admissionNumber: admissionNum,
+          admissionDate: new Date(),
           courseId,
           rejectionReason: null,
         },
       });
+      
+      // Also generate a FeeRecord for this course
+      const existingFee = await db.feeRecord.findUnique({
+        where: { studentId },
+      });
+      if (!existingFee && course) {
+        await db.feeRecord.create({
+          data: {
+            studentId,
+            totalFee: course.totalFee,
+            receivedAmount: 0,
+            dueAmount: course.totalFee,
+          },
+        });
+      }
     } else {
       await db.studentProfile.update({
         where: { id: studentId },

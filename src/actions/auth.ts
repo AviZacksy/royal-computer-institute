@@ -34,28 +34,80 @@ export async function studentLoginAction(formData: FormData) {
 export async function registerAction(formData: FormData) {
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
+    fatherName: formData.get("fatherName"),
+    motherName: formData.get("motherName"),
+    gender: formData.get("gender"),
+    dateOfBirth: formData.get("dateOfBirth"),
+    aadhaarNumber: formData.get("aadhaarNumber"),
     email: formData.get("email"),
     phone: formData.get("phone"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
-    courseId: formData.get("courseId") || undefined,
-    address: formData.get("address") || undefined,
+    courseId: formData.get("courseId"),
+    qualification: formData.get("qualification"),
+    permanentAddress: formData.get("permanentAddress"),
+    currentAddress: formData.get("currentAddress"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.errors[0]?.message ?? "Invalid input" };
   }
 
+  const files = {
+    photo: formData.get("studentPhoto"),
+    marksheet: formData.get("marksheet"),
+    aadhaarCard: formData.get("aadhaarCard"),
+    signature: formData.get("signature"),
+  };
+  for (const [label, file] of Object.entries(files)) {
+    const error = validateAdmissionFile(label, file);
+    if (error) return { error };
+  }
+
   const { confirmPassword: _confirmPassword, ...data } = parsed.data;
-  const result = await registerStudent(data);
+  const result = await registerStudent({
+    ...data,
+    files: files as {
+      photo: File;
+      marksheet: File;
+      aadhaarCard: File;
+      signature: File;
+    },
+  });
   if (!result.ok) {
     return { error: result.error };
   }
 
-  redirect(result.redirect);
+  return {
+    success: "Registration submitted successfully. Your admission form has been generated.",
+    admissionNumber: result.admissionNumber,
+  };
 }
 
 export async function logoutAction() {
   await logoutUser();
   redirect("/");
+}
+
+function validateAdmissionFile(label: string, value: FormDataEntryValue | null) {
+  const names: Record<string, string> = {
+    photo: "Student photo",
+    marksheet: "Marksheet",
+    aadhaarCard: "Aadhaar card",
+    signature: "Signature",
+  };
+  const display = names[label] ?? "File";
+  if (!(value instanceof File) || value.size === 0) {
+    return `${display} is required`;
+  }
+  if (value.size > 5 * 1024 * 1024) {
+    return `${display} must be 5MB or smaller`;
+  }
+  const allowed =
+    value.type.startsWith("image/") ||
+    value.type === "application/pdf";
+  if (!allowed) {
+    return `${display} must be an image or PDF`;
+  }
+  return null;
 }

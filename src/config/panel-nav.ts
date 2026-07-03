@@ -17,9 +17,10 @@ export const ADMIN_NAV: PanelNavItem[] = [
 ];
 
 export const STUDENT_NAV: PanelNavItem[] = [
-  { href: "/student/dashboard", label: "Dashboard", icon: "dashboard" },
-  { href: "/student/fees", label: "My Fees", icon: "fees" },
-  { href: "/student/exams", label: "My Exams", icon: "exams" },
+  { href: "/student/dashboard", label: "Home", icon: "dashboard" },
+  { href: "/student/course", label: "My Courses", icon: "courses" },
+  { href: "/student/fees", label: "Fees & Receipts", icon: "fees" },
+  { href: "/student/exams", label: "Exams", icon: "exams" },
   { href: "/student/documents", label: "My Documents", icon: "documents" },
-  { href: "/student/notes", label: "My Notes", icon: "notes" },
+  { href: "/student/queries", label: "Support/Queries", icon: "enquiries" },
 ];

@@ -20,7 +20,6 @@ import {
   MessageSquareText,
   NotebookTabs,
   ReceiptText,
-  School,
   Settings,
   Users,
   WalletCards,

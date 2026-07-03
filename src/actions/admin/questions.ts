@@ -18,6 +18,7 @@ export async function upsertQuestionAction(
 
     const parsed = questionSchema.safeParse({
       courseId: formData.get("courseId"),
+      topic: formData.get("topic"),
       questionText: formData.get("questionText"),
       optionA: formData.get("optionA"),
       optionB: formData.get("optionB"),
@@ -136,6 +137,7 @@ export async function bulkImportQuestionsAction(
         optionD: optionD.trim(),
         correctOption: correctOption as "A" | "B" | "C" | "D",
         marks: isNaN(marks) || marks < 1 ? 1 : marks,
+        topic: "FUNDAMENTAL" as const,
       });
     }
 
@@ -306,6 +308,7 @@ export async function confirmBulkImportAction(
       optionD: q.optionD,
       correctOption: q.correctOption,
       marks: q.marks,
+      topic: "FUNDAMENTAL" as const,
     }));
 
     await db.question.createMany({

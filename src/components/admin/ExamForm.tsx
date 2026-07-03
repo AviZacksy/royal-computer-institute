@@ -5,7 +5,8 @@ import { upsertExamAction } from "@/actions/admin/exams";
 import type { ActionState } from "@/actions/admin/types";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
-import { Input } from "@/components/ui/Input";
+import { Input, Select } from "@/components/ui/Input";
+import { MOCK_TOPICS } from "@/config/exam-topics";
 
 type Props = {
   courses: { id: string; name: string }[];
@@ -14,6 +15,7 @@ type Props = {
     courseId: string;
     title: string;
     type: "MOCK" | "FINAL";
+    topic?: string | null;
     durationMinutes: number;
     isActive: boolean;
   };
@@ -54,16 +56,23 @@ export function ExamForm({ courses, initialData, onSuccess }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Exam Type" htmlFor="type">
-          <select
+          <Select
             name="type"
             id="type"
-            className="flex h-10 w-full rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-2 text-sm text-[var(--ui-text)] focus:border-[var(--ui-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-primary)]"
             defaultValue={initialData?.type ?? "MOCK"}
             required
           >
             <option value="MOCK">Mock Test (Results visible immediately)</option>
-            <option value="FINAL">Final Exam (Results hidden)</option>
-          </select>
+            <option value="FINAL">Final Exam (60 questions)</option>
+          </Select>
+        </Field>
+
+        <Field label="Mock Topic" htmlFor="topic">
+          <Select id="topic" name="topic" defaultValue={initialData?.topic ?? "FUNDAMENTAL"}>
+            {MOCK_TOPICS.map((topic) => (
+              <option key={topic.value} value={topic.value}>{topic.label}</option>
+            ))}
+          </Select>
         </Field>
 
         <Field label="Duration (Minutes)" htmlFor="durationMinutes">
@@ -71,15 +80,14 @@ export function ExamForm({ courses, initialData, onSuccess }: Props) {
         </Field>
 
         <Field label="Status" htmlFor="isActive">
-          <select
+          <Select
             name="isActive"
             id="isActive"
-            className="flex h-10 w-full rounded-md border border-[var(--ui-border)] bg-[var(--ui-bg)] px-3 py-2 text-sm text-[var(--ui-text)] focus:border-[var(--ui-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ui-primary)]"
             defaultValue={initialData?.isActive === false ? "false" : "true"}
           >
             <option value="true">Active</option>
             <option value="false">Inactive</option>
-          </select>
+          </Select>
         </Field>
       </div>
 

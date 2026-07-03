@@ -4,6 +4,12 @@ export function generateEnrollmentNumber() {
   return `RCI${year}${rand}`;
 }
 
+export function generateAdmissionNumber() {
+  const year = new Date().getFullYear().toString().slice(-2);
+  const rand = Math.floor(10000 + Math.random() * 90000);
+  return `ADM${year}${rand}`;
+}
+
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",

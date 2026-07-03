@@ -42,6 +42,14 @@ export class SupabaseStorageProvider implements StorageProvider {
     return data.signedUrl;
   }
 
+  async read(bucket: StorageBucket, key: string): Promise<Buffer> {
+    const { data, error } = await this.client.storage.from(bucket).download(key);
+    if (error || !data) {
+      throw new Error(`Storage download failed: ${error?.message ?? "unknown error"}`);
+    }
+    return Buffer.from(await data.arrayBuffer());
+  }
+
   async delete(bucket: StorageBucket, key: string): Promise<void> {
     const { error } = await this.client.storage.from(bucket).remove([key]);
     if (error) throw new Error(`Storage delete failed: ${error.message}`);

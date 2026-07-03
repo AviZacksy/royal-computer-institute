@@ -192,45 +192,65 @@ export async function verifyPaymentAction(
     const verifiedAt = new Date();
 
     if (action === "verify") {
-      const feeRecord = payment.student.feeRecord;
-      if (!feeRecord) return { error: "No fee record for this student" };
+      if (payment.paymentType === "EXAM") {
+        await db.$transaction([
+          db.paymentSubmission.update({
+            where: { id: paymentId },
+            data: {
+              status: "VERIFIED",
+              adminNotes: adminNotes || null,
+              verifiedById: session.userId,
+              verifiedAt,
+            },
+          }),
+          db.examRegistration.updateMany({
+            where: { paymentSubmissionId: paymentId },
+            data: { isAccessEnabled: true },
+          }),
+        ]);
+        // Note: We skip generating a fee receipt for exam payments for now, 
+        // as the fee record is only for course fees.
+      } else {
+        const feeRecord = payment.student.feeRecord;
+        if (!feeRecord) return { error: "No fee record for this student" };
 
-      const newReceived = feeRecord.receivedAmount + payment.amount;
-      const newDue = Math.max(0, feeRecord.totalFee - newReceived);
+        const newReceived = feeRecord.receivedAmount + payment.amount;
+        const newDue = Math.max(0, feeRecord.totalFee - newReceived);
 
-      await db.$transaction([
-        db.paymentSubmission.update({
-          where: { id: paymentId },
-          data: {
-            status: "VERIFIED",
-            adminNotes: adminNotes || null,
-            verifiedById: session.userId,
-            verifiedAt,
-          },
-        }),
-        db.feeRecord.update({
-          where: { studentId: payment.studentId },
-          data: { receivedAmount: newReceived, dueAmount: newDue },
-        }),
-      ]);
+        await db.$transaction([
+          db.paymentSubmission.update({
+            where: { id: paymentId },
+            data: {
+              status: "VERIFIED",
+              adminNotes: adminNotes || null,
+              verifiedById: session.userId,
+              verifiedAt,
+            },
+          }),
+          db.feeRecord.update({
+            where: { studentId: payment.studentId },
+            data: { receivedAmount: newReceived, dueAmount: newDue },
+          }),
+        ]);
 
-      // Generate receipt PDF
-      await generateAndSaveReceipt({
-        paymentId,
-        studentName: payment.student.name,
-        enrollmentNumber: payment.student.enrollmentNumber ?? "",
-        courseName: payment.student.course?.name ?? "N/A",
-        amount: payment.amount,
-        totalFee: feeRecord.totalFee,
-        paidAmount: newReceived,
-        dueAmount: newDue,
-        transactionId: payment.transactionId,
-        paymentDate: payment.createdAt,
-        verifiedAt,
-        verifiedByEmail: session.email,
-        instituteName: payment.student.institute.name,
-        instituteId: session.instituteId,
-      });
+        // Generate receipt PDF
+        await generateAndSaveReceipt({
+          paymentId,
+          studentName: payment.student.name,
+          enrollmentNumber: payment.student.enrollmentNumber ?? "",
+          courseName: payment.student.course?.name ?? "N/A",
+          amount: payment.amount,
+          totalFee: feeRecord.totalFee,
+          paidAmount: newReceived,
+          dueAmount: newDue,
+          transactionId: payment.transactionId,
+          paymentDate: payment.createdAt,
+          verifiedAt,
+          verifiedByEmail: session.email,
+          instituteName: payment.student.institute.name,
+          instituteId: session.instituteId,
+        });
+      }
     } else {
       await db.paymentSubmission.update({
         where: { id: paymentId },

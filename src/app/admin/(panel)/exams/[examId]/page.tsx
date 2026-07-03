@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { requireAdminSession } from "@/lib/auth";
 import { PanelPage } from "@/components/panels/PanelPage";
 import { ExamQuestionsForm } from "@/components/admin/ExamQuestionsForm";
+import { getMockTopicLabel } from "@/config/exam-topics";
 
 export default async function AdminExamDetailsPage(props: { params: Promise<{ examId: string }> }) {
   const session = await requireAdminSession();
@@ -25,6 +26,7 @@ export default async function AdminExamDetailsPage(props: { params: Promise<{ ex
       instituteId: session.instituteId,
       courseId: exam.courseId,
       isActive: true,
+      ...(exam.type === "MOCK" && exam.topic ? { topic: exam.topic } : {}),
     },
     orderBy: { createdAt: "desc" },
     select: {
@@ -32,6 +34,7 @@ export default async function AdminExamDetailsPage(props: { params: Promise<{ ex
       questionText: true,
       marks: true,
       correctOption: true,
+      topic: true,
     }
   });
 
@@ -40,12 +43,21 @@ export default async function AdminExamDetailsPage(props: { params: Promise<{ ex
   return (
     <PanelPage
       title={`Manage Questions: ${exam.title}`}
-      subtitle={`Select questions from the ${exam.course.name} question bank`}
+      subtitle={
+        exam.type === "MOCK"
+          ? `Select ${getMockTopicLabel(exam.topic)} questions from the ${exam.course.name} question bank`
+          : `Select exactly 60 questions from the ${exam.course.name} question bank`
+      }
       backLink={{ href: "/admin/exams", label: "Back to Exams" }}
     >
       <div className="mb-6 rounded-lg bg-[var(--ui-bg-subtle)] p-4 border border-[var(--ui-border)] flex flex-wrap gap-4 items-center justify-between">
         <div>
           <p className="text-sm text-[var(--ui-muted)]">Type: <span className="font-bold text-[var(--ui-text)]">{exam.type}</span></p>
+          {exam.type === "MOCK" ? (
+            <p className="text-sm text-[var(--ui-muted)]">Topic: <span className="font-bold text-[var(--ui-text)]">{getMockTopicLabel(exam.topic)}</span></p>
+          ) : (
+            <p className="text-sm text-[var(--ui-muted)]">Required Questions: <span className="font-bold text-[var(--ui-text)]">60</span></p>
+          )}
           <p className="text-sm text-[var(--ui-muted)]">Duration: <span className="font-bold text-[var(--ui-text)]">{exam.durationMinutes} mins</span></p>
         </div>
         <Link 
@@ -58,6 +70,7 @@ export default async function AdminExamDetailsPage(props: { params: Promise<{ ex
 
       <ExamQuestionsForm 
         examId={exam.id}
+        examType={exam.type}
         allQuestions={allQuestions}
         selectedQuestionIds={selectedQuestionIds}
       />

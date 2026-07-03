@@ -1,9 +1,8 @@
-import { Award, ClipboardList, FileBadge, FolderOpen } from "lucide-react";
+import { Award, ClipboardList, FileBadge, FolderOpen, IdCard } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireStudentSession } from "@/lib/auth";
 import { PanelPage } from "@/components/panels/PanelPage";
 import { Card } from "@/components/ui/Card";
-import { DownloadDocumentButton } from "@/components/shared/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +16,7 @@ export default async function StudentDocumentsPage() {
 
   if (!profile) {
     return (
-      <PanelPage title="My Documents" subtitle="Your admit cards, certificates, and marksheets">
+      <PanelPage title="My Documents" subtitle="Your generated student documents">
         <Card className="p-8 text-center text-sm text-[var(--ui-muted)]">
           Profile not found. Please contact admin.
         </Card>
@@ -25,7 +24,11 @@ export default async function StudentDocumentsPage() {
     );
   }
 
-  const [admitCards, certificates, marksheets] = await Promise.all([
+  const [idCards, admitCards, certificates, marksheets] = await Promise.all([
+    db.studentIdCard.findMany({
+      where: { studentId: profile.id },
+      orderBy: { generatedAt: "desc" },
+    }),
     db.admitCard.findMany({
       where: { studentId: profile.id },
       include: { exam: true },
@@ -44,23 +47,26 @@ export default async function StudentDocumentsPage() {
   ]);
 
   return (
-    <PanelPage title="My Documents" subtitle="Your admit cards, certificates, and marksheets">
+    <PanelPage title="My Documents" subtitle="Download your ID card, certificates, marksheets, and exam documents">
       <DocumentSection
-        title="Admit Cards"
-        icon={<FileBadge className="h-5 w-5" />}
-        empty="No admit cards issued yet. Your admin will generate them before your exam."
+        title="Student ID Cards"
+        icon={<IdCard className="h-5 w-5" />}
+        empty="No ID card issued yet. Your admin will generate it after approval."
       >
-        {admitCards.map((ac) => (
+        {idCards.map((card) => (
           <DocumentCard
-            key={ac.id}
-            title={ac.exam.title}
-            meta={`Issued: ${ac.generatedAt.toLocaleDateString("en-IN")}`}
+            key={card.id}
+            title="Student ID Card"
+            meta={`Batch: ${card.batchTime ?? "Regular Batch"} | Issued: ${card.generatedAt.toLocaleDateString("en-IN")}`}
           >
-            <DownloadDocumentButton
-              storageKey={ac.storageKey}
-              label="Download"
-              filename={`admit-card-${ac.exam.title}.pdf`}
-            />
+            <a
+              href={`/documents/id-card/${profile.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition"
+            >
+              View / Print
+            </a>
           </DocumentCard>
         ))}
       </DocumentSection>
@@ -70,17 +76,20 @@ export default async function StudentDocumentsPage() {
         icon={<Award className="h-5 w-5" />}
         empty="No certificates issued yet. Complete your course to receive one."
       >
-        {certificates.map((c) => (
+        {certificates.map((certificate) => (
           <DocumentCard
-            key={c.id}
-            title={c.course.name}
-            meta={`Cert No: ${c.certificateNumber} | ${c.generatedAt.toLocaleDateString("en-IN")}`}
+            key={certificate.id}
+            title={certificate.course.name}
+            meta={`Cert No: ${certificate.certificateNumber} | ${certificate.generatedAt.toLocaleDateString("en-IN")}`}
           >
-            <DownloadDocumentButton
-              storageKey={c.storageKey}
-              label="Download"
-              filename={`certificate-${c.course.name}.pdf`}
-            />
+            <a
+              href={`/documents/certificate/${certificate.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition"
+            >
+              View / Print
+            </a>
           </DocumentCard>
         ))}
       </DocumentSection>
@@ -90,17 +99,43 @@ export default async function StudentDocumentsPage() {
         icon={<ClipboardList className="h-5 w-5" />}
         empty="No marksheets issued yet. Your admin will publish them after your final exam."
       >
-        {marksheets.map((m) => (
+        {marksheets.map((marksheet) => (
           <DocumentCard
-            key={m.id}
-            title={m.exam.title}
-            meta={`Score: ${m.obtainedMarks}/${m.totalMarks}${m.grade ? ` | Grade: ${m.grade}` : ""} | ${m.generatedAt.toLocaleDateString("en-IN")}`}
+            key={marksheet.id}
+            title={marksheet.exam.title}
+            meta={`Score: ${marksheet.obtainedMarks}/${marksheet.totalMarks}${marksheet.grade ? ` | Grade: ${marksheet.grade}` : ""} | ${marksheet.generatedAt.toLocaleDateString("en-IN")}`}
           >
-            <DownloadDocumentButton
-              storageKey={m.storageKey}
-              label="Download"
-              filename={`marksheet-${m.exam.title}.pdf`}
-            />
+            <a
+              href={`/documents/marksheet/${marksheet.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition"
+            >
+              View / Print
+            </a>
+          </DocumentCard>
+        ))}
+      </DocumentSection>
+
+      <DocumentSection
+        title="Admit Cards"
+        icon={<FileBadge className="h-5 w-5" />}
+        empty="No admit cards issued yet. Your admin will generate them before your exam."
+      >
+        {admitCards.map((admitCard) => (
+          <DocumentCard
+            key={admitCard.id}
+            title={admitCard.exam.title}
+            meta={`Issued: ${admitCard.generatedAt.toLocaleDateString("en-IN")}`}
+          >
+            <a
+              href={`/documents/admit-card/${admitCard.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition"
+            >
+              View / Print
+            </a>
           </DocumentCard>
         ))}
       </DocumentSection>

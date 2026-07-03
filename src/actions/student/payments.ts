@@ -94,3 +94,103 @@ export async function submitPaymentAction(
     return { error: "Something went wrong. Please try again." };
   }
 }
+
+export async function submitExamPaymentAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireStudentSession();
+    if (!session?.studentId) return { error: "Not authenticated" };
+
+    const amount = Number(formData.get("amount"));
+    const transactionId = formData.get("transactionId")?.toString();
+    const paymentDate = formData.get("paymentDate")?.toString();
+    const examId = formData.get("examId")?.toString();
+
+    if (!amount || !paymentDate || !examId) {
+      return { error: "Amount, payment date, and exam ID are required" };
+    }
+
+    const student = await db.studentProfile.findFirst({
+      where: { id: session.studentId, status: "APPROVED" },
+    });
+    if (!student) return { error: "Student profile not found or not approved" };
+
+    const exam = await db.exam.findFirst({
+      where: { id: examId, instituteId: session.instituteId, isActive: true },
+    });
+    if (!exam) return { error: "Exam not found or inactive" };
+
+    const existingRegistration = await db.examRegistration.findUnique({
+      where: { studentId_examId: { studentId: session.studentId, examId } },
+      include: { paymentSubmission: true },
+    });
+    if (existingRegistration) {
+      if (existingRegistration.isAccessEnabled) {
+        return { error: "You are already registered for this exam." };
+      }
+      if (existingRegistration.paymentSubmission?.status === "PENDING") {
+        return { error: "Your exam payment is already under review." };
+      }
+    }
+
+    const screenshot = formData.get("screenshot") as File | null;
+    let screenshotStorageKey: string | null = null;
+
+    if (screenshot && screenshot.size > 0) {
+      if (!ALLOWED_IMAGE_TYPES.includes(screenshot.type)) {
+        return { error: "Screenshot must be a JPG, PNG, or WebP image" };
+      }
+      if (screenshot.size > MAX_FILE_SIZE) {
+        return { error: "Screenshot must be smaller than 5 MB" };
+      }
+      const ext = path.extname(screenshot.name) || ".jpg";
+      const key = buildStorageKey(session.instituteId, "payment-screenshots", `${randomUUID()}${ext}`);
+      const buffer = Buffer.from(await screenshot.arrayBuffer());
+      await getStorageProvider().upload({
+        bucket: STORAGE_BUCKETS.payments,
+        key,
+        body: buffer,
+        contentType: screenshot.type,
+      });
+      screenshotStorageKey = key;
+    }
+
+    const payment = await db.paymentSubmission.create({
+      data: {
+        studentId: session.studentId,
+        amount,
+        transactionId: transactionId?.trim() || null,
+        screenshotStorageKey,
+        paymentType: "EXAM",
+        status: "PENDING",
+        createdAt: new Date(paymentDate),
+      },
+    });
+
+    if (existingRegistration) {
+      await db.examRegistration.update({
+        where: { id: existingRegistration.id },
+        data: { paymentSubmissionId: payment.id },
+      });
+    } else {
+      await db.examRegistration.create({
+        data: {
+          instituteId: session.instituteId,
+          studentId: session.studentId,
+          examId,
+          paymentSubmissionId: payment.id,
+          isAccessEnabled: false,
+        },
+      });
+    }
+
+    revalidatePath("/student/exams");
+    return { success: "Exam fee submitted for verification. You will be notified once reviewed." };
+  } catch (e) {
+    console.error(e);
+    return { error: "Something went wrong. Please try again." };
+  }
+}
+

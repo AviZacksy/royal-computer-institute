@@ -4,7 +4,7 @@ import { StudentLoginCard } from "@/components/forms/StudentLoginCard";
 export default async function StudentLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ registered?: string }>;
+  searchParams: Promise<{ admitted?: string }>;
 }) {
   const params = await searchParams;
   return (
@@ -13,7 +13,7 @@ export default async function StudentLoginPage({
       subtitle="Login to access your student dashboard, notes, fees, and exams."
     >
       <div className="mx-auto w-full max-w-md">
-        <StudentLoginCard registered={params.registered === "1"} />
+        <StudentLoginCard admitted={params.admitted === "1"} />
       </div>
     </PageShell>
   );

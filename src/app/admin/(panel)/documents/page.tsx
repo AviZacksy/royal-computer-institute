@@ -1,3 +1,4 @@
+import { Award, BadgeCheck, ClipboardList, FileBadge, IdCard } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireAdminSession } from "@/lib/auth";
 import { PanelPage } from "@/components/panels/PanelPage";
@@ -6,7 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { AdmitCardForm } from "@/components/admin/AdmitCardForm";
 import { CertificateForm } from "@/components/admin/CertificateForm";
 import { MarksheetForm } from "@/components/admin/MarksheetForm";
-import { DownloadDocumentButton } from "@/components/shared/DownloadDocumentButton";
+import { StudentIdCardForm } from "@/components/admin/StudentIdCardForm";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function AdminDocumentsPage() {
 
   const { instituteId } = session;
 
-  const [students, exams, finalAttempts, admitCards, certificates, marksheets] = await Promise.all([
+  const [students, exams, finalAttempts, idCards, admitCards, certificates, marksheets] = await Promise.all([
     db.studentProfile.findMany({
       where: { instituteId, status: "APPROVED" },
       select: { id: true, name: true, enrollmentNumber: true, course: { select: { name: true } } },
@@ -31,6 +32,11 @@ export default async function AdminDocumentsPage() {
       where: { exam: { instituteId, type: "FINAL" }, submittedAt: { not: null } },
       include: { student: true, exam: true },
       orderBy: { submittedAt: "desc" },
+    }),
+    db.studentIdCard.findMany({
+      where: { instituteId },
+      include: { student: { include: { course: true } } },
+      orderBy: { generatedAt: "desc" },
     }),
     db.admitCard.findMany({
       where: { instituteId },
@@ -49,172 +55,191 @@ export default async function AdminDocumentsPage() {
     }),
   ]);
 
-  // Prepare data for forms
-  const studentsForForm = students.map((s) => ({
-    id: s.id,
-    name: s.name,
-    enrollmentNumber: s.enrollmentNumber,
-    courseName: s.course?.name ?? "No Course",
+  const studentsForForm = students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    enrollmentNumber: student.enrollmentNumber,
+    courseName: student.course?.name ?? "No Course",
   }));
 
-  const attemptsForForm = finalAttempts.map((a) => ({
-    id: a.id,
-    studentName: a.student.name,
-    examTitle: a.exam.title,
-    score: a.score,
-    totalMarks: a.totalMarks,
+  const attemptsForForm = finalAttempts.map((attempt) => ({
+    id: attempt.id,
+    studentName: attempt.student.name,
+    examTitle: attempt.exam.title,
+    score: attempt.score,
+    totalMarks: attempt.totalMarks,
   }));
 
   return (
-    <PanelPage title="Documents" subtitle="Admit Cards, Certificates, and Marksheets">
-      {/* ─── Generate buttons ─────────────────────────────────────────────── */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="p-5 space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🪪</span>
-            <div>
-              <h3 className="font-bold text-[var(--ui-text)]">Admit Cards</h3>
-              <p className="text-xs text-[var(--ui-muted)]">{admitCards.length} generated</p>
-            </div>
-          </div>
-          <Modal triggerText="Generate Admit Card" triggerVariant="primary">
-            <h2 className="mb-4 text-xl font-bold">Generate Admit Card</h2>
-            <AdmitCardForm students={studentsForForm} exams={exams} />
+    <PanelPage title="Documents" subtitle="Auto-generate student ID cards, certificates, and final exam marksheets">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <GeneratorCard title="Student ID Cards" count={idCards.length} icon={<IdCard className="h-5 w-5" />}>
+          <Modal triggerText="Generate ID Card" triggerVariant="primary">
+            <h2 className="mb-4 text-xl font-bold">Generate Student ID Card</h2>
+            <StudentIdCardForm students={studentsForForm} />
           </Modal>
-        </Card>
+        </GeneratorCard>
 
-        <Card className="p-5 space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🎓</span>
-            <div>
-              <h3 className="font-bold text-[var(--ui-text)]">Certificates</h3>
-              <p className="text-xs text-[var(--ui-muted)]">{certificates.length} generated</p>
-            </div>
-          </div>
+        <GeneratorCard title="Certificates" count={certificates.length} icon={<Award className="h-5 w-5" />}>
           <Modal triggerText="Generate Certificate" triggerVariant="primary">
             <h2 className="mb-4 text-xl font-bold">Generate Certificate</h2>
             <CertificateForm students={studentsForForm} />
           </Modal>
-        </Card>
+        </GeneratorCard>
 
-        <Card className="p-5 space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📋</span>
-            <div>
-              <h3 className="font-bold text-[var(--ui-text)]">Marksheets</h3>
-              <p className="text-xs text-[var(--ui-muted)]">{marksheets.length} generated</p>
-            </div>
-          </div>
+        <GeneratorCard title="Marksheets" count={marksheets.length} icon={<ClipboardList className="h-5 w-5" />}>
           <Modal triggerText="Generate Marksheet" triggerVariant="primary">
             <h2 className="mb-4 text-xl font-bold">Generate Marksheet</h2>
             <MarksheetForm attempts={attemptsForForm} />
           </Modal>
-        </Card>
+        </GeneratorCard>
+
+        <GeneratorCard title="Admit Cards" count={admitCards.length} icon={<FileBadge className="h-5 w-5" />}>
+          <Modal triggerText="Generate Admit Card" triggerVariant="outline">
+            <h2 className="mb-4 text-xl font-bold">Generate Admit Card</h2>
+            <AdmitCardForm students={studentsForForm} exams={exams} />
+          </Modal>
+        </GeneratorCard>
       </div>
 
-      {/* ─── Admit Cards list ─────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-lg font-bold text-[var(--ui-text)] mb-3">🪪 Admit Cards</h2>
-        {admitCards.length === 0 ? (
-          <Card className="p-6 text-center text-sm text-[var(--ui-muted)]">No admit cards generated yet.</Card>
-        ) : (
-          <Card className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--ui-border)] bg-[var(--ui-bg-subtle)]">
-                  {["Student", "Enrollment", "Exam", "Generated", "Action"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {admitCards.map((ac) => (
-                  <tr key={ac.id} className="border-b border-[var(--ui-border)] last:border-0">
-                    <td className="px-4 py-3 font-medium text-[var(--ui-text)]">{ac.student.name}</td>
-                    <td className="px-4 py-3 text-[var(--ui-muted)]">{ac.student.enrollmentNumber ?? "-"}</td>
-                    <td className="px-4 py-3 text-[var(--ui-text)]">{ac.exam.title}</td>
-                    <td className="px-4 py-3 text-[var(--ui-muted)]">{ac.generatedAt.toLocaleDateString("en-IN")}</td>
-                    <td className="px-4 py-3">
-                      <DownloadDocumentButton storageKey={ac.storageKey} label="Download" filename={`admit-card-${ac.student.name}.pdf`} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
-        )}
-      </section>
+      <DocumentSection title="Student ID Cards" icon={<IdCard className="h-5 w-5" />} empty="No student ID cards generated yet.">
+        {idCards.map((card) => (
+          <DocumentRow
+            key={card.id}
+            title={card.student.name}
+            meta={`${card.student.enrollmentNumber ?? "-"} | ${card.student.course?.name ?? "No Course"} | ${card.batchTime ?? "Regular Batch"}`}
+            generatedAt={card.generatedAt}
+          >
+            <a href={`/documents/id-card/${card.student.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+              View / Print
+            </a>
+          </DocumentRow>
+        ))}
+      </DocumentSection>
 
-      {/* ─── Certificates list ────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-lg font-bold text-[var(--ui-text)] mb-3">🎓 Certificates</h2>
-        {certificates.length === 0 ? (
-          <Card className="p-6 text-center text-sm text-[var(--ui-muted)]">No certificates generated yet.</Card>
-        ) : (
-          <Card className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--ui-border)] bg-[var(--ui-bg-subtle)]">
-                  {["Student", "Course", "Cert No.", "Generated", "Action"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {certificates.map((c) => (
-                  <tr key={c.id} className="border-b border-[var(--ui-border)] last:border-0">
-                    <td className="px-4 py-3 font-medium text-[var(--ui-text)]">{c.student.name}</td>
-                    <td className="px-4 py-3 text-[var(--ui-text)]">{c.course.name}</td>
-                    <td className="px-4 py-3 text-[var(--ui-muted)] font-mono text-xs">{c.certificateNumber}</td>
-                    <td className="px-4 py-3 text-[var(--ui-muted)]">{c.generatedAt.toLocaleDateString("en-IN")}</td>
-                    <td className="px-4 py-3">
-                      <DownloadDocumentButton storageKey={c.storageKey} label="Download" filename={`certificate-${c.student.name}.pdf`} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
-        )}
-      </section>
+      <DocumentSection title="Certificates" icon={<Award className="h-5 w-5" />} empty="No certificates generated yet.">
+        {certificates.map((certificate) => (
+          <DocumentRow
+            key={certificate.id}
+            title={certificate.student.name}
+            meta={`${certificate.course.name} | Cert No: ${certificate.certificateNumber}`}
+            generatedAt={certificate.generatedAt}
+          >
+            <a href={`/documents/certificate/${certificate.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+              View / Print
+            </a>
+          </DocumentRow>
+        ))}
+      </DocumentSection>
 
-      {/* ─── Marksheets list ──────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-lg font-bold text-[var(--ui-text)] mb-3">📋 Marksheets</h2>
-        {marksheets.length === 0 ? (
-          <Card className="p-6 text-center text-sm text-[var(--ui-muted)]">No marksheets generated yet.</Card>
-        ) : (
-          <Card className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--ui-border)] bg-[var(--ui-bg-subtle)]">
-                  {["Student", "Exam", "Score", "Grade", "Generated", "Action"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {marksheets.map((m) => (
-                  <tr key={m.id} className="border-b border-[var(--ui-border)] last:border-0">
-                    <td className="px-4 py-3 font-medium text-[var(--ui-text)]">{m.student.name}</td>
-                    <td className="px-4 py-3 text-[var(--ui-text)]">{m.exam.title}</td>
-                    <td className="px-4 py-3 text-[var(--ui-text)]">{m.obtainedMarks}/{m.totalMarks}</td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${m.grade === "F" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-                        {m.grade ?? "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-[var(--ui-muted)]">{m.generatedAt.toLocaleDateString("en-IN")}</td>
-                    <td className="px-4 py-3">
-                      <DownloadDocumentButton storageKey={m.storageKey} label="Download" filename={`marksheet-${m.student.name}.pdf`} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
-        )}
-      </section>
+      <DocumentSection title="Marksheets" icon={<ClipboardList className="h-5 w-5" />} empty="No marksheets generated yet.">
+        {marksheets.map((marksheet) => (
+          <DocumentRow
+            key={marksheet.id}
+            title={marksheet.student.name}
+            meta={`${marksheet.exam.title} | Score: ${marksheet.obtainedMarks}/${marksheet.totalMarks}${marksheet.grade ? ` | Grade: ${marksheet.grade}` : ""}`}
+            generatedAt={marksheet.generatedAt}
+          >
+            <a href={`/documents/marksheet/${marksheet.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+              View / Print
+            </a>
+          </DocumentRow>
+        ))}
+      </DocumentSection>
+
+      <DocumentSection title="Admit Cards" icon={<FileBadge className="h-5 w-5" />} empty="No admit cards generated yet.">
+        {admitCards.map((admitCard) => (
+          <DocumentRow
+            key={admitCard.id}
+            title={admitCard.student.name}
+            meta={`${admitCard.student.enrollmentNumber ?? "-"} | ${admitCard.exam.title}`}
+            generatedAt={admitCard.generatedAt}
+          >
+            <a href={`/documents/admit-card/${admitCard.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+              View / Print
+            </a>
+          </DocumentRow>
+        ))}
+      </DocumentSection>
     </PanelPage>
+  );
+}
+
+function GeneratorCard({
+  title,
+  count,
+  icon,
+  children,
+}: {
+  title: string;
+  count: number;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card className="space-y-4 p-5">
+      <div className="flex items-center gap-3">
+        <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-[var(--ui-secondary)]">{icon}</span>
+        <div>
+          <h3 className="font-bold text-[var(--ui-text)]">{title}</h3>
+          <p className="text-xs text-[var(--ui-muted)]">{count} generated</p>
+        </div>
+      </div>
+      {children}
+    </Card>
+  );
+}
+
+function DocumentSection({
+  title,
+  icon,
+  empty,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  empty: string;
+  children: React.ReactNode[];
+}) {
+  return (
+    <section className="space-y-3">
+      <h2 className="flex items-center gap-2 text-lg font-extrabold text-[var(--ui-primary)]">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-50 text-[var(--ui-secondary)]">{icon}</span>
+        {title}
+      </h2>
+      {children.length === 0 ? (
+        <Card className="p-8 text-center">
+          <BadgeCheck className="mx-auto h-8 w-8 text-[var(--ui-secondary)]" />
+          <p className="mt-3 text-sm text-[var(--ui-muted)]">{empty}</p>
+        </Card>
+      ) : (
+        <div className="grid gap-3">{children}</div>
+      )}
+    </section>
+  );
+}
+
+function DocumentRow({
+  title,
+  meta,
+  generatedAt,
+  children,
+}: {
+  title: string;
+  meta: string;
+  generatedAt: Date;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="font-extrabold text-[var(--ui-primary)]">{title}</p>
+        <p className="mt-1 text-xs font-medium text-[var(--ui-muted)]">{meta}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="text-xs font-medium text-[var(--ui-muted)]">{generatedAt.toLocaleDateString("en-IN")}</span>
+        {children}
+      </div>
+    </Card>
   );
 }

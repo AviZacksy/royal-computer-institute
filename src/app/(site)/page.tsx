@@ -28,8 +28,19 @@ export default async function Home() {
         
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 w-full mx-auto max-w-screen-xl">
           <div className="animate-fade-up animation-delay-100 flex flex-col items-center">
-            <h1 className="font-[var(--font-poppins)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-[1.5px] uppercase text-white drop-shadow-lg mb-3">ROYAL COMPUTER INSTITUTE</h1>
-            <div className="w-[80px] sm:w-[100px] h-[4px] bg-[#d4af37] mx-auto rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)]"></div>
+            <h1 className="font-[var(--font-poppins)] text-center uppercase text-white drop-shadow-2xl mb-4">
+              <span className="block text-[34px] sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[0.08em] leading-none">
+                Royal
+              </span>
+              <span className="mt-2 block text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[0.18em] leading-tight text-[#f8d45c]">
+                Computer Institute
+              </span>
+            </h1>
+            <div className="mx-auto flex w-[180px] items-center justify-center gap-2">
+              <span className="h-[3px] w-12 rounded-full bg-white/80"></span>
+              <span className="h-[6px] w-16 rounded-full bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.9)]"></span>
+              <span className="h-[3px] w-12 rounded-full bg-white/80"></span>
+            </div>
           </div>
           
           <p className="animate-fade-up animation-delay-200 font-body text-base sm:text-lg md:text-xl font-medium text-[rgb(240,240,240)] mt-5 mb-8 max-w-[700px]">Bhawanipur Zirat, Infront of Stone Clinic, Motihari</p>
@@ -39,7 +50,7 @@ export default async function Home() {
           <p className="animate-fade-up animation-delay-400 font-body text-sm sm:text-base md:text-lg text-[rgb(240,240,240)] max-w-[700px] mb-8 drop-shadow">Learn practical computer skills with hands‑on training, exam support, and certificate services.</p>
           
           <div className="animate-fade-up animation-delay-500 flex flex-wrap items-center justify-center gap-4 mb-8 sm:mb-12">
-            <Link href="/student/register" className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 px-8 py-3.5 text-white font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1">Apply Now</Link>
+            <Link href="/admission" className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 px-8 py-3.5 text-white font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1">Student Admission</Link>
             <Link href="/courses" className="inline-flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/30 px-8 py-3.5 text-white font-bold hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">View Courses</Link>
           </div>
         </div>
@@ -70,7 +81,6 @@ export default async function Home() {
             subtitle="Explore the latest active programs, fees, and durations available for admission."
             centered
           />
-
           {courses.length === 0 ? (
             <div className="mt-16 rounded-md border border-[var(--ui-border)] bg-white p-8 text-center shadow-sm">
               <p className="font-display text-2xl font-black text-[var(--ui-primary)]">
@@ -82,7 +92,7 @@ export default async function Home() {
               </p>
             </div>
           ) : (
-            <div className="mt-8 sm:mt-16 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+            <div className="mt-8 sm:mt-16 grid grid-cols-2 items-start gap-3 sm:gap-6 lg:grid-cols-3">
               {courses.map((course) => (
                 <CourseCard
                   key={course.id}
@@ -92,6 +102,8 @@ export default async function Home() {
                   fee={formatCurrency(course.oneTimeFee || course.totalFee)}
                   actualFee={formatCurrency(course.actualFee || course.totalFee)}
                   image={course.imageUrl ?? undefined}
+                  href={`/courses/${course.id}`}
+                  enquiryHref={`/query?courseId=${course.id}`}
                 />
               ))}
             </div>

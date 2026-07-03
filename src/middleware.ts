@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/student") && !pathname.startsWith("/student/register")) {
+  if (pathname.startsWith("/student") && !pathname.startsWith("/admission")) {
     if (!session || session.role !== "STUDENT") {
       return NextResponse.redirect(new URL("/student-login", request.url));
     }

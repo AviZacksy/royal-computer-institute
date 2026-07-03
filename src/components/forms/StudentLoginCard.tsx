@@ -8,7 +8,7 @@ import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 
-export function StudentLoginCard({ registered }: { registered?: boolean }) {
+export function StudentLoginCard({ admitted }: { admitted?: boolean }) {
   const [state, action, pending] = useActionState(
     async (_prev: { error?: string } | null, formData: FormData) => {
       const result = await studentLoginAction(formData);
@@ -24,13 +24,13 @@ export function StudentLoginCard({ registered }: { registered?: boolean }) {
           <div className="grid h-11 w-11 place-items-center rounded-[var(--radius-control)] bg-gold/15 text-xl">🔐</div>
           <div>
             <p className="text-base font-extrabold text-royal">Student Login</p>
-            <p className="mt-1 text-sm text-muted">Login with your registered email after admin approval.</p>
+            <p className="mt-1 text-sm text-muted">Login with your admitted email after admin approval.</p>
           </div>
         </div>
 
-        {registered ? (
+        {admitted ? (
           <div className="mt-4 rounded-[var(--radius-card)] border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-            Registration submitted. Please wait for admin approval before logging in.
+            Admission request submitted. Please wait for admin approval before logging in.
           </div>
         ) : null}
 
@@ -48,8 +48,8 @@ export function StudentLoginCard({ registered }: { registered?: boolean }) {
             <Button type="submit" disabled={pending} className="w-full sm:w-auto">
               {pending ? "Logging in…" : "Login"}
             </Button>
-            <Link href="/student/register" className="text-sm font-semibold text-[var(--ui-primary)] hover:underline">
-              New student? Register
+            <Link href="/admission" className="text-sm font-semibold text-[var(--ui-primary)] hover:underline">
+              New student? Student Admission
             </Link>
           </div>
         </form>

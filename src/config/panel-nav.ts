@@ -4,15 +4,16 @@ export const ADMIN_NAV: PanelNavItem[] = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/admin/students", label: "Students", icon: "students" },
   { href: "/admin/students/approval", label: "Approvals", icon: "approvals" },
-  { href: "/admin/courses", label: "Courses", icon: "courses" },
   { href: "/admin/fees", label: "Fee Management", icon: "fees" },
   { href: "/admin/payments", label: "Payments", icon: "payments" },
   { href: "/admin/enquiries", label: "Enquiries", icon: "enquiries" },
-  { href: "/admin/gallery", label: "Gallery", icon: "gallery" },
   { href: "/admin/questions", label: "Questions", icon: "questions" },
   { href: "/admin/exams", label: "Exams", icon: "exams" },
   { href: "/admin/documents", label: "Documents", icon: "documents" },
   { href: "/admin/notes", label: "Notes", icon: "notes" },
+  { href: "/admin/about", label: "About", icon: "about", section: "Website Management" },
+  { href: "/admin/gallery", label: "Gallery", icon: "gallery", section: "Website Management" },
+  { href: "/admin/courses", label: "Courses", icon: "courses", section: "Website Management" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
 

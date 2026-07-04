@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { ChevronDown, Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { NAV_ITEMS } from "@/components/site/nav";
 import { MobileNav } from "@/components/site/mobile/MobileNav";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
@@ -17,12 +17,12 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
               <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
                 <Image src="/logo/logo.jpeg" alt={INSTITUTE.name} width={48} height={48} className="rounded-full shadow-sm border border-white/20 object-cover" />
                 <span className="min-w-0 block">
-                  <span className="block font-display text-sm sm:text-[22px] font-black leading-tight text-gray-900 tracking-normal truncate">
+                  <span className="block font-display text-sm sm:text-[23px] font-black leading-tight text-gray-950 tracking-normal truncate">
                     {INSTITUTE.name}
                   </span>
-                  <span className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[13px] font-medium text-gray-500 mt-0.5">
-                    <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                    <span className="truncate">Bhawanipur Zirat, infront of stone clinic motihari</span>
+                  <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-gray-600 sm:text-[12px]">
+                    <span className="block truncate">ISO IAF 9001:2015 Certificate Institute</span>
+                    <span className="block truncate">Reg. Under MSME Gov. Of India</span>
                   </span>
                 </span>
               </Link>

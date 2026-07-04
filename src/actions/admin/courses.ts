@@ -22,6 +22,7 @@ function parseCourseForm(formData: FormData) {
     oneTimeFee: formData.get("oneTimeFee"),
     imagePath: formData.get("imagePath") || undefined,
     isActive: formData.get("isActive") ?? "true",
+    isEnquiryEnabled: formData.get("isEnquiryEnabled") ?? "true",
   });
 }
 
@@ -67,9 +68,11 @@ export async function saveCourseAction(
       oneTimeFee,
       imagePath,
       isActive,
+      isEnquiryEnabled,
     } = parsed.data;
     const totalFee = oneTimeFee;
     const active = isActive !== "false";
+    const enquiryEnabled = isEnquiryEnabled !== "false";
     const imageFile = formData.get("courseImage");
     const removeImage = formData.get("removeImage") === "true";
     const hasUpload =
@@ -145,6 +148,7 @@ export async function saveCourseAction(
           imageStorageKey,
           imagePath: nextImagePath,
           isActive: active,
+          isEnquiryEnabled: enquiryEnabled,
         },
       });
     } else {
@@ -190,6 +194,7 @@ export async function saveCourseAction(
           imageStorageKey,
           imagePath: removeImage ? null : (imagePath ?? null),
           isActive: active,
+          isEnquiryEnabled: enquiryEnabled,
           sortOrder: (maxSort._max.sortOrder ?? 0) + 1,
         },
       });

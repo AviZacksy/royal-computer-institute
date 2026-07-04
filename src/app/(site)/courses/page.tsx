@@ -17,24 +17,6 @@ function getCourseInitials(name: string): string {
   return initials || "RC";
 }
 
-function getCourseDropdownDetails(name: string) {
-  const key = name.trim().toUpperCase();
-  const details: Record<string, string[]> = {
-    ADCA: ["Fundamentals of Computer", "Microsoft Windows", "Microsoft Office", "DTP", "Tally Prime", "HTML Basics", "Internet & Multimedia"],
-    DCA: ["Fundamentals of Computer", "Microsoft Windows", "Microsoft Office", "HTML Basics", "Internet & Multimedia", "File & Folder Management"],
-    DTP: ["Adobe PageMaker", "Adobe Photoshop", "Adobe Illustrator", "CorelDRAW", "Canva", "Album, poster, card and certificate design"],
-    CFA: ["Computer Fundamentals", "Accounting Fundamentals", "Tally Prime", "GST Basics", "Microsoft Excel", "Practical Business Accounting"],
-    DFA: ["Fundamentals of Computer", "Microsoft Office", "Accounting Fundamentals", "Tally Prime", "Taxation", "Advanced Excel", "Banking & Finance", "Practical Training"],
-    CCC: ["Introduction to Computer", "Computer Fundamentals", "Operating System (Windows)", "Internet & Multimedia", "Practical Training"],
-    "MS OFFICE": ["Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint", "Microsoft Access", "Microsoft Outlook"],
-    TYPING: ["English Typing", "Hindi Typing", "Remington Gail Layout", "Typing speed improvement", "Accuracy and productivity practice"],
-    ACCOUNTING: ["Basic Accounting", "Tally Prime", "GST & TDS", "Voucher Creation", "Stock Maintenance", "Reports & Financial Statements"],
-    GRAPHICS: ["Photoshop", "CorelDRAW", "Illustrator", "Canva", "Poster and banner design", "Certificate and card design"],
-  };
-
-  return details[key] ?? [];
-}
-
 export default async function CoursesPage() {
   const courses = await getPublicCourses();
 
@@ -156,7 +138,7 @@ export default async function CoursesPage() {
                             Course Details
                           </p>
                           <ul className="mb-4 grid gap-2 text-sm font-semibold leading-snug text-slate-700">
-                            {getCourseDropdownDetails(course.name).map((item) => (
+                            {(course.syllabus?.split(/\r?\n/).map((item) => item.trim()).filter(Boolean) ?? []).map((item) => (
                               <li key={item} className="flex gap-2">
                                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ui-secondary)]" />
                                 <span>{item}</span>
@@ -178,9 +160,9 @@ export default async function CoursesPage() {
                       <ButtonLink
                         href={`/query?courseId=${course.id}`}
                         variant="outline"
-                        className="flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-bold"
+                        className={`flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-bold ${course.isEnquiryEnabled ? "" : "pointer-events-none opacity-50"}`}
                       >
-                        Enquire
+                        {course.isEnquiryEnabled ? "Enquire" : "Enquiry Closed"}
                       </ButtonLink>
                     </div>
                   </div>

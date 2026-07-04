@@ -14,6 +14,7 @@ export type GalleryFormValues = {
   mediaType: "IMAGE" | "VIDEO";
   mediaUrl?: string | null;
   category: string;
+  sortOrder: number;
   isActive: boolean;
 };
 
@@ -50,6 +51,9 @@ export function GalleryItemForm({ initial }: { initial?: GalleryFormValues }) {
         </Field>
         <Field label="Category" htmlFor="category">
           <Input id="category" name="category" placeholder="Campus" defaultValue={initial?.category ?? "General"} />
+        </Field>
+        <Field label="Sort Order" htmlFor="sortOrder">
+          <Input id="sortOrder" name="sortOrder" type="number" min={0} defaultValue={initial?.sortOrder ?? 0} />
         </Field>
         <Field label="Status" htmlFor="isActive">
           <Select id="isActive" name="isActive" defaultValue={initial?.isActive === false ? "false" : "true"}>

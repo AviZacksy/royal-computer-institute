@@ -106,6 +106,39 @@ const SEED_COURSES = [
   },
 ];
 
+const COURSE_SYLLABUS: Record<string, string> = {
+  ADCA: "Fundamentals of Computer\nMicrosoft Windows\nMicrosoft Office\nDTP\nTally Prime\nHTML Basics\nInternet & Multimedia",
+  DCA: "Fundamentals of Computer\nMicrosoft Windows\nMicrosoft Office\nHTML Basics\nInternet & Multimedia\nFile & Folder Management",
+  DTP: "Adobe PageMaker\nAdobe Photoshop\nAdobe Illustrator\nCorelDRAW\nCanva\nAlbum, poster, card and certificate design",
+  CFA: "Computer Fundamentals\nAccounting Fundamentals\nTally Prime\nGST Basics\nMicrosoft Excel\nPractical Business Accounting",
+  DFA: "Fundamentals of Computer\nMicrosoft Office\nAccounting Fundamentals\nTally Prime\nTaxation\nAdvanced Excel\nBanking & Finance\nPractical Training",
+  CCC: "Introduction to Computer\nComputer Fundamentals\nOperating System (Windows)\nInternet & Multimedia\nPractical Training",
+  "MS OFFICE": "Microsoft Word\nMicrosoft Excel\nMicrosoft PowerPoint\nMicrosoft Access\nMicrosoft Outlook",
+  TYPING: "English Typing\nHindi Typing\nRemington Gail Layout\nTyping speed improvement\nAccuracy and productivity practice",
+  ACCOUNTING: "Basic Accounting\nTally Prime\nGST & TDS\nVoucher Creation\nStock Maintenance\nReports & Financial Statements",
+  GRAPHICS: "Photoshop\nCorelDRAW\nIllustrator\nCanva\nPoster and banner design\nCertificate and card design",
+};
+
+const ABOUT_CONTENT = {
+  title: "Welcome to Royal Computer Institute",
+  description:
+    "Bihar's premier computer training center dedicated to building professional careers through practical education.",
+  content: {
+    introduction:
+      "Royal Computer Institute is a premier institute for Programming and Coding Classes located in Motihari. We offer expert training in Python, Java, C, C++, Full-Stack Web Development, Data Analysis, Data Science, and AI.",
+    mission:
+      "We believe that theoretical knowledge must be paired with hands-on practice. That's why our state-of-the-art computer labs are designed to provide every student with the independent practice time they need to master their chosen technologies and secure successful placements.",
+    vision:
+      "To make practical, job-ready computer education accessible to every learner through disciplined training, updated course content, and student-first support.",
+    sections: [
+      { title: "Practical Lab Training", description: "1:1 computer ratio for hands-on experience." },
+      { title: "Online Admission Portal", description: "Easy, paperless registration from anywhere." },
+      { title: "Mock & Final Exams", description: "Online portal to prepare for final certifications." },
+      { title: "Govt. Recognized", description: "Verifiable certificates useful for job placements." },
+    ],
+  },
+};
+
 async function main() {
   const slug = process.env.DEFAULT_INSTITUTE_SLUG ?? "royal-ci";
   const instituteName = process.env.DEFAULT_INSTITUTE_NAME ?? "Royal Computer Institute";
@@ -150,16 +183,19 @@ async function main() {
         description: course.description,
         duration: course.duration,
         totalFee,
+        syllabus: COURSE_SYLLABUS[course.name],
         actualFee: course.actualFee,
         installmentFee: course.installmentFee,
         oneTimeFee: course.oneTimeFee,
         imagePath: course.imagePath,
         sortOrder: course.sortOrder,
         isActive: true,
+        isEnquiryEnabled: true,
       },
       create: {
         instituteId: institute.id,
         ...course,
+        syllabus: COURSE_SYLLABUS[course.name],
         totalFee,
       },
     });
@@ -171,6 +207,21 @@ async function main() {
       name: { notIn: SEED_COURSES.map((course) => course.name) },
     },
     data: { isActive: false },
+  });
+
+  await prisma.websiteContent.upsert({
+    where: {
+      instituteId_page: {
+        instituteId: institute.id,
+        page: "about",
+      },
+    },
+    update: {},
+    create: {
+      instituteId: institute.id,
+      page: "about",
+      ...ABOUT_CONTENT,
+    },
   });
 
   console.log("Seed complete.");

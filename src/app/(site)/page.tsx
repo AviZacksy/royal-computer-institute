@@ -28,24 +28,23 @@ export default async function Home() {
         
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 w-full mx-auto max-w-screen-xl">
           <div className="animate-fade-up animation-delay-100 flex flex-col items-center">
-            <h1 className="font-[var(--font-poppins)] text-center uppercase text-white drop-shadow-2xl mb-4">
-              <span className="block text-[34px] sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[0.08em] leading-none">
-                Royal
-              </span>
-              <span className="mt-2 block text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-[0.18em] leading-tight text-[#f8d45c]">
-                Computer Institute
+            <h1 className="w-full font-[var(--font-poppins)] text-center uppercase text-white drop-shadow-2xl">
+              <span className="block whitespace-nowrap text-[23px] sm:text-[46px] md:text-[62px] lg:text-[76px] font-black tracking-normal leading-none">
+                Royal Computer Institute
               </span>
             </h1>
-            <div className="mx-auto flex w-[180px] items-center justify-center gap-2">
+            <div className="mx-auto mt-5 flex w-[220px] items-center justify-center gap-2">
               <span className="h-[3px] w-12 rounded-full bg-white/80"></span>
-              <span className="h-[6px] w-16 rounded-full bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.9)]"></span>
+              <span className="h-[6px] w-24 rounded-full bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.9)]"></span>
               <span className="h-[3px] w-12 rounded-full bg-white/80"></span>
             </div>
+            <p className="mt-5 max-w-[760px] font-body text-sm font-bold leading-relaxed text-[#f8d45c] drop-shadow sm:text-base md:text-lg">
+              <span className="block">ISO IAF 9001:2015 Certificate Institute</span>
+              <span className="block">Reg. Under MSME Gov. Of India</span>
+            </p>
           </div>
           
-          <p className="animate-fade-up animation-delay-200 font-body text-base sm:text-lg md:text-xl font-medium text-[rgb(240,240,240)] mt-5 mb-8 max-w-[700px]">Bhawanipur Zirat, Infront of Stone Clinic, Motihari</p>
-          
-          <h2 className="animate-fade-up animation-delay-300 font-[var(--font-poppins)] text-[32px] sm:text-[40px] md:text-[56px] lg:text-[64px] leading-[1.1] font-bold text-white mb-4 sm:mb-6 drop-shadow-md">Job-ready computer courses in Motihari</h2>
+          <h2 className="animate-fade-up animation-delay-300 mt-9 max-w-4xl font-[var(--font-poppins)] text-[26px] sm:text-[34px] md:text-[44px] lg:text-[52px] leading-[1.12] font-extrabold text-white mb-4 sm:mb-6 drop-shadow-md">Job-ready computer courses in Motihari</h2>
           
           <p className="animate-fade-up animation-delay-400 font-body text-sm sm:text-base md:text-lg text-[rgb(240,240,240)] max-w-[700px] mb-8 drop-shadow">Learn practical computer skills with hands‑on training, exam support, and certificate services.</p>
           
@@ -100,11 +99,12 @@ export default async function Home() {
                   subHeading={course.description}
                   duration={course.duration}
                   fee={formatCurrency(course.oneTimeFee || course.totalFee)}
-                  actualFee={formatCurrency(course.actualFee || course.totalFee)}
-                  image={course.imageUrl ?? undefined}
-                  href={`/courses/${course.id}`}
-                  enquiryHref={`/query?courseId=${course.id}`}
-                />
+                    actualFee={formatCurrency(course.actualFee || course.totalFee)}
+                    image={course.imageUrl ?? undefined}
+                    href={`/courses/${course.id}`}
+                    enquiryHref={course.isEnquiryEnabled ? `/query?courseId=${course.id}` : undefined}
+                    details={course.syllabus}
+                  />
               ))}
             </div>
           )}

@@ -44,6 +44,7 @@ export const galleryItemSchema = z.object({
   mediaType: z.enum(["IMAGE", "VIDEO"]),
   mediaUrl: z.string().max(2048).optional(),
   category: z.string().max(64).optional(),
+  sortOrder: z.coerce.number().int().min(0).optional(),
   isActive: z.enum(["true", "false"]).optional(),
 });
 
@@ -83,6 +84,18 @@ export const courseFormSchema = z.object({
   oneTimeFee: z.coerce.number().min(0, "One-time fee cannot be negative"),
   imagePath: z.string().max(2048).optional(),
   isActive: z.enum(["true", "false"]).optional(),
+  isEnquiryEnabled: z.enum(["true", "false"]).optional(),
+});
+
+export const aboutContentSchema = z.object({
+  title: z.string().min(2, "Enter the About title").max(160),
+  description: z.string().min(5, "Enter the About description").max(1000),
+  introduction: z.string().min(10, "Enter institute introduction").max(4000),
+  mission: z.string().min(10, "Enter mission text").max(4000),
+  vision: z.string().min(10, "Enter vision text").max(4000),
+  imagePath: z.string().max(2048).optional(),
+  sectionTitle: z.array(z.string().max(120)).optional(),
+  sectionDescription: z.array(z.string().max(500)).optional(),
 });
 
 export const feeSchema = z.object({

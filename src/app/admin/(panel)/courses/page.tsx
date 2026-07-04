@@ -61,6 +61,7 @@ export default async function AdminCoursesPage({
                 imageUrl: editCourse.imageUrl,
                 imagePath: editCourse.imagePath,
                 isActive: editCourse.isActive,
+                isEnquiryEnabled: editCourse.isEnquiryEnabled,
               }
             : undefined
         }
@@ -73,7 +74,7 @@ export default async function AdminCoursesPage({
       ) : null}
 
       <DataTable
-        headers={["Course", "Duration", "Actual", "Installment", "One Time", "Status", "Enrolled", "Actions"]}
+        headers={["Course", "Duration", "Actual", "Installment", "One Time", "Status", "Enquiry", "Enrolled", "Actions"]}
         rows={coursesWithImages.map((c) => [
           <div key={`course-${c.id}`} className="flex items-center gap-3">
             {c.imageUrl ? (
@@ -93,6 +94,7 @@ export default async function AdminCoursesPage({
           formatCurrency(c.installmentFee || c.totalFee),
           formatCurrency(c.oneTimeFee || c.totalFee),
           <ActiveBadge key={`ab-${c.id}`} active={c.isActive} />,
+          <ActiveBadge key={`eq-${c.id}`} active={c.isEnquiryEnabled} />,
           c._count.students,
           <div key={`act-${c.id}`} className="flex flex-wrap gap-2">
             <Link

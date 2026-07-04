@@ -24,6 +24,7 @@ export type CourseFormValues = {
   imageUrl?: string | null;
   imagePath?: string | null;
   isActive: boolean;
+  isEnquiryEnabled: boolean;
 };
 
 export function CourseForm({ initial }: { initial?: CourseFormValues }) {
@@ -63,6 +64,12 @@ export function CourseForm({ initial }: { initial?: CourseFormValues }) {
           <Select id="isActive" name="isActive" defaultValue={initial?.isActive === false ? "false" : "true"}>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
+          </Select>
+        </Field>
+        <Field label="Enquiry Availability" htmlFor="isEnquiryEnabled">
+          <Select id="isEnquiryEnabled" name="isEnquiryEnabled" defaultValue={initial?.isEnquiryEnabled === false ? "false" : "true"}>
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
           </Select>
         </Field>
         <Field label="Fallback Image Path" htmlFor="imagePath">

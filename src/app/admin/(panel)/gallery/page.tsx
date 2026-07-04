@@ -52,6 +52,7 @@ export default async function AdminGalleryPage({
                 mediaType: editItem.mediaType,
                 mediaUrl: editItem.mediaUrl,
                 category: editItem.category,
+                sortOrder: editItem.sortOrder,
                 isActive: editItem.isActive,
               }
             : undefined

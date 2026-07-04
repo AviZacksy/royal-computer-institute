@@ -31,6 +31,7 @@ export type PanelNavItem = {
   href: string;
   label: string;
   icon: string;
+  section?: string;
 };
 
 export function PanelShell({
@@ -47,9 +48,8 @@ export function PanelShell({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const nav = (
-    <nav className="grid gap-1.5">
-      {navItems.map((item) => {
+  const renderNavItems = (items: PanelNavItem[]) =>
+    items.map((item) => {
         const active =
           pathname === item.href ||
           (item.href !== "/admin/dashboard" &&
@@ -83,7 +83,30 @@ export function PanelShell({
             <span className="truncate">{item.label}</span>
           </Link>
         );
-      })}
+      });
+
+  const groupedNav = navItems.reduce<Array<{ title?: string; items: PanelNavItem[] }>>((groups, item) => {
+    const last = groups[groups.length - 1];
+    if (last && last.title === item.section) {
+      last.items.push(item);
+    } else {
+      groups.push({ title: item.section, items: [item] });
+    }
+    return groups;
+  }, []);
+
+  const nav = (
+    <nav className="grid gap-4">
+      {groupedNav.map((group, index) => (
+        <div key={`${group.title ?? "main"}-${index}`} className="grid gap-1.5">
+          {group.title ? (
+            <p className="px-3 pt-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+              {group.title}
+            </p>
+          ) : null}
+          {renderNavItems(group.items)}
+        </div>
+      ))}
     </nav>
   );
 

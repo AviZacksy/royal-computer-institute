@@ -24,6 +24,7 @@ export async function saveGalleryItemAction(
       mediaType: formData.get("mediaType"),
       mediaUrl: formData.get("mediaUrl") || undefined,
       category: formData.get("category") || undefined,
+      sortOrder: formData.get("sortOrder") || undefined,
       isActive: formData.get("isActive") ?? "true",
     });
 
@@ -35,6 +36,7 @@ export async function saveGalleryItemAction(
     const mediaUrl = parsed.data.mediaUrl?.trim() || null;
     const isActive = parsed.data.isActive !== "false";
     const category = parsed.data.category?.trim() || "General";
+    const sortOrder = parsed.data.sortOrder ?? 0;
 
     let storageKey: string | null = null;
     let finalMediaUrl: string | null = mediaUrl;
@@ -70,12 +72,19 @@ export async function saveGalleryItemAction(
         return { error: "Gallery item not found" };
       }
 
+      if (storageKey && existing.storageKey) {
+        await getStorageProvider()
+          .delete(STORAGE_BUCKETS.gallery, existing.storageKey)
+          .catch(() => undefined);
+      }
+
       await db.galleryItem.update({
         where: { id: parsed.data.id },
         data: {
           title: parsed.data.title,
           mediaType: parsed.data.mediaType,
           category,
+          sortOrder,
           isActive,
           ...(storageKey
             ? { storageKey, mediaUrl: null }
@@ -99,7 +108,7 @@ export async function saveGalleryItemAction(
           mediaUrl: finalMediaUrl,
           category,
           isActive,
-          sortOrder: (maxSort._max.sortOrder ?? 0) + 1,
+          sortOrder: parsed.data.sortOrder ?? (maxSort._max.sortOrder ?? 0) + 1,
         },
       });
     }
@@ -125,6 +134,12 @@ export async function deleteGalleryItemAction(
       where: { id, instituteId: session.instituteId },
     });
     if (!item) return { error: "Gallery item not found" };
+
+    if (item.storageKey) {
+      await getStorageProvider()
+        .delete(STORAGE_BUCKETS.gallery, item.storageKey)
+        .catch(() => undefined);
+    }
 
     await db.galleryItem.delete({ where: { id } });
 

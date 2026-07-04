@@ -14,99 +14,12 @@ interface CourseCardProps {
   image?: string;
   href?: string;
   enquiryHref?: string;
+  details?: string | null;
 }
 
-export function getCourseDropdownDetails(name: string) {
-  const key = name.trim().toUpperCase();
-  const details: Record<string, string[]> = {
-    ADCA: [
-      "Fundamentals of Computer",
-      "Microsoft Windows",
-      "Microsoft Office",
-      "DTP (Desktop Publishing)",
-      "Tally Prime",
-      "HTML Basics",
-      "Internet & Multimedia",
-    ],
-    DCA: [
-      "Fundamentals of Computer",
-      "Microsoft Windows",
-      "Microsoft Office",
-      "HTML Basics",
-      "Internet & Multimedia",
-      "File & Folder Management",
-    ],
-    DTP: [
-      "Adobe PageMaker",
-      "Adobe Photoshop",
-      "Adobe Illustrator",
-      "CorelDRAW",
-      "Canva",
-      "Album, poster, visiting card and certificate design",
-    ],
-    CFA: [
-      "Computer Fundamentals",
-      "Accounting Fundamentals",
-      "Tally Prime",
-      "GST Basics",
-      "Microsoft Excel",
-      "Practical Business Accounting",
-    ],
-    DFA: [
-      "Fundamentals of Computer",
-      "Microsoft Office",
-      "Accounting Fundamentals",
-      "Tally Prime",
-      "Taxation",
-      "Advanced Excel",
-      "Banking & Finance",
-      "Practical Training",
-    ],
-    CCC: [
-      "Introduction to Computer",
-      "Computer Fundamentals",
-      "Operating System (Windows)",
-      "Internet & Multimedia",
-      "Practical Training",
-    ],
-    "MS OFFICE": [
-      "Microsoft Word",
-      "Microsoft Excel",
-      "Microsoft PowerPoint",
-      "Microsoft Access",
-      "Microsoft Outlook",
-    ],
-    TYPING: [
-      "English Typing",
-      "Hindi Typing",
-      "Remington Gail Layout",
-      "Typing speed improvement",
-      "Accuracy and productivity practice",
-    ],
-    ACCOUNTING: [
-      "Basic Accounting",
-      "Tally Prime",
-      "GST & TDS",
-      "Voucher Creation",
-      "Stock Maintenance",
-      "Reports & Financial Statements",
-    ],
-    GRAPHICS: [
-      "Photoshop",
-      "CorelDRAW",
-      "Illustrator",
-      "Canva",
-      "Poster and banner design",
-      "Certificate and card design",
-    ],
-  };
-
-  return details[key] ?? [];
-}
-
-export function CourseCard({ name, subHeading, description, duration, fee, actualFee, image = "/banner/banner1.jpeg", enquiryHref }: CourseCardProps) {
+export function CourseCard({ name, subHeading, description, duration, fee, actualFee, image = "/banner/banner1.jpeg", enquiryHref, details }: CourseCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const details = getCourseDropdownDetails(name);
+  const detailItems = details?.split(/\r?\n/).map((item) => item.trim()).filter(Boolean) ?? [];
 
   return (
     <div className="group relative flex flex-col bg-white overflow-hidden shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300">
@@ -142,16 +55,16 @@ export function CourseCard({ name, subHeading, description, duration, fee, actua
         )}
 
         {/* Details Section (Expands on Click) */}
-        {(fee || details.length > 0) && (
+        {(fee || detailItems.length > 0) && (
           <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
-              {details.length > 0 ? (
+              {detailItems.length > 0 ? (
                 <div className="mb-3 rounded-lg bg-blue-50 p-3 text-left">
                   <p className="mb-2 text-[11px] sm:text-xs font-black uppercase tracking-wide text-[#0f2f6f]">
                     Course Details
                   </p>
                   <ul className="grid gap-1 text-[11px] sm:text-[13px] font-semibold leading-snug text-gray-700">
-                    {details.map((item) => (
+                    {detailItems.map((item) => (
                       <li key={item} className="flex gap-2">
                         <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2563eb]" />
                         <span>{item}</span>

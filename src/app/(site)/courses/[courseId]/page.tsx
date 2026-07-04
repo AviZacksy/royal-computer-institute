@@ -5,7 +5,7 @@ import { Clock, IndianRupee, GraduationCap, BriefcaseBusiness, ListChecks } from
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { ButtonLink } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/format";
-import { getPublicCourseById, getPublicCourses } from "@/lib/public-content";
+import { getPublicCourseById, getPublicEnquiryCourses } from "@/lib/public-content";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
   const { courseId } = await props.params;
   const [course, courses] = await Promise.all([
     getPublicCourseById(courseId),
-    getPublicCourses(),
+    getPublicEnquiryCourses(),
   ]);
 
   if (!course) notFound();
@@ -95,7 +95,13 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <EnquiryForm courses={courses.map((item) => ({ id: item.id, name: item.name }))} defaultCourseId={course.id} />
+            {course.isEnquiryEnabled ? (
+              <EnquiryForm courses={courses.map((item) => ({ id: item.id, name: item.name }))} defaultCourseId={course.id} />
+            ) : (
+              <div className="rounded-2xl border border-[var(--ui-border)] bg-white p-6 text-sm font-semibold text-[var(--ui-muted)]">
+                Enquiry is currently closed for this course.
+              </div>
+            )}
             <div className="mt-4 rounded-2xl border border-[var(--ui-border)] bg-white p-5">
               <p className="text-sm font-bold text-[var(--ui-primary)]">Ready for admission?</p>
               <p className="mt-1 text-sm text-[var(--ui-muted)]">

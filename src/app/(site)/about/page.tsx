@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Clock3, GraduationCap, Users } from "lucide-react";
 import { INSTITUTE } from "@/config/institute";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { getPublicAboutContent } from "@/lib/public-content";
 
 const FACULTY = [
   {
@@ -15,7 +16,7 @@ const FACULTY = [
   {
     id: "managing-director",
     role: "Managing Director",
-    name: "Vishal Kumar",
+    name: "Vishal Verma",
     description: "Senior Microsoft Azure Cloud Engineer (NTT Data LTD), Ex Wipro. M.Tech (Computer Science), BITS Pilani.",
     image: "/about/vishal.jpeg",
     icon: "users",
@@ -50,7 +51,11 @@ const UNIQUE_FACULTY = FACULTY.filter(
   (member, index, list) => list.findIndex((item) => item.id === member.id) === index,
 );
 
-export default function AboutPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AboutPage() {
+  const about = await getPublicAboutContent();
+
   return (
     <div className="w-full bg-[var(--ui-surface)] min-h-screen">
       <section className="py-12 sm:py-32 relative overflow-hidden">
@@ -60,8 +65,8 @@ export default function AboutPage() {
           <div>
             <SectionHeading
               eyebrow="About Us"
-              title={`Welcome to ${INSTITUTE.name}`}
-              subtitle={`Bihar's premier computer training center dedicated to building professional careers through practical education.`}
+              title={about.title}
+              subtitle={about.description}
               centered
             />
           </div>
@@ -72,12 +77,27 @@ export default function AboutPage() {
             </h2>
             <div className="prose prose-lg text-[var(--ui-muted)] prose-p:leading-relaxed mx-auto text-center">
               <p>
-                <strong className="text-[var(--ui-secondary)] font-extrabold">{INSTITUTE.name}</strong> is a premier institute for Programming and Coding Classes located in {INSTITUTE.city}. We offer expert training in Python, Java, C, C++, Full-Stack Web Development, Data Analysis, Data Science, and AI.
+                <strong className="text-[var(--ui-secondary)] font-extrabold">{INSTITUTE.name}</strong>{" "}
+                {stripInstitutePrefix(about.introduction)}
               </p>
               <p className="mt-6">
-                We believe that theoretical knowledge must be paired with hands-on practice. That&apos;s why our state-of-the-art computer labs are designed to provide every student with the independent practice time they need to master their chosen technologies and secure successful placements.
+                {about.mission}
               </p>
+              <p className="mt-6">{about.vision}</p>
             </div>
+
+            {about.imageUrl ? (
+              <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-[var(--ui-border)] bg-white shadow-sm">
+                <Image
+                  src={about.imageUrl}
+                  alt={about.title}
+                  width={960}
+                  height={520}
+                  unoptimized={about.imageUrl.startsWith("http") || about.imageUrl.startsWith("/api/")}
+                  className="h-auto w-full object-cover"
+                />
+              </div>
+            ) : null}
 
             <div className="mt-16 border-t border-[var(--ui-border)] pt-12">
               <SectionHeading
@@ -133,15 +153,10 @@ export default function AboutPage() {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-8 max-w-5xl mx-auto">
-              {[
-                { title: "Practical Lab Training", desc: "1:1 computer ratio for hands-on experience." },
-                { title: "Online Admission Portal", desc: "Easy, paperless registration from anywhere." },
-                { title: "Mock & Final Exams", desc: "Online portal to prepare for final certifications." },
-                { title: "Govt. Recognized", desc: "Verifiable certificates useful for job placements." },
-              ].map((item) => (
+              {about.sections.map((item) => (
                 <div key={item.title} className="text-center sm:text-left">
                   <h3 className="text-xl font-extrabold text-[var(--ui-primary)] mb-2">{item.title}</h3>
-                  <p className="text-[var(--ui-muted)] text-sm leading-relaxed">{item.desc}</p>
+                  <p className="text-[var(--ui-muted)] text-sm leading-relaxed">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -150,6 +165,11 @@ export default function AboutPage() {
       </section>
     </div>
   );
+}
+
+function stripInstitutePrefix(value: string) {
+  const prefix = `${INSTITUTE.name} `;
+  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
 }
 
 function FacultyIcon({ icon }: { icon: string }) {

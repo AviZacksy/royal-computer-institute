@@ -17,11 +17,12 @@ export async function submitEnquiryAction(
     let courseInterest = (formData.get("courseInterest") as string) || undefined;
     if (courseId) {
       const course = await db.course.findFirst({
-        where: { id: courseId, instituteId: institute.id, isActive: true },
+        where: { id: courseId, instituteId: institute.id, isActive: true, isEnquiryEnabled: true },
       });
-      if (course) {
-        courseInterest = course.name;
+      if (!course) {
+        return { error: "Enquiry is currently closed for this course." };
       }
+      courseInterest = course.name;
     }
 
     const parsed = publicEnquirySchema.safeParse({

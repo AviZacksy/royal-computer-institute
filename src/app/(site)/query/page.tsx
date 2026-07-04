@@ -1,5 +1,5 @@
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
-import { getPublicCourses } from "@/lib/public-content";
+import { getPublicEnquiryCourses } from "@/lib/public-content";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ export default async function QueryPage({
   searchParams: Promise<{ courseId?: string }>;
 }) {
   const { courseId } = await searchParams;
-  const courses = await getPublicCourses();
+  const courses = await getPublicEnquiryCourses();
 
   return (
     <div className="w-full">

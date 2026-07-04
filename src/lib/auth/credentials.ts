@@ -8,7 +8,7 @@ import { createSession, destroySession, type SessionPayload } from "@/lib/auth/s
 import { buildStorageKey, getStorageProvider, STORAGE_BUCKETS, uploadFile } from "@/lib/storage";
 
 export type AuthResult =
-  | { ok: true; redirect: string }
+  | { ok: true; redirect: string; admissionNumber?: string }
   | { ok: false; error: string };
 
 export async function loginUser(

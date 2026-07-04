@@ -204,10 +204,7 @@ export default async function IdCardDocument({
           <div>Course Name: <span style={{fontWeight: 'normal'}}>{student.course?.name}</span></div>
           <div>Mobile Number: <span style={{fontWeight: 'normal'}}>{student.phone}</span></div>
           <div>Enrollment No: <span style={{fontWeight: 'normal'}}>{student.enrollmentNumber || "-"}</span></div>
-          <div>Batch: <span style={{fontWeight: 'normal'}}>{student.batchTime || "-"}</span></div>
-          {student.studentIdCards?.[0]?.validUntil && (
-            <div>Validity: <span style={{fontWeight: 'normal'}}>{new Date(student.studentIdCards[0].validUntil).toLocaleDateString('en-IN')}</span></div>
-          )}
+          <div>Batch: <span style={{fontWeight: 'normal'}}>{student.studentIdCards?.[0]?.batchTime || "Regular Batch"}</span></div>
         </div>
 
         <div className="id-sign">

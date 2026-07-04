@@ -12,6 +12,7 @@ export default async function ExamRegisterPage({
   const session = await requireStudentSession();
   if (!session) return null;
   const { examId } = await params;
+  if (!session.studentId) return notFound();
 
   const exam = await db.exam.findFirst({
     where: { id: examId, instituteId: session.instituteId, isActive: true },
@@ -23,8 +24,10 @@ export default async function ExamRegisterPage({
 
   const registration = await db.examRegistration.findUnique({
     where: { studentId_examId: { studentId: session.studentId, examId } },
-    include: { paymentSubmission: true },
   });
+  const paymentSubmission = registration?.paymentSubmissionId
+    ? await db.paymentSubmission.findUnique({ where: { id: registration.paymentSubmissionId } })
+    : null;
 
   if (registration?.isAccessEnabled) {
     redirect(`/student/exams/${examId}/take`);
@@ -33,7 +36,7 @@ export default async function ExamRegisterPage({
   return (
     <PanelPage title="Exam Registration" subtitle={`Register and pay fee for ${exam.title}`}>
       <div className="mx-auto max-w-lg">
-        {registration?.paymentSubmission?.status === "PENDING" ? (
+        {paymentSubmission?.status === "PENDING" ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center text-amber-800">
             <h3 className="mb-2 font-bold">Payment Under Review</h3>
             <p className="text-sm">

@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
+import { getStorageProvider, STORAGE_BUCKETS } from "@/lib/storage";
 // We no longer generate static PDFs, we use HTML templates instead.
 import type { ActionState } from "./types";
 

@@ -43,7 +43,7 @@ export default async function AdmitCardDocument({
             <div><span className="text-gray-500 block text-xs">Student Name</span><span className="font-semibold">{admitCard.student.name}</span></div>
             <div><span className="text-gray-500 block text-xs">Enrollment Number</span><span className="font-semibold">{admitCard.student.enrollmentNumber || "-"}</span></div>
             <div><span className="text-gray-500 block text-xs">Course</span><span className="font-semibold">{admitCard.student.course?.name || "-"}</span></div>
-            <div><span className="text-gray-500 block text-xs">Batch Time</span><span className="font-semibold">{admitCard.batchTime || "-"}</span></div>
+            <div><span className="text-gray-500 block text-xs">Exam Duration</span><span className="font-semibold">{admitCard.exam.durationMinutes} minutes</span></div>
           </div>
         </section>
 

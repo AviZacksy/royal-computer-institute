@@ -434,7 +434,7 @@ function FileDropzone({ id, label, required, accept = "image/*,application/pdf" 
   };
 
   return (
-    <Field label={label} htmlFor={id} required={required}>
+    <Field label={required ? `${label} *` : label} htmlFor={id}>
       <div 
         className={`group flex h-32 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-300 ${fileName ? "border-emerald-400 bg-emerald-50" : "border-slate-300 bg-slate-50 hover:border-[var(--ui-secondary)] hover:bg-blue-50"}`}
         onClick={() => inputRef.current?.click()}

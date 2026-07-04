@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 
 const FACULTY = [
   {
+    id: "director",
     role: "Director",
     name: INSTITUTE.directorName,
     description: "Academic leadership and institute operations.",
@@ -12,20 +13,42 @@ const FACULTY = [
     icon: "graduation",
   },
   {
+    id: "managing-director",
     role: "Managing Director",
-    name: "Royal Computer Institute",
-    description: "Admissions, administration, and student support.",
-    image: null,
+    name: "Vishal Kumar",
+    description: "Senior Microsoft Azure Cloud Engineer (NTT Data LTD), Ex Wipro. M.Tech (Computer Science), BITS Pilani.",
+    image: "/about/vishal.jpeg",
     icon: "users",
   },
   {
-    role: "Teachers",
-    name: "Expert Faculty Team",
-    description: "Practical lab training, course guidance, and exam preparation.",
-    image: null,
+    id: "vice-director",
+    role: "Vice Director",
+    name: "Sumit Shrivastava",
+    description: "BCA, Chandigarh University. Institute administration, student support, and academic coordination.",
+    image: "/about/vicedirector.jpeg",
+    icon: "users",
+  },
+  {
+    id: "vivek-teacher",
+    role: "Teacher",
+    name: "Vivek Kumar",
+    description: "Computer teacher focused on practical training, course guidance, and student preparation.",
+    image: "/about/vivekteacher.jpeg",
+    icon: "graduation",
+  },
+  {
+    id: "prince-teacher",
+    role: "Teacher",
+    name: "Prince Singh",
+    description: "Computer teacher focused on lab practice, fundamentals, and student mentoring.",
+    image: "/about/princeteacher.jpeg",
     icon: "graduation",
   },
 ];
+
+const UNIQUE_FACULTY = FACULTY.filter(
+  (member, index, list) => list.findIndex((item) => item.id === member.id) === index,
+);
 
 export default function AboutPage() {
   return (
@@ -64,17 +87,17 @@ export default function AboutPage() {
                 centered
               />
 
-              <div className="mt-10 grid gap-6 sm:grid-cols-3">
-                {FACULTY.map((member) => (
-                  <div key={member.role} className="rounded-xl border border-[var(--ui-border)] bg-white p-6 text-center shadow-sm">
-                    <div className="mx-auto mb-5 flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-50 text-[var(--ui-secondary)] shadow-lg ring-1 ring-gray-100">
+              <div className="mt-10 grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {UNIQUE_FACULTY.map((member) => (
+                  <div key={member.id} className="flex h-[460px] flex-col rounded-xl border border-[var(--ui-border)] bg-white p-5 text-center shadow-sm">
+                    <div className="mx-auto mb-5 flex h-[245px] w-[220px] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--ui-border)] bg-blue-50 text-[var(--ui-secondary)] shadow-sm">
                       {member.image ? (
                         <Image
                           src={member.image}
                           alt={member.name}
-                          width={128}
-                          height={128}
-                          className="h-full w-full object-cover"
+                          width={220}
+                          height={275}
+                          className="h-full w-full object-contain"
                         />
                       ) : (
                         <FacultyIcon icon={member.icon} />
@@ -86,7 +109,7 @@ export default function AboutPage() {
                     <p className="font-display text-xl font-extrabold text-[var(--ui-primary)]">
                       {member.name}
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-[var(--ui-muted)]">
+                    <p className="mt-2 line-clamp-4 text-sm leading-6 text-[var(--ui-muted)]">
                       {member.description}
                     </p>
                   </div>

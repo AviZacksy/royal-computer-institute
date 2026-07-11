@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getFileUrl } from "@/lib/storage";
 import { PrintButton } from "@/components/documents/PrintButton";
+import QRCode from "react-qr-code";
 
 export default async function CertificateDocument({
   params,
@@ -21,6 +22,8 @@ export default async function CertificateDocument({
   const durationText = /month/i.test(certificate.course.duration)
     ? certificate.course.duration
     : `${certificate.course.duration} MONTHS`;
+
+  const verificationUrl = `https://royalcomputer.in/verify/${certificate.id}`;
 
   return (
     <div className="print-wrapper" style={{
@@ -136,20 +139,35 @@ export default async function CertificateDocument({
           background: transparent;
         }
 
-        .photo-box img,
-        .signature-box img {
+        .photo-box img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
+        .signature-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
         .signature-box {
           position: absolute;
           z-index: 2;
-          right: 41mm;
-          bottom: 35mm;
-          width: 42mm;
-          height: 13mm;
+          right: 20mm;
+          bottom: 26mm;
+          width: 61mm;
+          height: 42mm;
+        }
+
+        .qr-box {
+          position: absolute;
+          z-index: 2;
+          left: 24mm;
+          bottom: 37mm;
+          width: 32mm;
+          height: 32mm;
+          background: white;
         }
 
       `}</style>
@@ -181,6 +199,16 @@ export default async function CertificateDocument({
         <div className="signature-box">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/signature.png" alt="Signature" style={{ objectFit: 'contain' }} />
+        </div>
+
+        <div className="qr-box" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <QRCode
+            value={verificationUrl}
+            size={256}
+            style={{ display: "block", width: "100%", height: "100%" }}
+            viewBox={`0 0 256 256`}
+            level="M"
+          />
         </div>
       </div>
     </div>

@@ -40,14 +40,14 @@ export default async function IdCardDocument({
     >
       <style>{`
         @page {
-          size: 54mm 86mm;
+          size: A4 portrait;
           margin: 0;
         }
 
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
           .no-print { display: none !important; }
-          .print-wrapper { margin: 0 !important; width: 54mm !important; height: 86mm !important; box-shadow: none !important; }
+          .print-wrapper { margin: 20mm !important; width: 54mm !important; height: 86mm !important; box-shadow: none !important; }
         }
 
         .id-overlay {

@@ -61,19 +61,19 @@ export default async function Home() {
         <div className="relative z-10 mx-auto w-full max-w-screen-xl px-4 mt-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             <div className="animate-fade-up animation-delay-700 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
-              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">5000+</p>
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">1000+</p>
               <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
                 Happy Students
               </p>
             </div>
             <div className="animate-fade-up animation-delay-800 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
-              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">50+</p>
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">30+</p>
               <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
                 Professional Courses
               </p>
             </div>
             <div className="animate-fade-up animation-delay-900 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
-              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">15+</p>
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">8+</p>
               <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
                 Years Experience
               </p>

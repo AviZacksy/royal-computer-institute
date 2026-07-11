@@ -53,10 +53,10 @@ body {
 }
 
 .animate-marquee-slow {
-  animation: marquee 30s linear infinite;
+  animation: marquee 60s linear infinite;
 }
 .animate-marquee2-slow {
-  animation: marquee2 30s linear infinite;
+  animation: marquee2 60s linear infinite;
 }
 
 @keyframes fade-up {

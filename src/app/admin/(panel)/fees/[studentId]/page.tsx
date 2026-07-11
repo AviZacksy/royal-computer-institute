@@ -136,15 +136,24 @@ export default async function AdminStudentFeeDetailPage({ params }: Props) {
               </span>,
               <span key="notes" className="text-xs text-[var(--ui-muted)]">{p.adminNotes || "—"}</span>,
               p.receipt ? (
-                <a
-                  key="receipt"
-                  href={`/api/receipts/${p.receipt.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-semibold text-[var(--ui-primary)] hover:underline"
-                >
-                  📄 Download
-                </a>
+                <div key="receipt" className="flex items-center gap-3">
+                  <a
+                    href={`/api/receipts/${p.receipt.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-[var(--ui-primary)] hover:underline"
+                  >
+                    📄 Download
+                  </a>
+                  <a
+                    href={`/documents/payment-slip/${p.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-emerald-600 hover:underline"
+                  >
+                    👁️ Preview
+                  </a>
+                </div>
               ) : (
                 <span key="no-receipt" className="text-xs text-[var(--ui-muted)]">—</span>
               ),

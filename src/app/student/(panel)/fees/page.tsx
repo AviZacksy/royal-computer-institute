@@ -147,16 +147,26 @@ export default async function StudentFeesPage() {
                       {statusLabels[p.status]}
                     </span>
                     {p.receipt ? (
-                      <a
-                        href={`/api/receipts/${p.receipt.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[var(--ui-primary)] shadow-sm transition-colors hover:bg-slate-50"
-                      >
-                        <ReceiptText className="h-3.5 w-3.5 text-[var(--ui-secondary)]" />
-                        Download Receipt
-                        <span className="text-[var(--ui-muted)]">#{p.receipt.receiptNumber}</span>
-                      </a>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <a
+                          href={`/api/receipts/${p.receipt.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[var(--ui-primary)] shadow-sm transition-colors hover:bg-slate-50"
+                        >
+                          <ReceiptText className="h-3.5 w-3.5 text-[var(--ui-secondary)]" />
+                          Download PDF
+                          <span className="text-[var(--ui-muted)]">#{p.receipt.receiptNumber}</span>
+                        </a>
+                        <a
+                          href={`/documents/payment-slip/${p.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-100"
+                        >
+                          👁️ Preview
+                        </a>
+                      </div>
                     ) : null}
                   </div>
                 </div>

@@ -181,14 +181,24 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
                     {p.receipt && (
                       <div>
                         <p className="text-xs font-bold text-[var(--ui-muted)]">Receipt</p>
-                        <a
-                          href={`/api/receipts/${p.receipt.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold text-[var(--ui-primary)] hover:underline"
-                        >
-                          📄 {p.receipt.receiptNumber}
-                        </a>
+                        <div className="flex items-center gap-3">
+                          <a
+                            href={`/api/receipts/${p.receipt.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-[var(--ui-primary)] hover:underline flex items-center gap-1"
+                          >
+                            📄 {p.receipt.receiptNumber}
+                          </a>
+                          <a
+                            href={`/documents/payment-slip/${p.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-emerald-600 hover:underline flex items-center gap-1"
+                          >
+                            👁️ Preview
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>

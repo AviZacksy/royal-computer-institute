@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { PrintButton } from "@/components/documents/PrintButton";
-import { MapPin, Phone, Mail } from "lucide-react";
 
 export default async function PaymentSlipDocument({
   params,
@@ -28,161 +27,152 @@ export default async function PaymentSlipDocument({
   const totalFee = feeRecord?.totalFee || 0;
   const paidFee = payment.amount;
   const dueAmount = feeRecord?.dueAmount || 0;
+  const fatherName = payment.student.fatherName || payment.student.motherName || "";
+  const paymentDate = payment.createdAt.toLocaleDateString('en-IN');
+  const paymentMode = payment.transactionId ? "ONLINE" : "CASH";
 
   return (
     <div className="print-wrapper" style={{
       width: '210mm',
-      height: '148mm', // A5 landscape (half A4)
-      backgroundColor: 'white',
-      padding: '10mm',
+      height: '140mm', // 21cm x 14cm
       position: 'relative',
-      margin: '0 auto',
+      margin: '40px auto',
       boxSizing: 'border-box',
       color: 'black',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
+      backgroundColor: 'white',
+      overflow: 'hidden',
     }}>
       <style>{`
-        .slip-border {
-           border: 2px solid #2e7d32; /* Green outer */
-           padding: 2px;
-           height: 100%;
-           box-sizing: border-box;
+        @page {
+          size: A4 portrait;
+          margin: 0;
         }
-        .slip-inner-border {
-           border: 2px solid #e65100; /* Orange inner */
-           height: 100%;
-           box-sizing: border-box;
-           padding: 20px;
-           position: relative;
-           display: flex;
-           flex-direction: column;
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          .no-print { display: none !important; }
+          .print-wrapper { margin: 0 !important; border: none !important; box-shadow: none !important; width: 210mm !important; height: 140mm !important; }
         }
-        .line-input {
-           border-bottom: 1px solid black;
-           display: inline-block;
-           font-weight: normal;
-           padding: 0 10px;
-           min-height: 1.2em;
+
+        .receipt-sheet {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: fill;
+          z-index: 0;
         }
-        .text-row {
-           font-size: 16px;
-           margin-bottom: 25px;
-           line-height: 1.5;
-           display: flex;
-           align-items: baseline;
-           white-space: nowrap;
+
+        .receipt-field {
+          position: absolute;
+          z-index: 2;
+          font-weight: 600;
+          font-size: 4mm;
+          color: #000;
+          white-space: nowrap;
         }
-        .bottom-bar {
-           position: absolute;
-           bottom: 10px;
-           left: 10px;
-           right: 10px;
-           display: flex;
-           justify-content: space-between;
-           border-top: 2px solid #e65100;
-           padding-top: 10px;
-           font-size: 12px;
-           color: #1a237e;
-           font-weight: bold;
+
+        /* POSITIONS FROM DEV TOOLS */
+        .field-student-name {
+          left: 100mm;
+          top: 56mm;
+          width: 80mm;
         }
-        .icon-text {
-           display: flex;
-           align-items: center;
-           gap: 5px;
+
+        .field-father-name {
+          left: 58mm;
+          top: 69mm;
+          width: 60mm;
+        }
+
+        .field-batch-time {
+          left: 148mm;
+          top: 69mm;
+          width: 40mm;
+        }
+
+        .field-total-fee {
+          left: 48mm;
+          top: 82mm;
+        }
+
+        .field-paid-fee {
+          left: 108mm;
+          top: 82mm;
+        }
+
+        .field-due-amount {
+          left: 170mm;
+          top: 82mm;
+        }
+
+        .field-date {
+          left: 35mm;
+          top: 95mm;
+        }
+
+        .field-payment-mode {
+          left: 120mm;
+          top: 95mm;
+        }
+
+        .signature-box {
+          position: absolute;
+          z-index: 2;
+          right: 31mm;
+          bottom: 17mm;
+          width: 40mm;
+          height: 31mm;
+        }
+        .signature-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .stamp-box {
+          position: absolute;
+          z-index: 1;
+          right: 14mm;
+          bottom: 26mm;
+          width: 35mm;
+          height: 20mm;
+          opacity: 0.85;
+        }
+        .stamp-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
       `}</style>
       
-      <div className="no-print" style={{ position: 'absolute', top: '-50px', right: '0' }}>
+      <div className="no-print" style={{ position: 'absolute', top: '-40px', right: '0', zIndex: 100 }}>
         <PrintButton />
       </div>
 
-      <div className="slip-border">
-        <div className="slip-inner-border">
-          
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              {/* Logo Placeholder */}
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', border: '2px solid #e65100', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                 <img src="/logo/logo.jpeg" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div>
-                <h1 style={{ margin: 0, fontSize: '36px', color: '#e65100', fontFamily: 'Impact, sans-serif', letterSpacing: '1px' }}>ROYAL COMPUTER</h1>
-                <h1 style={{ margin: 0, fontSize: '36px', color: '#2e7d32', fontFamily: 'Impact, sans-serif', letterSpacing: '1px', marginTop: '-5px' }}>INSTITUTE</h1>
-              </div>
-            </div>
-          </div>
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="receipt-sheet" src="/online-receipt.jpg" alt="Receipt design" />
 
-          {/* Payment Slip Badge */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
-             <div style={{ 
-                background: 'linear-gradient(to right, #1565c0, #00838f)', 
-                color: 'white', 
-                padding: '5px 40px', 
-                borderRadius: '20px', 
-                fontSize: '20px', 
-                fontWeight: 'bold',
-                letterSpacing: '1px'
-             }}>
-                PAYMENT SLIP
-             </div>
-          </div>
+        <div className="receipt-field field-student-name">{payment.student.name}</div>
+        <div className="receipt-field field-father-name">{fatherName}</div>
+        <div className="receipt-field field-batch-time"></div>
+        <div className="receipt-field field-total-fee">Rs. {totalFee}</div>
+        <div className="receipt-field field-paid-fee">Rs. {paidFee}</div>
+        <div className="receipt-field field-due-amount">Rs. {dueAmount}</div>
+        <div className="receipt-field field-date">{paymentDate}</div>
+        <div className="receipt-field field-payment-mode">{paymentMode}</div>
 
-          {/* Form Fields */}
-          <div className="text-row">
-            <span>Received with thanks from Mr./Mrs. :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px' }}>{payment.student.name}</span>
-          </div>
+        <div className="stamp-box">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/stamp.png" alt="Stamp" />
+        </div>
 
-          <div className="text-row">
-            <span>SO/DO/CO Mr. :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px', marginRight: '20px' }}>{payment.student.fatherName || payment.student.motherName || ""}</span>
-            <span>Batch Time :</span>
-            <span className="line-input" style={{ width: '150px', marginLeft: '10px' }}></span>
-          </div>
-
-          <div className="text-row">
-            <span>Total Fee :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px', marginRight: '20px' }}>Rs. {totalFee}</span>
-            <span>Paid Fee :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px', marginRight: '20px' }}>Rs. {paidFee}</span>
-            <span>Due Amount :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px' }}>Rs. {dueAmount}</span>
-          </div>
-
-          <div className="text-row">
-            <span>Date :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px', marginRight: '20px' }}>{payment.createdAt.toLocaleDateString('en-IN')}</span>
-            <span>Payment Mode :</span>
-            <span className="line-input" style={{ flexGrow: 1, marginLeft: '10px' }}>{payment.paymentType}</span>
-            <span>.</span>
-          </div>
-
-          {/* Footer Area */}
-          <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px' }}>
-            <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
-               *Students can make next payment on their online account<br/>
-               after logging in to <a href="https://royalcomputerit.in" style={{ color: '#0288d1', textDecoration: 'none', fontWeight: 'bold' }}>royalcomputerit.in</a> using their id password.
-            </div>
-            <div style={{ textAlign: 'center' }}>
-               <div style={{ borderBottom: '1px solid black', width: '150px', marginBottom: '5px' }}></div>
-               <div style={{ fontSize: '14px' }}>Accounts Sign/Stamp</div>
-            </div>
-          </div>
-
-          {/* Bottom Bar Info */}
-          <div className="bottom-bar">
-             <div className="icon-text"><MapPin size={14} /> Bhawanipur Zirat, Infront of Stone Clinic, Motihari-845401</div>
-             <div>|</div>
-             <div className="icon-text"><Phone size={14} /> +91 73527 94558 &nbsp; +91 62095 52882</div>
-             <div>|</div>
-             <div className="icon-text"><Mail size={14} /> instituteroyalcomputer52@gmail.com</div>
-          </div>
-
+        <div className="signature-box">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/signature.png" alt="Signature" />
         </div>
       </div>
-
     </div>
   );
 }

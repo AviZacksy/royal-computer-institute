@@ -113,52 +113,83 @@ export default async function AdminStudentFeeDetailPage({ params }: Props) {
           Payment History ({student.payments.length})
         </h2>
         <DataTable
-          headers={["Date", "Amount", "Transaction ID", "Status", "Remarks", "Receipt"]}
-          rows={paymentsWithUrls.map((p) => {
-            const statusStyles: Record<string, string> = {
-              PENDING: "border-amber-200 bg-amber-50 text-amber-800",
-              VERIFIED: "border-green-200 bg-green-50 text-green-800",
-              REJECTED: "border-red-200 bg-red-50 text-red-800",
-            };
-            return [
-              new Date(p.createdAt).toLocaleDateString("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              }),
-              <span key="amt" className="font-semibold">{formatCurrency(p.amount)}</span>,
-              <span key="txn" className="font-mono text-xs">{p.transactionId || "—"}</span>,
-              <span
-                key="status"
-                className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusStyles[p.status]}`}
-              >
-                {p.status === "PENDING" ? "Pending" : p.status === "VERIFIED" ? "Verified" : "Rejected"}
-              </span>,
-              <span key="notes" className="text-xs text-[var(--ui-muted)]">{p.adminNotes || "—"}</span>,
-              p.receipt ? (
-                <div key="receipt" className="flex items-center gap-3">
-                  <a
-                    href={`/api/receipts/${p.receipt.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-[var(--ui-primary)] hover:underline"
-                  >
-                    📄 Download
-                  </a>
-                  <a
-                    href={`/documents/payment-slip/${p.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-emerald-600 hover:underline"
-                  >
-                    👁️ Preview
-                  </a>
-                </div>
-              ) : (
-                <span key="no-receipt" className="text-xs text-[var(--ui-muted)]">—</span>
-              ),
-            ];
-          })}
+          headers={["Date", "Amount", "Balance", "Transaction ID", "Status", "Remarks", "Receipt"]}
+          rows={(() => {
+            let runningPaid = 0;
+            // Reverse to calculate from oldest to newest
+            const historyWithBalance = [...paymentsWithUrls].reverse().map((p) => {
+              if (p.status === "VERIFIED") {
+                runningPaid += p.amount;
+              }
+              const balanceDue = fee ? Math.max(0, fee.totalFee - runningPaid) : 0;
+              return { ...p, runningPaid, balanceDue };
+            }).reverse();
+
+            return historyWithBalance.map((p, idx) => {
+              const statusStyles: Record<string, string> = {
+                PENDING: "border-amber-200 bg-amber-50 text-amber-800",
+                VERIFIED: "border-green-200 bg-green-50 text-green-800",
+                REJECTED: "border-red-200 bg-red-50 text-red-800",
+              };
+              const isLatest = idx === 0;
+              
+              return [
+                <div key="date" className="flex items-center gap-2">
+                  <span>
+                    {new Date(p.createdAt).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                  {isLatest && (
+                    <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700">Latest</span>
+                  )}
+                </div>,
+                <span key="amt" className="font-semibold">{formatCurrency(p.amount)}</span>,
+                <div key="bal" className="flex flex-col">
+                  {p.status === "VERIFIED" ? (
+                    <>
+                      <span className="text-xs font-semibold text-green-700">Paid: {formatCurrency(p.runningPaid)}</span>
+                      <span className="text-[10px] font-medium text-[var(--ui-muted)]">Due: {formatCurrency(p.balanceDue)}</span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-[var(--ui-muted)]">—</span>
+                  )}
+                </div>,
+                <span key="txn" className="font-mono text-xs">{p.transactionId || "—"}</span>,
+                <span
+                  key="status"
+                  className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusStyles[p.status]}`}
+                >
+                  {p.status === "PENDING" ? "Pending" : p.status === "VERIFIED" ? "Verified" : "Rejected"}
+                </span>,
+                <span key="notes" className="text-xs text-[var(--ui-muted)]">{p.adminNotes || "—"}</span>,
+                p.receipt ? (
+                  <div key="receipt" className="flex items-center gap-3">
+                    <a
+                      href={`/documents/payment-slip/${p.id}?print=1`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-[var(--ui-primary)] hover:underline"
+                    >
+                      📄 Download
+                    </a>
+                    <a
+                      href={`/documents/payment-slip/${p.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-emerald-600 hover:underline"
+                    >
+                      👁️ Preview
+                    </a>
+                  </div>
+                ) : (
+                  <span key="no-receipt" className="text-xs text-[var(--ui-muted)]">—</span>
+                ),
+              ];
+            });
+          })()}
         />
       </div>
     </PanelPage>

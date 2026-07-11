@@ -149,7 +149,7 @@ export default async function StudentFeesPage() {
                     {p.receipt ? (
                       <div className="flex flex-wrap items-center gap-2">
                         <a
-                          href={`/api/receipts/${p.receipt.id}`}
+                          href={`/documents/payment-slip/${p.id}?print=1`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[var(--ui-primary)] shadow-sm transition-colors hover:bg-slate-50"

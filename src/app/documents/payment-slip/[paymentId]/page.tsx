@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { AutoPrint } from "@/components/documents/AutoPrint";
 import { PrintButton } from "@/components/documents/PrintButton";
 
 export default async function PaymentSlipDocument({
   params,
+  searchParams,
 }: {
   params: Promise<{ paymentId: string }>;
+  searchParams: Promise<{ print?: string }>;
 }) {
   const { paymentId } = await params;
+  const { print } = await searchParams;
   
   const payment = await db.paymentSubmission.findUnique({
     where: { id: paymentId },
@@ -24,9 +28,31 @@ export default async function PaymentSlipDocument({
     where: { studentId: payment.studentId }
   });
 
+  // Calculate historical balance
+  const allPayments = await db.paymentSubmission.findMany({
+    where: { studentId: payment.studentId },
+    orderBy: { createdAt: "asc" }
+  });
+
+  let runningPaid = 0;
+  let targetPaidSoFar = 0;
+  for (const p of allPayments) {
+    if (p.status === "VERIFIED") {
+      runningPaid += p.amount;
+    }
+    if (p.id === paymentId) {
+      if (p.status !== "VERIFIED") {
+        targetPaidSoFar = runningPaid + p.amount;
+      } else {
+        targetPaidSoFar = runningPaid;
+      }
+      break;
+    }
+  }
+
   const totalFee = feeRecord?.totalFee || 0;
   const paidFee = payment.amount;
-  const dueAmount = feeRecord?.dueAmount || 0;
+  const dueAmount = Math.max(0, totalFee - targetPaidSoFar);
   const fatherName = payment.student.fatherName || payment.student.motherName || "";
   const paymentDate = payment.createdAt.toLocaleDateString('en-IN');
   const paymentMode = payment.transactionId ? "ONLINE" : "CASH";
@@ -43,15 +69,37 @@ export default async function PaymentSlipDocument({
       backgroundColor: 'white',
       overflow: 'hidden',
     }}>
+      <AutoPrint enabled={print === "1"} />
       <style>{`
         @page {
           size: A4 portrait;
           margin: 0;
         }
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          html, body {
+            width: 210mm !important;
+            height: 297mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
           .no-print { display: none !important; }
-          .print-wrapper { margin: 0 !important; border: none !important; box-shadow: none !important; width: 210mm !important; height: 140mm !important; }
+          .print-wrapper {
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 210mm !important;
+            height: 140mm !important;
+            transform: none !important;
+            rotate: 0deg !important;
+            writing-mode: horizontal-tb !important;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+          }
         }
 
         .receipt-sheet {
@@ -75,45 +123,45 @@ export default async function PaymentSlipDocument({
         /* POSITIONS FROM DEV TOOLS */
         .field-student-name {
           left: 100mm;
-          top: 56mm;
+          top: 52mm;
           width: 80mm;
         }
 
         .field-father-name {
-          left: 58mm;
-          top: 69mm;
+          left: 54mm;
+          top: 64mm;
           width: 60mm;
         }
 
         .field-batch-time {
           left: 148mm;
-          top: 69mm;
+          top: 64mm;
           width: 40mm;
         }
 
         .field-total-fee {
-          left: 48mm;
-          top: 82mm;
+          left: 49mm;
+          top: 77mm;
         }
 
         .field-paid-fee {
           left: 108mm;
-          top: 82mm;
+          top: 77mm;
         }
 
         .field-due-amount {
           left: 170mm;
-          top: 82mm;
+          top: 77mm;
         }
 
         .field-date {
           left: 35mm;
-          top: 95mm;
+          top: 89mm;
         }
 
         .field-payment-mode {
           left: 120mm;
-          top: 95mm;
+          top: 89mm;
         }
 
         .signature-box {

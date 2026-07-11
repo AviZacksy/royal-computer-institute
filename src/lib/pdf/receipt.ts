@@ -5,6 +5,7 @@ import path from "path";
 export type ReceiptData = {
   receiptNumber: string;
   studentName: string;
+  fatherName: string;
   enrollmentNumber: string;
   courseName: string;
   amount: number;
@@ -19,15 +20,11 @@ export type ReceiptData = {
 };
 
 function formatCurrency(n: number) {
-  return `${n.toLocaleString("en-IN")}/-`;
+  return `Rs. ${n}`;
 }
 
 function formatDate(d: Date) {
-  return d.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).replace(/\//g, "-");
+  return d.toLocaleDateString("en-IN");
 }
 
 export async function generateReceiptPdf(data: ReceiptData): Promise<Buffer> {
@@ -43,36 +40,65 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Buffer> {
   if (!bgPath) throw new Error("Receipt design image not found in public folder");
 
   const bgImage = await doc.embedJpg(fs.readFileSync(bgPath));
-  const page = doc.addPage([bgImage.width, bgImage.height]);
+  const mmToPt = (mm: number) => (mm * 72) / 25.4;
+  const pageWidth = mmToPt(210);
+  const pageHeight = mmToPt(140);
+  const page = doc.addPage([pageWidth, pageHeight]);
   page.drawImage(bgImage, {
     x: 0,
     y: 0,
-    width: bgImage.width,
-    height: bgImage.height,
+    width: pageWidth,
+    height: pageHeight,
   });
 
   const black = rgb(0.02, 0.02, 0.02);
   const fitText = (text: string, maxChars: number) =>
     text.length > maxChars ? `${text.slice(0, maxChars - 3)}...` : text;
 
-  const text = (value: string, x: number, yFromTop: number, size = 24) => {
+  const mmFontSize = mmToPt(4);
+
+  const text = (value: string, xMm: number, yMmFromTop: number, size = mmFontSize) => {
     page.drawText(value, {
-      x,
-      y: bgImage.height - yFromTop,
+      x: mmToPt(xMm),
+      y: pageHeight - mmToPt(yMmFromTop) - size * 0.75,
       size,
       font: boldFont,
       color: black,
     });
   };
 
-  text(fitText(data.studentName, 42), 690, 444, 22);
-  text("-", 385, 540, 22);
-  text(fitText(data.courseName, 13), 1288, 540, 20);
-  text(formatCurrency(data.totalFee), 310, 638, 22);
-  text(formatCurrency(data.amount), 775, 638, 22);
-  text(formatCurrency(data.dueAmount), 1260, 638, 22);
-  text(formatDate(data.paymentDate), 240, 736, 22);
-  text(data.transactionId ? "Online" : "Cash", 870, 736, 22);
+  text(fitText(data.studentName, 42), 100, 52);
+  text(fitText(data.fatherName || "-", 42), 54, 64);
+  text(formatCurrency(data.totalFee), 49, 77);
+  text(formatCurrency(data.amount), 108, 77);
+  text(formatCurrency(data.dueAmount), 170, 77);
+  text(formatDate(data.paymentDate), 35, 89);
+  text(data.transactionId ? "ONLINE" : "CASH", 120, 89);
+
+  const stampPath = path.join(process.cwd(), "public", "stamp.png");
+  if (fs.existsSync(stampPath)) {
+    const stampBytes = fs.readFileSync(stampPath);
+    const stampImg = await doc.embedPng(stampBytes);
+    page.drawImage(stampImg, {
+      x: pageWidth - mmToPt(14 + 35),
+      y: mmToPt(26),
+      width: mmToPt(35),
+      height: mmToPt(20),
+      opacity: 0.85,
+    });
+  }
+
+  const sigPath = path.join(process.cwd(), "public", "signature.png");
+  if (fs.existsSync(sigPath)) {
+    const sigBytes = fs.readFileSync(sigPath);
+    const sigImg = await doc.embedPng(sigBytes);
+    page.drawImage(sigImg, {
+      x: pageWidth - mmToPt(31 + 40),
+      y: mmToPt(17),
+      width: mmToPt(40),
+      height: mmToPt(31),
+    });
+  }
 
   const bytes = await doc.save();
   return Buffer.from(bytes);

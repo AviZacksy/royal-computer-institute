@@ -123,10 +123,10 @@ export async function addManualPaymentAction(
       data: { receivedAmount: newReceived, dueAmount: newDue },
     });
 
-    // Generate receipt PDF
     await generateAndSaveReceipt({
       paymentId: payment.id,
       studentName: student.name,
+      fatherName: student.fatherName || student.motherName || "",
       enrollmentNumber: student.enrollmentNumber ?? "",
       courseName: student.course?.name ?? "N/A",
       amount,
@@ -233,10 +233,10 @@ export async function verifyPaymentAction(
           }),
         ]);
 
-        // Generate receipt PDF
         await generateAndSaveReceipt({
           paymentId,
           studentName: payment.student.name,
+          fatherName: payment.student.fatherName || payment.student.motherName || "",
           enrollmentNumber: payment.student.enrollmentNumber ?? "",
           courseName: payment.student.course?.name ?? "N/A",
           amount: payment.amount,
@@ -281,6 +281,7 @@ export async function verifyPaymentAction(
 async function generateAndSaveReceipt(opts: {
   paymentId: string;
   studentName: string;
+  fatherName: string;
   enrollmentNumber: string;
   courseName: string;
   amount: number;
@@ -300,6 +301,7 @@ async function generateAndSaveReceipt(opts: {
   const pdfBuffer = await generateReceiptPdf({
     receiptNumber,
     studentName: opts.studentName,
+    fatherName: opts.fatherName,
     enrollmentNumber: opts.enrollmentNumber,
     courseName: opts.courseName,
     amount: opts.amount,

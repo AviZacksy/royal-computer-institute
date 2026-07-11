@@ -43,9 +43,32 @@ export default async function CertificateDocument({
           margin: 0;
         }
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          html, body {
+            width: 297mm !important;
+            height: 210mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            overflow: hidden !important;
+          }
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
           .no-print { display: none !important; }
-          .print-wrapper { margin: 0 !important; border: none !important; box-shadow: none !important; width: 297mm !important; height: 210mm !important; }
+          .print-wrapper {
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 297mm !important;
+            height: 210mm !important;
+            transform: none !important;
+            transform-origin: top left !important;
+            rotate: 0deg !important;
+            writing-mode: horizontal-tb !important;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+          }
         }
 
         .certificate-sheet {

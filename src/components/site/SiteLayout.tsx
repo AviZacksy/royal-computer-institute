@@ -4,6 +4,7 @@ import { ChevronDown, Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { NAV_ITEMS } from "@/components/site/nav";
 import { MobileNav } from "@/components/site/mobile/MobileNav";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
+import { MarqueeBanner } from "@/components/site/MarqueeBanner";
 import { INSTITUTE, WHATSAPP_LINK } from "@/config/institute";
 
 export function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -11,30 +12,45 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex-1 w-full flex flex-col bg-white">
       <header className="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white shadow-md border-b border-gray-200">
         <AnnouncementBar />
+        <MarqueeBanner />
         <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-8">
           <div className="flex h-[88px] items-center justify-between gap-4">
-            <div className="flex items-center gap-2 min-w-0">
-              <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-                <Image src="/logo/logo.jpeg" alt={INSTITUTE.name} width={48} height={48} className="rounded-full shadow-sm border border-white/20 object-cover" />
-                <span className="min-w-0 block">
-                  <span className="block font-display text-sm sm:text-[23px] font-black leading-tight text-gray-950 tracking-normal truncate">
-                    {INSTITUTE.name}
-                  </span>
-                  <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-gray-600 sm:text-[12px]">
-                    <span className="block truncate">ISO IAF 9001:2015 Certificate Institute</span>
-                    <span className="block truncate">Reg. Under MSME Gov. Of India</span>
-                  </span>
+            <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-3 sm:gap-4 hover:opacity-90 transition-opacity">
+                <Image src="/logo/logo.jpeg" alt={INSTITUTE.name} width={76} height={76} className="rounded-full shadow-sm border border-white/20 object-cover w-12 h-12 sm:w-[76px] sm:h-[76px]" />
+                <span className="block font-display text-[17px] sm:text-[34px] font-black leading-tight text-gray-950 tracking-normal">
+                  {INSTITUTE.name}
                 </span>
               </Link>
             </div>
+            
+            <div className="flex items-center gap-6 shrink-0">
+              <div className="hidden sm:block text-right">
+                <span className="block text-[15px] font-semibold leading-relaxed text-gray-600">
+                  ISO IAF 9001:2015 Certified Institute
+                </span>
+                <span className="block text-[15px] font-semibold leading-relaxed text-gray-600">
+                  Reg. Under MSME Gov. Of India
+                </span>
+              </div>
+              <div className="lg:hidden">
+                <MobileNav items={NAV_ITEMS} />
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <nav className="hidden lg:flex items-center gap-8">
-              {NAV_ITEMS.map((item) => (
+        {/* Secondary Navigation Row (Desktop Only) */}
+        <div className="hidden lg:block border-t border-gray-100 bg-white/95 backdrop-blur">
+          <div className="mx-auto w-full max-w-screen-2xl px-4 lg:px-8">
+            <div className="flex items-center justify-between py-2.5">
+              <nav className="flex items-center gap-8">
+                {NAV_ITEMS.map((item) => (
                 item.children?.length ? (
-                  <div key={item.href} className="group relative py-2">
+                  <div key={item.href} className="group relative py-1">
                     <Link
                       href={item.href}
-                      className="flex items-center gap-1 text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900"
+                      className="flex items-center gap-1 text-[16px] font-bold text-gray-700 transition-colors hover:text-gray-900"
                     >
                       {item.label}
                       <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
@@ -55,35 +71,34 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="text-[18px] font-bold text-gray-700 transition-colors hover:text-gray-900 relative group py-2"
+                    className="text-[16px] font-bold text-gray-700 transition-colors hover:text-gray-900 relative group py-1"
                   >
                     {item.label}
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
                   </Link>
                 )
               ))}
-            </nav>
-
-            <div className="flex items-center gap-4 shrink-0">
-              <Link
-                href="/student-login"
-                className="hidden sm:inline-flex items-center justify-center h-12 px-6 rounded-full bg-gray-100 text-[15px] font-bold text-gray-900 hover:bg-gray-200 transition-all"
-              >
-                Student Login
-              </Link>
-              <Link
-                href="/admission"
-                className="hidden sm:inline-flex items-center justify-center h-12 px-7 rounded-full bg-[var(--ui-accent)] text-[15px] font-extrabold text-[var(--ui-primary)] shadow-xl shadow-[var(--ui-accent)]/20 hover:scale-105 transition-all"
-              >
-                Student Admission
-              </Link>
-              <MobileNav items={NAV_ITEMS} />
+              </nav>
+              <div className="flex items-center gap-4 shrink-0">
+                <Link
+                  href="/student-login"
+                  className="inline-flex items-center justify-center h-11 px-6 rounded-full bg-gray-100 text-[15px] font-bold text-gray-900 hover:bg-gray-200 transition-all"
+                >
+                  Student Login
+                </Link>
+                <Link
+                  href="/admission"
+                  className="inline-flex items-center justify-center h-11 px-7 rounded-full bg-[var(--ui-accent)] text-[15px] font-extrabold text-[var(--ui-primary)] shadow-xl shadow-[var(--ui-accent)]/20 hover:scale-105 transition-all"
+                >
+                  Student Admission
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 w-full flex flex-col pt-[88px] sm:pt-[124px]">
+      <main className="flex-1 w-full flex flex-col pt-[88px] sm:pt-[124px] lg:pt-[168px]">
 
         
         {children}

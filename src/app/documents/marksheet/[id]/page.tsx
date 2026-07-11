@@ -16,11 +16,22 @@ export default async function MarksheetDocument({
   if (!marksheet) return notFound();
 
   const percentage = (marksheet.obtainedMarks / marksheet.totalMarks) * 100;
-  
-  let grade = "C";
-  if (percentage >= 85) grade = "A+";
-  else if (percentage >= 70) grade = "A";
-  else if (percentage >= 55) grade = "B";
+  const grade = marksheet.grade || "C";
+  const formattedDate = marksheet.generatedAt.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const dob = marksheet.student.dateOfBirth
+    ? marksheet.student.dateOfBirth.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "-";
+  const durationText = /month/i.test(marksheet.exam.course.duration)
+    ? marksheet.exam.course.duration
+    : `${marksheet.exam.course.duration} Months`;
 
   return (
     <div className="print-wrapper" style={{
@@ -32,8 +43,7 @@ export default async function MarksheetDocument({
       color: 'black',
       fontFamily: 'Arial, sans-serif',
       padding: '0',
-      /* The exact blank marksheet image goes here */
-      backgroundImage: 'url(/marksheet-bg.jpg)',
+      backgroundImage: 'url(/marksheet.jpg)',
       backgroundSize: '100% 100%',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
@@ -51,126 +61,172 @@ export default async function MarksheetDocument({
           z-index: 10;
         }
 
-        /* Estimated Positions for Marksheet Data Overlay */
+        @page {
+          size: A4 portrait;
+          margin: 0;
+        }
+
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          .no-print { display: none !important; }
+          .print-wrapper { margin: 0 !important; box-shadow: none !important; width: 210mm !important; height: 297mm !important; min-height: 297mm !important; }
+        }
+
+        .mark-data-overlay div {
+          color: #111;
+          line-height: 1.1;
+          white-space: nowrap;
+        }
+
         .m-reg {
           position: absolute;
-          top: 13%;
-          left: 17%;
+          top: 12.7%;
+          left: 11.5%;
           font-weight: bold;
-          font-size: 12px;
+          font-size: 11px;
         }
         .m-sl {
           position: absolute;
-          top: 13%;
-          left: 49%;
+          top: 12.7%;
+          right: 12.5%;
           font-weight: bold;
-          font-size: 12px;
+          font-size: 11px;
         }
 
         .m-student {
           position: absolute;
-          top: 30.5%;
-          left: 26%;
-          width: 25%;
+          top: 29.3%;
+          left: 17.5%;
+          width: 32%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         .m-father {
           position: absolute;
-          top: 32.5%;
-          left: 26%;
-          width: 25%;
+          top: 31.35%;
+          left: 17.5%;
+          width: 32%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         .m-mother {
           position: absolute;
-          top: 34.5%;
-          left: 26%;
-          width: 25%;
+          top: 33.35%;
+          left: 17.5%;
+          width: 32%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         
         .m-course {
           position: absolute;
-          top: 30.5%;
-          left: 71%;
-          width: 20%;
+          top: 29.3%;
+          left: 65%;
+          width: 24%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 11px;
         }
         .m-duration {
           position: absolute;
-          top: 32.5%;
-          left: 71%;
-          width: 20%;
+          top: 31.35%;
+          left: 65%;
+          width: 24%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 11px;
         }
         .m-dob {
           position: absolute;
-          top: 34.5%;
-          left: 71%;
-          width: 20%;
+          top: 33.35%;
+          left: 65%;
+          width: 24%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 11px;
         }
 
         /* Table Data */
         .m-table-subject {
           position: absolute;
-          top: 45%;
-          left: 9%;
-          width: 40%;
+          top: 44.4%;
+          left: 12%;
+          width: 42%;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         
         .m-table-obj {
           position: absolute;
-          top: 45%;
-          left: 54.5%;
-          width: 8%;
+          top: 44.4%;
+          left: 59.8%;
+          width: 6%;
           text-align: center;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         .m-table-prac {
           position: absolute;
-          top: 45%;
-          left: 67%;
-          width: 8%;
+          top: 44.4%;
+          left: 69.9%;
+          width: 6%;
           text-align: center;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         .m-table-total-row {
           position: absolute;
-          top: 45%;
+          top: 44.4%;
           left: 80%;
-          width: 10%;
+          width: 6%;
           text-align: center;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
         }
         
         .m-table-final-total {
           position: absolute;
-          top: 67.5%;
+          top: 62.9%;
           left: 80%;
-          width: 10%;
+          width: 6%;
           text-align: center;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 12px;
+        }
+
+        .m-total-marks {
+          position: absolute;
+          top: 44.4%;
+          left: 88%;
+          width: 6%;
+          text-align: center;
+          font-weight: bold;
+          font-size: 12px;
+        }
+
+        .m-final-total-marks {
+          position: absolute;
+          top: 62.9%;
+          left: 88%;
+          width: 6%;
+          text-align: center;
+          font-weight: bold;
+          font-size: 12px;
+        }
+
+        .m-grade {
+          position: absolute;
+          bottom: 16.3%;
+          right: 14.4%;
+          width: 8%;
+          text-align: center;
+          font-weight: bold;
+          font-size: 13px;
         }
 
         .m-result-date {
           position: absolute;
-          bottom: 8.5%;
-          left: 17%;
+          bottom: 5.8%;
+          left: 12.5%;
           font-weight: bold;
-          font-size: 12px;
+          font-size: 10px;
         }
 
         .m-qr {
@@ -186,10 +242,6 @@ export default async function MarksheetDocument({
         <PrintButton />
       </div>
 
-      <div className="no-print" style={{ position: 'absolute', top: '-60px', left: '0', background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '5px', fontSize: '12px', fontWeight: 'bold' }}>
-        INSTRUCTION: Save a completely blank version of the marksheet PDF as an image and place it at "public/marksheet-bg.jpg" for this to work perfectly.
-      </div>
-
       <div className="mark-data-overlay">
         
         <div className="m-reg">{marksheet.student.enrollmentNumber || "-"}</div>
@@ -197,22 +249,25 @@ export default async function MarksheetDocument({
         
         {/* Student Details */}
         <div className="m-student">{marksheet.student.name}</div>
-        <div className="m-father">-</div>
-        <div className="m-mother">-</div>
+        <div className="m-father">{marksheet.student.fatherName || "-"}</div>
+        <div className="m-mother">{marksheet.student.motherName || "-"}</div>
         
         <div className="m-course">{marksheet.exam.course.name}</div>
-        <div className="m-duration">{marksheet.exam.course.duration} Months</div>
-        <div className="m-dob">-</div>
+        <div className="m-duration">{durationText}</div>
+        <div className="m-dob">{dob}</div>
         
         {/* Statement of Marks */}
         <div className="m-table-subject">{marksheet.exam.title}</div>
-        <div className="m-table-obj">-</div>
+        <div className="m-table-obj">{marksheet.obtainedMarks}</div>
         <div className="m-table-prac">-</div>
         <div className="m-table-total-row">{marksheet.obtainedMarks}</div>
+        <div className="m-total-marks">{marksheet.totalMarks}</div>
         
         <div className="m-table-final-total">{marksheet.obtainedMarks}</div>
+        <div className="m-final-total-marks">{marksheet.totalMarks}</div>
+        <div className="m-grade">{grade} ({percentage.toFixed(1)}%)</div>
         
-        <div className="m-result-date">{new Date().toLocaleDateString('en-IN')}</div>
+        <div className="m-result-date">{formattedDate}</div>
         
         {/* QR Box Placeholder */}
         <div className="m-qr"></div>

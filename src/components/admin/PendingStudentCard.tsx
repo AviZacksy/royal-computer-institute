@@ -43,12 +43,12 @@ export function PendingStudentCard({
             <p className="font-extrabold text-[var(--ui-primary)]">{student.name}</p>
             <StatusBadge status="PENDING" />
             <a 
-              href={`/documents/admission/${student.id}`} 
+              href={`/admin/students/${student.id}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xs font-semibold text-blue-600 hover:underline ml-2"
+              className="text-xs font-semibold text-[var(--ui-secondary)] hover:underline ml-2"
             >
-              View Form
+              View Profile
             </a>
           </div>
           <p className="mt-1 text-sm text-[var(--ui-muted)]">{student.email}</p>

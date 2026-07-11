@@ -183,6 +183,9 @@ export async function registerStudent(data: {
             aadhaarStorageKey: aadhaarCard.key,
             signatureStorageKey: signature.key,
             admissionFormStorageKey: admissionFormKey,
+            admissionDetails: {
+              aadhaarNumber: data.aadhaarNumber,
+            },
             courseId: course.id,
             status: "PENDING",
           },

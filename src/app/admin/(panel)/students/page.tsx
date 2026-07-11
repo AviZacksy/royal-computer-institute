@@ -39,23 +39,25 @@ export default async function AdminStudentsPage() {
       </div>
 
       <DataTable
-        headers={["Name", "Email", "Status", "Enrollment", "Course", "Assign"]}
+        headers={["Name", "Email", "Status", "Enrollment", "Course", "Actions"]}
         rows={students.map((s) => [
           s.name,
           s.user.email,
           <StatusBadge key={`st-${s.id}`} status={s.status} />,
           s.enrollmentNumber ?? "—",
           s.course?.name ?? "—",
-          s.status === "APPROVED" ? (
-            <AssignCourseForm
-              key={`as-${s.id}`}
-              studentId={s.id}
-              courses={courses}
-              currentCourseId={s.courseId}
-            />
-          ) : (
-            "—"
-          ),
+          <div key={`act-${s.id}`} className="flex items-center gap-4">
+            <Link href={`/admin/students/${s.id}`} className="text-sm font-bold text-[var(--ui-secondary)] hover:underline whitespace-nowrap">
+              View Profile
+            </Link>
+            {s.status === "APPROVED" && (
+              <AssignCourseForm
+                studentId={s.id}
+                courses={courses}
+                currentCourseId={s.courseId}
+              />
+            )}
+          </div>
         ])}
       />
     </PanelPage>

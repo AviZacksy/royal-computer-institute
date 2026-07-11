@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import type { CSSProperties } from "react";
 import { db } from "@/lib/db";
+import { getFileUrl } from "@/lib/storage";
 import { PrintButton } from "@/components/documents/PrintButton";
 
 export default async function AdmissionFormDocument({
@@ -15,291 +17,232 @@ export default async function AdmissionFormDocument({
 
   if (!student) return notFound();
 
-  // Helper for formatting dates
-  const formatDate = (date?: Date | null) => {
-    if (!date) return "...../...../.......";
-    return date.toLocaleDateString("en-IN", { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, ' / ');
+  const photoUrl = student.photoStorageKey ? await getFileUrl("documents", student.photoStorageKey) : null;
+  const signatureUrl = student.signatureStorageKey ? await getFileUrl("documents", student.signatureStorageKey) : null;
+  const details = (student.admissionDetails as Record<string, string>) || {};
+
+  const formatDate = (date?: Date | null) =>
+    date ? date.toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" }) : "";
+
+  const splitDate = (date?: Date | null) => ({
+    day: date ? date.toLocaleDateString("en-IN", { day: "2-digit" }) : "",
+    month: date ? date.toLocaleDateString("en-IN", { month: "2-digit" }) : "",
+    year: date ? date.toLocaleDateString("en-IN", { year: "numeric" }) : "",
+  });
+
+  const parseAddress = (addr: string) => {
+    const result = { village: "", post: "", ps: "", district: "", state: "", pin: "" };
+    if (!addr) return result;
+    const vMatch = addr.match(/village[\s\-:]+([^,]+)/i);
+    if (vMatch) result.village = vMatch[1].trim();
+    const pMatch = addr.match(/post[\s\-:]+([^,]+)/i);
+    if (pMatch) result.post = pMatch[1].trim();
+    const psMatch = addr.match(/p\.?s\.?[\s\-:]+([^,]+)/i);
+    if (psMatch) result.ps = psMatch[1].trim();
+    const dMatch = addr.match(/district[\s\-:]+([^,]+)/i);
+    if (dMatch) result.district = dMatch[1].trim();
+    const sMatch = addr.match(/state[\s\-:]+([^,]+)/i);
+    if (sMatch) result.state = sMatch[1].trim();
+    const pinMatch = addr.match(/(?:pin(?:code)?|zip)[\s\-:]*(\d{6})/i) || addr.match(/\b(\d{6})\b/);
+    if (pinMatch) result.pin = pinMatch[1].trim();
+    return result;
   };
 
-  const getDay = (date?: Date | null) => date ? date.toLocaleDateString("en-IN", { day: '2-digit' }) : "....";
-  const getMonth = (date?: Date | null) => date ? date.toLocaleDateString("en-IN", { month: '2-digit' }) : "....";
-  const getYear = (date?: Date | null) => date ? date.toLocaleDateString("en-IN", { year: 'numeric' }) : ".........";
-
-  const renderBoxes = (value: string | null | undefined, count: number) => {
-    const chars = (value || "").padEnd(count, ' ').substring(0, count).toUpperCase().split('');
-    return (
-      <div style={{ display: 'inline-flex', gap: '2px' }}>
-        {chars.map((char, i) => (
-          <div key={i} style={{ width: '18px', height: '24px', border: '1px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-            {char.trim()}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const dob = splitDate(student.dateOfBirth);
+  const addr = parseAddress(student.address || student.currentAddress || "");
+  const admissionDate = formatDate(student.admissionDate);
 
   return (
-    <div className="print-wrapper" style={{ 
-      width: '210mm', 
-      minHeight: '297mm', 
-      backgroundColor: 'white', 
-      padding: '10mm', 
-      position: 'relative',
-      margin: '0 auto',
-      boxSizing: 'border-box',
-      color: 'black',
-      fontFamily: 'Arial, sans-serif'
-    }}>
+    <div
+      className="print-wrapper"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        position: "relative",
+        margin: "0 auto",
+        boxSizing: "border-box",
+        color: "black",
+        fontFamily: "Arial, sans-serif",
+        backgroundImage: "url(/Admission-Form.jpg)",
+        backgroundSize: "100% 100%",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundColor: "white",
+      }}
+    >
       <style>{`
-        .dotted-line {
-          border-bottom: 2px dotted black;
-          flex-grow: 1;
-          display: inline-block;
-          height: 1.2em;
-          margin-left: 8px;
-          min-width: 50px;
-          font-weight: bold;
-          text-align: center;
+        @page {
+          size: A4 portrait;
+          margin: 0;
+        }
+
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          .no-print { display: none !important; }
+          .print-wrapper { margin: 0 !important; width: 210mm !important; height: 297mm !important; min-height: 297mm !important; box-shadow: none !important; }
+        }
+
+        .admission-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 10;
+        }
+
+        .admission-field {
+          position: absolute;
+          color: #111;
+          font-size: var(--fs, 17px);
+          font-weight: 700;
+          line-height: 1;
+          letter-spacing: var(--ls, 0);
+          white-space: nowrap;
+          overflow: hidden;
           text-transform: uppercase;
         }
-        .field-row {
-          display: flex;
-          align-items: flex-end;
-          margin-bottom: 15px;
-          font-size: 15px;
-          font-weight: bold;
+
+        .admission-small {
+          --fs: 11px;
         }
-        .box-row {
-           display: flex;
-           align-items: center;
-           margin-bottom: 15px;
-           font-size: 15px;
-           font-weight: bold;
-        }
-        .qual-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 20px;
-        }
-        .qual-table th, .qual-table td {
-          border: 1px solid black;
-          padding: 8px;
-          text-align: left;
-          font-weight: bold;
-        }
-        .qual-table td {
-          height: 30px;
-        }
-        .photo-box {
+
+        .admission-photo {
           position: absolute;
-          right: 0;
-          top: 0;
-          width: 110px;
-          height: 140px;
-          border: 1px solid black;
-          border-radius: 10px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          font-size: 12px;
-          padding: 10px;
-          box-sizing: border-box;
+          top: 21.8%;
+          right: 8.8%;
+          width: 23mm;
+          height: 33mm;
+          object-fit: contain;
+          border-radius: 5mm;
+        }
+
+        .student-sign {
+          position: absolute;
+          left: 9%;
+          bottom: 10.8%;
+          width: 30mm;
+          height: 10mm;
+          object-fit: contain;
+        }
+
+        .director-sign {
+          position: absolute;
+          right: 18.5%;
+          bottom: 8.5%;
+          width: 31mm;
+          height: 26mm;
+          object-fit: contain;
+        }
+
+        .letter-boxes {
+          --ls: 12.6px;
+          --fs: 19px;
+          font-family: "Courier New", monospace;
         }
       `}</style>
 
-      <div className="no-print" style={{ position: 'absolute', top: '-50px', right: '0' }}>
+      <div className="no-print" style={{ position: "absolute", top: "-40px", right: "0", zIndex: 100 }}>
         <PrintButton />
       </div>
 
-      <div style={{ border: '2px solid black', padding: '10px', height: '100%', boxSizing: 'border-box' }}>
-        
-        {/* Header Top Bar */}
-        <div style={{ backgroundColor: 'black', color: 'white', textAlign: 'center', padding: '4px', fontSize: '13px', fontWeight: 'bold' }}>
-          भारत सरकार द्वारा मान्यता प्राप्त डिजिटल शिक्षा की सर्वश्रेष्ठ संस्थान &nbsp;/&nbsp; An ISO IAF 9001:2015 Certified Institute
+      <div className="admission-overlay">
+        <div data-field="admission-number" className="admission-field" style={{ top: "17.1%", left: "22.8%", width: "25%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {student.admissionNumber || ""}
+        </div>
+        <div data-field="admission-date" className="admission-field" style={{ top: "17.1%", right: "2.5%", width: "17%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {admissionDate}
         </div>
 
-        {/* Institute Name */}
-        <div style={{ textAlign: 'center', margin: '15px 0' }}>
-          <h1 style={{ 
-            color: 'red', 
-            fontSize: '48px', 
-            margin: 0, 
-            fontFamily: 'Impact, sans-serif',
-            textShadow: '2px 2px 0px #ffcc00, -1px -1px 0 #ffcc00, 1px -1px 0 #ffcc00, -1px 1px 0 #ffcc00, 1px 1px 0 #ffcc00',
-            letterSpacing: '1px'
-          }}>
-            ROYAL COMPUTER INSTITUTE
-          </h1>
+        {photoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="admission-photo" src={photoUrl} alt="Student" />
+        )}
+
+        <div data-field="student-name" className="admission-field" style={{ top: "23%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {student.name}
+        </div>
+        <div data-field="father-name" className="admission-field" style={{ top: "26.75%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {student.fatherName || ""}
+        </div>
+        <div data-field="mother-name" className="admission-field" style={{ top: "30.15%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {student.motherName || ""}
         </div>
 
-        {/* Venue Box */}
-        <div style={{ border: '2px solid black', textAlign: 'center', padding: '5px', fontSize: '14px', fontWeight: 'bold', borderRadius: '5px', marginBottom: '15px' }}>
-          VENUE :- BHAWANIPUR ZIRAT, IN FRONT OF STONE CLINIC , WOMEN'S COLLEGE ROAD MOTIHARI
+        <div data-field="dob-day" className="admission-field" style={{ top: "33.85%", left: "25.3%", width: "5%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {dob.day}
+        </div>
+        <div data-field="dob-month" className="admission-field" style={{ top: "33.85%", left: "29.5%", width: "5%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {dob.month}
+        </div>
+        <div data-field="dob-year" className="admission-field" style={{ top: "33.85%", left: "32.8%", width: "8%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {dob.year}
+        </div>
+        <div data-field="gender" className="admission-field" style={{ top: "33.85%", left: "64.5%", width: "16%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {student.gender || ""}
         </div>
 
-        {/* Admission Form Header */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-          <div style={{ backgroundColor: 'black', color: 'white', padding: '5px 40px', fontSize: '20px', fontWeight: 'bold', borderRadius: '3px' }}>
-            Admission Form
-          </div>
+        <div data-field="student-mobile" className="admission-field letter-boxes" style={{ top: "37.2%", left: "33.2%", width: "33%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
+          {student.phone || ""}
+        </div>
+        <div data-field="parents-mobile" className="admission-field letter-boxes" style={{ top: "48.2%", left: "38.2%", width: "31%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
+          {details.parentsMobile || ""}
+        </div>
+        <div data-field="aadhaar" className="admission-field letter-boxes" style={{ top: "52.1%", left: "27.1%", width: "30%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
+          {details.aadhaarNumber || ""}
+        </div>
+        <div data-field="email" className="admission-field admission-small" style={{ top: "45%", left: "70.2%", width: "21%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {student.email || ""}
         </div>
 
-        {/* Admission Info Row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', borderBottom: '2px solid black', paddingBottom: '5px' }}>
-          <div>Admission No :- {student.admissionNumber || "..........................."}</div>
-          <div>Admission Date :- {formatDate(student.admissionDate)}</div>
+        <div data-field="village" className="admission-field admission-small" style={{ top: "51.7%", left: "17.2%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.village}
+        </div>
+        <div data-field="post" className="admission-field admission-small" style={{ top: "51.7%", left: "45.5%", width: "18%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.post}
+        </div>
+        <div data-field="ps" className="admission-field admission-small" style={{ top: "51.7%", left: "69%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.ps}
+        </div>
+        <div data-field="district" className="admission-field admission-small" style={{ top: "54.6%", left: "15.2%", width: "21%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.district}
+        </div>
+        <div data-field="state" className="admission-field admission-small" style={{ top: "54.6%", left: "42.8%", width: "20%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.state}
+        </div>
+        <div data-field="pin" className="admission-field admission-small" style={{ top: "54.6%", left: "79.6%", width: "13%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {addr.pin}
         </div>
 
-        {/* Instruction Bar */}
-        <div style={{ backgroundColor: 'black', color: 'white', textAlign: 'center', padding: '5px', fontSize: '15px', fontWeight: 'bold', marginBottom: '20px' }}>
-          To Fill all statement is CAPITAL Letter , And attached required documents with Form
+        <div data-field="course-name" className="admission-field admission-small" style={{ top: "57.5%", left: "25.5%", width: "34%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {student.course?.name || ""}
+        </div>
+        <div data-field="duration" className="admission-field admission-small" style={{ top: "57.5%", left: "56.3%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {student.course?.duration || ""}
+        </div>
+        <div data-field="batch-time" className="admission-field admission-small" style={{ top: "57.5%", left: "82.2%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {details.batchTime || ""}
         </div>
 
-        {/* Form Body - Relative for Photo positioning */}
-        <div style={{ position: 'relative', paddingRight: '120px' }}>
-          
-          <div className="photo-box">
-             {student.photoStorageKey ? (
-               // eslint-disable-next-line @next/next/no-img-element
-               <img src={`/api/media/${student.photoStorageKey}`} alt="Student" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px'}} />
-             ) : (
-               <>
-                 <div style={{marginBottom: '10px'}}>Attached</div>
-                 <div>Passport<br/>Size Photo</div>
-               </>
-             )}
-          </div>
-
-          <div className="field-row">
-            <span>Student's Name :-</span>
-            <span className="dotted-line">{student.name}</span>
-          </div>
-
-          <div className="field-row">
-            <span>Father's Name :-</span>
-            <span className="dotted-line">{student.fatherName || ""}</span>
-          </div>
-
-          <div className="field-row">
-            <span>Mother's Name :-</span>
-            <span className="dotted-line">{student.motherName || ""}</span>
-          </div>
-
-          <div className="box-row" style={{ marginTop: '20px' }}>
-            <span style={{ marginRight: '10px' }}>Date Of Birth :-</span>
-            <div style={{ border: '1px solid black', padding: '2px 10px', borderRadius: '5px', display: 'flex', alignItems: 'center' }}>
-              <span>{getDay(student.dateOfBirth)}</span>
-              <span style={{ margin: '0 5px' }}>/</span>
-              <span>{getMonth(student.dateOfBirth)}</span>
-              <span style={{ margin: '0 5px' }}>/</span>
-              <span>{getYear(student.dateOfBirth)}</span>
-            </div>
-            <span style={{ marginLeft: '40px', marginRight: '10px' }}>Gender :-</span>
-            <div style={{ border: '1px solid black', padding: '2px 10px', borderRadius: '5px', minWidth: '80px', textAlign: 'center' }}>
-              {student.gender ? student.gender.toUpperCase() : ""}
-            </div>
-          </div>
-
+        <div data-field="qualification" className="admission-field admission-small" style={{ top: "73.8%", left: "8.5%", width: "12%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {student.qualification || ""}
+        </div>
+        <div data-field="qualification-school" className="admission-field admission-small" style={{ top: "73.8%", left: "23.3%", width: "33%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {details.qualificationSchool || ""}
+        </div>
+        <div data-field="qualification-board" className="admission-field admission-small" style={{ top: "73.8%", left: "58.9%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {details.qualificationBoard || ""}
+        </div>
+        <div data-field="qualification-marks" className="admission-field admission-small" style={{ top: "73.8%", left: "72%", width: "9%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {details.qualificationMarks || ""}
+        </div>
+        <div data-field="qualification-year" className="admission-field admission-small" style={{ top: "73.8%", left: "83.3%", width: "10%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+          {details.qualificationYear || ""}
         </div>
 
-        {/* Full width box rows */}
-        <div className="box-row" style={{ marginTop: '20px' }}>
-          <span style={{ marginRight: '10px', minWidth: '190px' }}>Students Mobile Number :-</span>
-          {renderBoxes(student.phone, 10)}
-        </div>
-
-        <div className="box-row">
-          <span style={{ marginRight: '10px', minWidth: '190px' }}>Parents Mobile Number :-</span>
-          {renderBoxes("", 10)}
-        </div>
-
-        <div className="box-row">
-          <span style={{ marginRight: '10px', minWidth: '140px' }}>Aadhar Number :-</span>
-          {renderBoxes("", 12)}
-          <span style={{ marginLeft: '10px', marginRight: '5px' }}>E-Mail Id :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', fontSize: '13px', display: 'flex', alignItems: 'center' }}>
-            {student.email ? student.email.toUpperCase() : ""}
-          </div>
-        </div>
-
-        {/* Address section */}
-        <div style={{ marginTop: '20px', fontWeight: 'bold', fontSize: '16px', textDecoration: 'underline', marginBottom: '10px' }}>Full Address :-</div>
-        
-        <div className="box-row">
-          <span style={{ marginRight: '10px' }}>Village :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}>
-          </div>
-          <span style={{ marginRight: '10px' }}>Post :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}></div>
-          <span style={{ marginRight: '10px' }}>P.S :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center' }}></div>
-        </div>
-
-        <div className="box-row">
-          <span style={{ marginRight: '10px' }}>District :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}></div>
-          <span style={{ marginRight: '10px' }}>State :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}></div>
-          <span style={{ marginRight: '10px' }}>Pin Code :-</span>
-          <div style={{ border: '1px solid black', width: '100px', height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center' }}></div>
-        </div>
-        <div style={{ fontSize: '11px', fontWeight: 'normal', fontStyle: 'italic', marginBottom: '15px' }}>(Recorded Address: {student.address || student.currentAddress || ""})</div>
-
-        <div className="box-row">
-          <span style={{ marginRight: '10px' }}>Course Name :-</span>
-          <div style={{ border: '1px solid black', flexGrow: 1, height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}>
-            {student.course?.name || ""}
-          </div>
-          <span style={{ marginRight: '10px' }}>Duration :-</span>
-          <div style={{ border: '1px solid black', width: '100px', height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center', marginRight: '10px' }}>
-            {student.course?.duration || ""}
-          </div>
-          <span style={{ marginRight: '10px' }}>Batch Time :-</span>
-          <div style={{ border: '1px solid black', width: '100px', height: '26px', padding: '0 5px', display: 'flex', alignItems: 'center' }}></div>
-        </div>
-
-        {/* Qualification */}
-        <div style={{ marginTop: '20px', fontWeight: 'bold', fontSize: '16px', textDecoration: 'underline', marginBottom: '10px' }}>Qualification :-</div>
-        
-        <table className="qual-table">
-          <thead>
-            <tr>
-              <th style={{ width: '15%' }}>Class</th>
-              <th style={{ width: '45%' }}>School/College Name</th>
-              <th style={{ width: '15%' }}>Board</th>
-              <th style={{ width: '10%' }}>Marks %</th>
-              <th style={{ width: '15%' }}>Passing Year</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>{student.qualification}</td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td></td><td></td><td></td><td></td><td></td></tr>
-          </tbody>
-        </table>
-
-        {/* Declaration */}
-        <div style={{ marginTop: '20px', fontWeight: 'bold', fontSize: '15px', lineHeight: '1.5' }}>
-          <div style={{ marginBottom: '5px' }}>➢ Declamation by the Students</div>
-          <div style={{ fontWeight: 'normal', fontSize: '14px' }}>
-            I declare that the above information is true to the best of my knowledge and brief . I agree to abide the rules and regulation is Royal Computer Institute .
-          </div>
-        </div>
-
-        {/* Signatures */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', padding: '0 20px' }}>
-          <div style={{ textAlign: 'center' }}>
-             <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>Student's Signature</div>
-             <div style={{ letterSpacing: '3px', fontWeight: 'bold' }}>. . . . . . . . . . . . . . . . . . . . . . .</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-             <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>Director's Sign</div>
-             <div style={{ letterSpacing: '3px', fontWeight: 'bold' }}>. . . . . . . . . . . . . . . . . . . . . . .</div>
-          </div>
-        </div>
-
+        {signatureUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="student-sign" src={signatureUrl} alt="Student signature" />
+        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="director-sign" src="/signature.png" alt="Director signature" />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, ClipboardList, FileBadge, IdCard } from "lucide-react";
+import { Award, BadgeCheck, ClipboardList, FileBadge, IdCard, FileText } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireAdminSession } from "@/lib/auth";
 import { PanelPage } from "@/components/panels/PanelPage";
@@ -20,7 +20,7 @@ export default async function AdminDocumentsPage() {
   const [students, exams, finalAttempts, idCards, admitCards, certificates, marksheets] = await Promise.all([
     db.studentProfile.findMany({
       where: { instituteId, status: "APPROVED" },
-      select: { id: true, name: true, enrollmentNumber: true, course: { select: { name: true } } },
+      select: { id: true, name: true, enrollmentNumber: true, course: { select: { name: true } }, admissionDate: true },
       orderBy: { name: "asc" },
     }),
     db.exam.findMany({
@@ -72,7 +72,17 @@ export default async function AdminDocumentsPage() {
 
   return (
     <PanelPage title="Documents" subtitle="Auto-generate student ID cards, certificates, and final exam marksheets">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <Card className="space-y-4 p-5">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-[var(--ui-secondary)]"><FileText className="h-5 w-5" /></span>
+            <div>
+              <h3 className="font-bold text-[var(--ui-text)]">Admission Forms</h3>
+              <p className="text-xs text-[var(--ui-muted)]">{students.length} available</p>
+            </div>
+          </div>
+          <p className="text-sm font-medium text-[var(--ui-muted)]">Generated automatically on admission</p>
+        </Card>
         <GeneratorCard title="Student ID Cards" count={idCards.length} icon={<IdCard className="h-5 w-5" />}>
           <Modal triggerText="Generate ID Card" triggerVariant="primary">
             <h2 className="mb-4 text-xl font-bold">Generate Student ID Card</h2>
@@ -101,6 +111,21 @@ export default async function AdminDocumentsPage() {
           </Modal>
         </GeneratorCard>
       </div>
+
+      <DocumentSection title="Admission Forms" icon={<FileText className="h-5 w-5" />} empty="No admission forms found.">
+        {students.map((student) => (
+          <DocumentRow
+            key={student.id}
+            title={student.name}
+            meta={`${student.enrollmentNumber ?? "-"} | ${student.course?.name ?? "No Course"}`}
+            generatedAt={student.admissionDate || new Date()}
+          >
+            <a href={`/documents/admission/${student.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+              View / Print
+            </a>
+          </DocumentRow>
+        ))}
+      </DocumentSection>
 
       <DocumentSection title="Student ID Cards" icon={<IdCard className="h-5 w-5" />} empty="No student ID cards generated yet.">
         {idCards.map((card) => (

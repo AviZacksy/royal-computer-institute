@@ -39,14 +39,18 @@ export default async function Home() {
               <span className="h-[3px] w-12 rounded-full bg-white/80"></span>
             </div>
             <p className="mt-5 max-w-[760px] font-body text-sm font-bold leading-relaxed text-[#f8d45c] drop-shadow sm:text-base md:text-lg">
-              <span className="block">ISO IAF 9001:2015 Certificate Institute</span>
+              <span className="block">ISO IAF 9001:2015 Certified Institute</span>
               <span className="block">Reg. Under MSME Gov. Of India</span>
             </p>
           </div>
           
-          <h2 className="animate-fade-up animation-delay-300 mt-9 max-w-4xl font-[var(--font-poppins)] text-[26px] sm:text-[34px] md:text-[44px] lg:text-[52px] leading-[1.12] font-extrabold text-white mb-4 sm:mb-6 drop-shadow-md">Job-ready computer courses in Motihari</h2>
+          <h2 className="animate-fade-up animation-delay-300 mt-9 max-w-4xl font-[var(--font-poppins)] text-[26px] sm:text-[34px] md:text-[44px] lg:text-[52px] leading-[1.12] font-extrabold text-white mb-4 sm:mb-6 drop-shadow-md">
+            Best Computer Training Institute in Motihari
+          </h2>
           
-          <p className="animate-fade-up animation-delay-400 font-body text-sm sm:text-base md:text-lg text-[rgb(240,240,240)] max-w-[700px] mb-8 drop-shadow">Learn practical computer skills with hands‑on training, exam support, and certificate services.</p>
+          <p className="animate-fade-up animation-delay-400 font-body text-sm sm:text-base md:text-lg text-[rgb(240,240,240)] max-w-[700px] mb-8 drop-shadow">
+            Providing high-quality computer education, practical training, and 100% job placement assistance to help you build a successful career.
+          </p>
           
           <div className="animate-fade-up animation-delay-500 flex flex-wrap items-center justify-center gap-4 mb-8 sm:mb-12">
             <Link href="/admission" className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 px-8 py-3.5 text-white font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1">Student Admission</Link>
@@ -55,17 +59,29 @@ export default async function Home() {
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-screen-xl px-4 mt-auto">
-          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-            <div className="animate-fade-up animation-delay-700 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-5 text-center shadow-2xl transition-transform hover:scale-[1.02]">
-              <p className="font-display text-3xl md:text-4xl font-black text-[#d4af37]">1000+</p>
-              <p className="mt-2 flex items-center justify-center gap-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
-                <span className="text-lg">🎓</span> Students
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="animate-fade-up animation-delay-700 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">5000+</p>
+              <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
+                Happy Students
               </p>
             </div>
-            <div className="animate-fade-up animation-delay-700 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-5 text-center shadow-2xl transition-transform hover:scale-[1.02]">
-              <p className="font-display text-3xl md:text-4xl font-black text-[#d4af37]">400+</p>
-              <p className="mt-2 flex items-center justify-center gap-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
-                <span className="text-lg">💼</span> Placements
+            <div className="animate-fade-up animation-delay-800 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">50+</p>
+              <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
+                Professional Courses
+              </p>
+            </div>
+            <div className="animate-fade-up animation-delay-900 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">15+</p>
+              <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
+                Years Experience
+              </p>
+            </div>
+            <div className="animate-fade-up animation-delay-1000 rounded-xl bg-white/[0.08] backdrop-blur-[10px] border border-white/20 px-4 py-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+              <p className="font-display text-3xl md:text-4xl font-black text-[#f8d45c]">100%</p>
+              <p className="mt-2 text-xs md:text-sm font-bold uppercase tracking-wider text-white">
+                Job Assistance
               </p>
             </div>
           </div>

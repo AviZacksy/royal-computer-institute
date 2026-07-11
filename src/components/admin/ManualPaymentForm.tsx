@@ -45,7 +45,7 @@ export function ManualPaymentForm({ studentId, dueAmount }: Props) {
             type="number"
             min={1}
             max={dueAmount}
-            step={100}
+            step={1}
             required
           />
         </Field>

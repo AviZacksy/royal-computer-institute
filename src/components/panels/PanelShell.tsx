@@ -62,24 +62,13 @@ export function PanelShell({
             key={item.href}
             href={item.href}
             onClick={() => setMobileOpen(false)}
-            className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
+            className={`group relative flex min-h-11 items-center gap-3.5 rounded-lg px-4 py-2.5 text-[15px] font-medium transition-all ${
               active
-                ? "bg-blue-50 text-[var(--ui-secondary)] shadow-sm ring-1 ring-blue-100"
-                : "text-slate-600 hover:bg-slate-50 hover:text-[var(--ui-primary)]"
+                ? "bg-[#5438FF] text-white shadow-md"
+                : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
             }`}
           >
-            {active ? (
-              <span className="absolute left-0 top-2 h-7 w-1 rounded-r-full bg-[var(--ui-secondary)]" />
-            ) : null}
-            <span
-              className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition-colors ${
-                active
-                  ? "bg-[var(--ui-secondary)] text-white"
-                  : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-[var(--ui-secondary)]"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-            </span>
+            <Icon className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-slate-400 group-hover:text-slate-300"}`} />
             <span className="truncate">{item.label}</span>
           </Link>
         );
@@ -111,9 +100,10 @@ export function PanelShell({
   );
 
   return (
-    <div className="min-h-screen bg-[var(--ui-surface)]">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
+    <div className="flex min-h-screen flex-col bg-[var(--ui-surface)]">
+      {/* Full-width Header */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white shadow-sm">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 lg:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -123,14 +113,14 @@ export function PanelShell({
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full shadow-sm">
+            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full shadow-sm">
               <Image src="/logo/logo.jpeg" alt="Institute Logo" fill className="object-cover" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--ui-muted)]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--ui-muted)]">
                 {title}
               </p>
-              <p className="truncate font-display text-lg font-extrabold text-[var(--ui-primary)]">
+              <p className="truncate font-display text-base font-extrabold text-[var(--ui-primary)]">
                 {INSTITUTE.name}
               </p>
             </div>
@@ -148,22 +138,22 @@ export function PanelShell({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-screen-2xl gap-6 px-4 py-6 lg:grid-cols-[280px_1fr] lg:px-6">
-        <aside className="sticky top-[84px] hidden h-[calc(100vh-108px)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:block">
-          <div className="mb-5 rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              Management Portal
-            </p>
-            <p className="mt-1 text-sm font-semibold text-[var(--ui-primary)]">
-              Education + Technology
-            </p>
+      {/* Main Layout Area */}
+      <div className="flex flex-1">
+        {/* Desktop Sidebar (Flushed to left, no gaps) */}
+        <aside className="sticky top-16 hidden h-[calc(100vh-64px)] w-[280px] shrink-0 flex-col overflow-y-auto border-r border-slate-800 bg-[#0f172a] lg:flex">
+          <div className="flex-1 p-4">
+            {nav}
           </div>
-          {nav}
         </aside>
 
-        <main className="min-w-0 pb-8">{children}</main>
+        {/* Main Content */}
+        <main className="flex-1 min-w-0 overflow-x-hidden p-4 lg:p-6">
+          {children}
+        </main>
       </div>
 
+      {/* Mobile Sidebar Overlay */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
@@ -172,31 +162,26 @@ export function PanelShell({
             className="absolute inset-0 bg-slate-950/35 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative flex h-full w-[min(320px,86vw)] flex-col border-r border-slate-200 bg-white p-4 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <aside className="relative flex h-full w-[min(320px,86vw)] flex-col border-r border-slate-800 bg-[#0f172a] shadow-2xl">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 px-4">
               <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full shadow-sm">
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full shadow-sm bg-white">
                   <Image src="/logo/logo.jpeg" alt="Institute Logo" fill className="object-cover" />
                 </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                    {title}
-                  </p>
-                  <p className="text-sm font-extrabold text-[var(--ui-primary)]">
-                    Menu
-                  </p>
-                </div>
+                <p className="font-display text-sm font-extrabold text-white">
+                  Menu
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600"
+                className="grid h-9 w-9 place-items-center rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200"
                 aria-label="Close navigation"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="overflow-y-auto pr-1">{nav}</div>
+            <div className="flex-1 overflow-y-auto p-4">{nav}</div>
           </aside>
         </div>
       ) : null}

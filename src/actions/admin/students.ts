@@ -164,3 +164,54 @@ export async function assignCourseAction(
     return { error: "Something went wrong. Please try again." };
   }
 }
+
+import { hashPassword } from "@/lib/auth/credentials";
+import { z } from "zod";
+
+const resetPasswordSchema = z.object({
+  studentId: z.string().cuid(),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export async function resetStudentPasswordAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireAdminContext();
+    const parsed = resetPasswordSchema.safeParse({
+      studentId: formData.get("studentId"),
+      newPassword: formData.get("newPassword"),
+    });
+
+    if (!parsed.success) {
+      return { error: parsed.error.errors[0]?.message ?? "Invalid input" };
+    }
+
+    const { studentId, newPassword } = parsed.data;
+
+    // Find the student profile to get the userId
+    const student = await db.studentProfile.findFirst({
+      where: {
+        id: studentId,
+        instituteId: session.instituteId,
+      },
+      select: { userId: true },
+    });
+
+    if (!student) {
+      return { error: "Student not found" };
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+
+    await db.user.update({
+      where: { id: student.userId },
+      data: { passwordHash },
+    });
+
+    return { success: "Password reset successfully. Tell the student the new password." };
+  } catch {
+    return { error: "Something went wrong. Please try again." };
+  }
+}

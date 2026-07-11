@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getFileUrl } from "@/lib/storage";
-import { STORAGE_BUCKETS } from "@/lib/storage/types";
+import { generateReceiptPdf } from "@/lib/pdf/receipt";
+
+function safePdfName(receiptNumber: string) {
+  const safeReceiptNumber = receiptNumber.replace(/[^a-zA-Z0-9._-]/g, "-");
+  return `receipt-${safeReceiptNumber}.pdf`;
+}
 
 export async function GET(
   _req: NextRequest,
@@ -19,7 +23,15 @@ export async function GET(
     where: { id },
     include: {
       paymentSubmission: {
-        include: { student: true },
+        include: {
+          student: {
+            include: {
+              course: true,
+              feeRecord: true,
+              institute: true,
+            },
+          },
+        },
       },
     },
   });
@@ -44,8 +56,28 @@ export async function GET(
   }
 
   try {
-    const url = await getFileUrl(STORAGE_BUCKETS.documents, receipt.storageKey);
-    return NextResponse.redirect(url);
+    const { paymentSubmission: payment } = receipt;
+    const pdf = await generateReceiptPdf({
+      receiptNumber: receipt.receiptNumber,
+      studentName: payment.student.name,
+      enrollmentNumber: payment.student.enrollmentNumber ?? "",
+      courseName: payment.student.course?.name ?? "N/A",
+      amount: payment.amount,
+      totalFee: payment.student.feeRecord?.totalFee ?? payment.amount,
+      paidAmount: payment.student.feeRecord?.receivedAmount ?? payment.amount,
+      dueAmount: payment.student.feeRecord?.dueAmount ?? 0,
+      transactionId: payment.transactionId,
+      paymentDate: payment.createdAt,
+      verifiedAt: payment.verifiedAt ?? receipt.generatedAt,
+      instituteName: payment.student.institute.name,
+    });
+    return new NextResponse(new Uint8Array(pdf), {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${safePdfName(receipt.receiptNumber)}"`,
+        "Cache-Control": "private, max-age=3600",
+      },
+    });
   } catch {
     return NextResponse.json({ error: "Could not retrieve receipt" }, { status: 500 });
   }

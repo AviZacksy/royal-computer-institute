@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { getFileUrl } from "@/lib/storage";
 import { PrintButton } from "@/components/documents/PrintButton";
 
 export default async function CertificateDocument({
@@ -15,181 +16,172 @@ export default async function CertificateDocument({
 
   if (!certificate) return notFound();
 
+  const photoUrl = certificate.student.photoStorageKey ? await getFileUrl("documents", certificate.student.photoStorageKey) : null;
+  const formattedDate = certificate.generatedAt.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+  const durationText = /month/i.test(certificate.course.duration)
+    ? certificate.course.duration
+    : `${certificate.course.duration} MONTHS`;
+
   return (
     <div className="print-wrapper" style={{
       width: '297mm',
-      minHeight: '210mm',
+      height: '210mm',
       position: 'relative',
-      margin: '0 auto',
+      margin: '40px auto',
       boxSizing: 'border-box',
       color: 'black',
-      fontFamily: 'Arial, sans-serif',
-      padding: '0',
-      /* The exact blank certificate image goes here */
-      backgroundImage: 'url(/certificate-bg.jpg)',
-      backgroundSize: '100% 100%',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundColor: 'white' // fallback
+      fontFamily: '"Times New Roman", Times, serif',
+      backgroundColor: 'white',
+      overflow: 'hidden',
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-        
-        .cert-data-overlay {
+        @page {
+          size: A4 landscape;
+          margin: 0;
+        }
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; background: white; }
+          .no-print { display: none !important; }
+          .print-wrapper { margin: 0 !important; border: none !important; box-shadow: none !important; width: 297mm !important; height: 210mm !important; }
+        }
+
+        .certificate-sheet {
           position: absolute;
-          top: 0;
-          left: 0;
+          inset: 0;
           width: 100%;
           height: 100%;
-          z-index: 10;
+          object-fit: fill;
+          z-index: 0;
         }
 
-        /* 
-          These positions are estimated based on the provided PDF image. 
-          You can tweak the top/left/width percentages slightly to perfectly align 
-          with your exact background image.
-        */
-        
-        .d-reg {
+        .cert-field {
           position: absolute;
-          top: 17%;
-          left: 45%;
-          font-weight: bold;
-          font-size: 14px;
-        }
-        .d-sl {
-          position: absolute;
-          top: 17%;
-          left: 70%;
-          font-weight: bold;
-          font-size: 14px;
-        }
-
-        .d-date {
-          position: absolute;
-          top: 42%;
-          left: 33%;
-          font-weight: bold;
-          font-size: 14px;
-        }
-
-        .d-name {
-          position: absolute;
-          top: 51.5%;
-          left: 46%;
-          width: 32%;
+          z-index: 2;
           text-align: center;
-          font-weight: bold;
-          font-size: 20px;
-          font-style: italic;
+          font-weight: 700;
+          font-style: normal;
+          color: #000;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .d-course {
-          position: absolute;
-          top: 57.5%;
-          left: 51%;
-          width: 27%;
-          text-align: center;
-          font-weight: bold;
-          font-size: 18px;
+        .reg-no {
+          left: 102mm;
+          top: 17.4mm;
+          width: 34mm;
+          font-size: 7.8mm;
+          text-align: left;
         }
 
-        .d-duration {
-          position: absolute;
-          top: 61.5%;
-          left: 27%;
-          width: 8%;
-          text-align: center;
-          font-weight: bold;
-          font-size: 16px;
-        }
-        
-        .d-grade {
-          position: absolute;
-          top: 61.5%;
-          left: 44%;
-          width: 4%;
-          text-align: center;
-          font-weight: bold;
-          font-size: 16px;
-        }
-        
-        .d-marks {
-          position: absolute;
-          top: 61.5%;
-          left: 56.5%;
-          width: 5%;
-          text-align: center;
-          font-weight: bold;
-          font-size: 16px;
+        .sl-no {
+          left: 221mm;
+          top: 21.4mm;
+          width: 99mm;
+          font-size: 3.8mm;
+          text-align: left;
         }
 
-        .d-course-bottom {
-          position: absolute;
-          top: 67%;
-          left: 32%;
-          width: 35%;
-          text-align: center;
-          font-weight: bold;
-          font-size: 18px;
+        .issue-date-value {
+          left: 60mm;
+          top: 80.2mm;
+          width: 34mm;
+          font-size: 3mm;
+          text-align: left;
         }
 
-        .d-photo {
-          position: absolute;
-          top: 35%;
-          right: 12%;
-          width: 25mm;
-          height: 32mm;
-          /* background: #f0f0f0; uncomment to see the box before photo is added */
+        .student-name {
+          left: 154mm;
+          top: 96.8mm;
+          width: 73mm;
+          font-size: 6.8mm;
         }
 
-        .d-qr {
-          position: absolute;
-          bottom: 18%;
-          left: 12%;
-          width: 20mm;
-          height: 20mm;
+        .course-name {
+          left: 163mm;
+          top: 107.8mm;
+          width: 101mm;
+          font-size: 7.8mm;
         }
+
+        .course-duration {
+          left: 58mm;
+          top: 126.2mm;
+          width: 27mm;
+          font-size: 3mm;
+        }
+
+        .grade {
+          left: 120mm;
+          top: 120.2mm;
+          width: 8mm;
+          font-size: 10mm;
+        }
+
+        .marks {
+          left: 171mm;
+          top: 123.2mm;
+          width: 16mm;
+          font-size: 6mm;
+        }
+
+        .photo-box {
+          position: absolute;
+          z-index: 2;
+          right: 24.4mm;
+          top: 59.8mm;
+          width: 32.5mm;
+          height: 42.5mm;
+          overflow: hidden;
+          background: transparent;
+        }
+
+        .photo-box img,
+        .signature-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .signature-box {
+          position: absolute;
+          z-index: 2;
+          right: 41mm;
+          bottom: 35mm;
+          width: 42mm;
+          height: 13mm;
+        }
+
       `}</style>
       
       <div className="no-print" style={{ position: 'absolute', top: '-40px', right: '0', zIndex: 100 }}>
         <PrintButton />
       </div>
 
-      <div className="no-print" style={{ position: 'absolute', top: '-60px', left: '0', background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '5px', fontSize: '12px', fontWeight: 'bold' }}>
-        INSTRUCTION: Save a completely blank version of the certificate PDF as an image and place it at "public/certificate-bg.jpg" for this to work perfectly.
-      </div>
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="certificate-sheet" src="/certificate-design.jpg" alt="Certificate design" />
 
-      <div className="cert-data-overlay">
-        
-        {/* Top Details */}
-        <div className="d-reg">{certificate.student.enrollmentNumber || "-"}</div>
-        <div className="d-sl">{certificate.certificateNumber}</div>
-        
-        {/* Date */}
-        <div className="d-date">{certificate.generatedAt.toLocaleDateString('en-IN')}</div>
-        
-        {/* Body Fields */}
-        <div className="d-name">{certificate.student.name}</div>
-        <div className="d-course">{certificate.course.name}</div>
-        
-        <div className="d-duration">{certificate.course.duration}M</div>
-        <div className="d-grade">{/* Grade placeholder */}A</div>
-        <div className="d-marks">{/* Marks placeholder */}85%</div>
-        
-        <div className="d-course-bottom">{certificate.course.name}</div>
+        <div className="cert-field reg-no">{certificate.student.enrollmentNumber || ""}</div>
+        <div className="cert-field sl-no">{certificate.certificateNumber || ""}</div>
+        <div className="cert-field issue-date-value">{formattedDate}</div>
+        <div className="cert-field student-name">{certificate.student.name}</div>
+        <div className="cert-field course-name">{certificate.course.name}</div>
+        <div className="cert-field course-duration">{durationText}</div>
+        <div className="cert-field grade">A</div>
+        <div className="cert-field marks">85%</div>
 
-        {/* Photo Box */}
-        <div className="d-photo">
-          {certificate.student.photoStorageKey && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/api/media/${certificate.student.photoStorageKey}`} alt="Student" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-          )}
+        {photoUrl ? (
+          <div className="photo-box">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photoUrl} alt="Student Photo" />
+          </div>
+        ) : null}
+
+        <div className="signature-box">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/signature.png" alt="Signature" style={{ objectFit: 'contain' }} />
         </div>
-
-        {/* QR Box Placeholder */}
-        <div className="d-qr"></div>
-        
       </div>
     </div>
   );

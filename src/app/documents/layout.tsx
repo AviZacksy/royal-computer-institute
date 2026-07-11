@@ -4,38 +4,26 @@ export default function DocumentsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-        <style>{`
-          @media print {
-            body {
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-              background-color: white !important;
-            }
-            .no-print {
-              display: none !important;
-            }
-            @page {
-              size: auto;
-              margin: 0;
-            }
-          }
+    <div className="min-h-screen w-full bg-slate-100 flex justify-center py-5 print:bg-white print:py-0 print:block">
+      <style>{`
+        @media print {
           body {
-            background-color: #f1f5f9; /* Slate 100 */
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            font-family: system-ui, -apple-system, sans-serif;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            background-color: white !important;
           }
-        `}</style>
-      </head>
-      <body>
-        <div className="flex w-full flex-col items-center">
-          {children}
-        </div>
-      </body>
-    </html>
+          .no-print {
+            display: none !important;
+          }
+          @page {
+            size: auto;
+            margin: 0;
+          }
+        }
+      `}</style>
+      <div className="flex w-full flex-col items-center">
+        {children}
+      </div>
+    </div>
   );
 }

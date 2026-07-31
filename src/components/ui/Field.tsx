@@ -2,15 +2,17 @@ type Props = {
   label: string;
   htmlFor: string;
   hint?: string;
+  required?: boolean;
   children: React.ReactNode;
 };
 
-export function Field({ label, htmlFor, hint, children }: Props) {
+export function Field({ label, htmlFor, hint, required, children }: Props) {
   return (
     <label className="block" htmlFor={htmlFor}>
       <div className="flex items-end justify-between gap-3">
         <span className="text-sm font-bold text-[var(--ui-primary)]">
           {label}
+          {required ? <span className="ml-1 text-red-500">*</span> : null}
         </span>
         {hint ? (
           <span className="text-xs font-medium text-[var(--ui-muted)]">{hint}</span>

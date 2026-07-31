@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
 import { generateEnrollmentNumber, generateAdmissionNumber } from "@/lib/format";
-import { assignCourseSchema, studentApprovalSchema } from "@/lib/validations";
+import { assignCourseSchema, studentApprovalSchema, updateStudentProfileSchema } from "@/lib/validations";
 import { getStorageProvider, STORAGE_BUCKETS } from "@/lib/storage";
 
 import type { ActionState } from "./types";
@@ -297,3 +297,121 @@ export async function deleteStudentAction(studentId: string): Promise<ActionStat
     return { error: "Something went wrong. Please try again." };
   }
 }
+
+export async function updateStudentProfileAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireAdminContext();
+    
+    const parsed = updateStudentProfileSchema.safeParse({
+      studentId: formData.get("studentId"),
+      name: formData.get("name"),
+      fatherName: formData.get("fatherName"),
+      motherName: formData.get("motherName"),
+      gender: formData.get("gender"),
+      dateOfBirth: formData.get("dateOfBirth"),
+      aadhaarNumber: formData.get("aadhaarNumber"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      parentsMobile: formData.get("parentsMobile"),
+      qualification: formData.get("qualification"),
+      qualificationSchool: formData.get("qualificationSchool"),
+      qualificationBoard: formData.get("qualificationBoard"),
+      qualificationMarks: formData.get("qualificationMarks"),
+      qualificationYear: formData.get("qualificationYear"),
+      permanentAddress: formData.get("permanentAddress"),
+      currentAddress: formData.get("currentAddress"),
+    });
+
+    if (!parsed.success) {
+      return { error: parsed.error.errors[0]?.message ?? "Invalid input" };
+    }
+
+    const data = parsed.data;
+
+    // Check if student exists
+    const student = await db.studentProfile.findFirst({
+      where: {
+        id: data.studentId,
+        instituteId: session.instituteId,
+      },
+      select: {
+        id: true,
+        userId: true,
+        email: true,
+        admissionDetails: true,
+      },
+    });
+
+    if (!student) {
+      return { error: "Student not found" };
+    }
+
+    const normalizedEmail = data.email.toLowerCase().trim();
+
+    // If email is changed, verify it's not taken by another user
+    if (student.email !== normalizedEmail) {
+      const emailTaken = await db.user.findFirst({
+        where: {
+          instituteId: session.instituteId,
+          email: normalizedEmail,
+          NOT: {
+            id: student.userId,
+          },
+        },
+      });
+      if (emailTaken) {
+        return { error: "Email is already taken by another user" };
+      }
+    }
+
+    // Prepare updated JSON admissionDetails
+    const existingDetails = (student.admissionDetails as Record<string, any>) || {};
+    const updatedDetails = {
+      ...existingDetails,
+      aadhaarNumber: data.aadhaarNumber,
+      parentsMobile: data.parentsMobile.trim(),
+      qualificationSchool: data.qualificationSchool.trim(),
+      qualificationBoard: data.qualificationBoard.trim(),
+      qualificationMarks: data.qualificationMarks.trim(),
+      qualificationYear: data.qualificationYear.trim(),
+    };
+
+    // Update User and StudentProfile in a transaction
+    await db.$transaction([
+      db.user.update({
+        where: { id: student.userId },
+        data: { email: normalizedEmail },
+      }),
+      db.studentProfile.update({
+        where: { id: data.studentId },
+        data: {
+          name: data.name.trim(),
+          fatherName: data.fatherName.trim(),
+          motherName: data.motherName.trim(),
+          gender: data.gender,
+          dateOfBirth: new Date(data.dateOfBirth),
+          email: normalizedEmail,
+          phone: data.phone.trim(),
+          qualification: data.qualification,
+          currentAddress: data.currentAddress.trim(),
+          permanentAddress: data.permanentAddress.trim(),
+          address: data.currentAddress.trim(), // Keep currentAddress and address in sync
+          admissionDetails: updatedDetails,
+        },
+      }),
+    ]);
+
+    revalidatePath(`/admin/students`);
+    revalidatePath(`/admin/students/${data.studentId}`);
+    revalidatePath(`/student/dashboard`);
+    
+    return { success: "Student profile updated successfully" };
+  } catch (error) {
+    console.error("Error updating student profile:", error);
+    return { error: "Something went wrong. Please try again." };
+  }
+}
+

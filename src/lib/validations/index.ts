@@ -179,3 +179,24 @@ export const examQuestionSchema = z.object({
   questionId: z.string(),
   sortOrder: z.number().default(0).optional(),
 });
+
+export const updateStudentProfileSchema = z.object({
+  studentId: z.string().cuid(),
+  name: z.string().min(2, "Enter your full name"),
+  fatherName: z.string().min(2, "Enter father's name").max(120),
+  motherName: z.string().min(2, "Enter mother's name").max(120),
+  gender: z.string().min(1, "Select gender"),
+  dateOfBirth: z.string().min(1, "Enter date of birth"),
+  aadhaarNumber: z.string().regex(/^\d{12}$/, "Enter a valid 12 digit Aadhaar number"),
+  email: z.string().email("Enter a valid email"),
+  phone: z.string().min(10, "Enter a valid phone number").max(15),
+  parentsMobile: z.string().min(10, "Enter a valid parents mobile number").max(15),
+  qualification: z.string().min(1, "Select qualification"),
+  qualificationSchool: z.string().min(2, "Enter school/college name").max(120),
+  qualificationBoard: z.string().min(2, "Enter board name").max(120),
+  qualificationMarks: z.string().min(1, "Enter marks percentage").max(10),
+  qualificationYear: z.string().regex(/^\d{4}$/, "Enter a valid 4-digit passing year"),
+  permanentAddress: z.string().min(5, "Enter permanent address").max(1000),
+  currentAddress: z.string().min(5, "Enter current address").max(1000),
+});
+

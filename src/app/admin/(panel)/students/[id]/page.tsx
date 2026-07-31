@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { getFileUrl } from "@/lib/storage";
 import { ResetStudentPasswordForm } from "@/components/admin/ResetStudentPasswordForm";
 import { DeleteStudentButton } from "@/components/admin/DeleteStudentButton";
+import { EditStudentProfileForm } from "@/components/admin/EditStudentProfileForm";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,10 @@ export default async function StudentProfilePage(props: { params: Promise<{ id: 
   const aadhaarUrl = student.aadhaarStorageKey ? await getFileUrl("documents", student.aadhaarStorageKey) : null;
   const marksheetUrl = student.marksheetStorageKey ? await getFileUrl("documents", student.marksheetStorageKey) : null;
   const signatureUrl = student.signatureStorageKey ? await getFileUrl("documents", student.signatureStorageKey) : null;
+
+  const details = (student.admissionDetails as Record<string, any>) || {};
+  const parentsMobile = details.parentsMobile || null;
+  const aadhaarNumber = details.aadhaarNumber || null;
 
   return (
     <PanelPage
@@ -95,8 +100,9 @@ export default async function StudentProfilePage(props: { params: Promise<{ id: 
         {/* Right Column: Full Details */}
         <div className="md:col-span-2 space-y-6">
           <div className="rounded-xl border border-[var(--ui-border)] bg-white shadow-sm overflow-hidden">
-            <div className="border-b border-[var(--ui-border)] bg-gray-50/50 px-6 py-4">
+            <div className="border-b border-[var(--ui-border)] bg-gray-50/50 px-6 py-4 flex items-center justify-between">
               <h3 className="font-semibold text-gray-900">Personal Information</h3>
+              <EditStudentProfileForm student={student} />
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
               <DetailItem label="Full Name" value={student.name} />
@@ -106,7 +112,9 @@ export default async function StudentProfilePage(props: { params: Promise<{ id: 
               <DetailItem label="Date of Birth" value={student.dateOfBirth?.toLocaleDateString("en-IN")} />
               <DetailItem label="Highest Qualification" value={student.qualification} />
               <DetailItem label="Phone Number" value={student.phone} />
+              <DetailItem label="Parents Mobile Number" value={parentsMobile} />
               <DetailItem label="Email Address" value={student.user.email} />
+              <DetailItem label="Aadhaar Number" value={aadhaarNumber} />
               
               <div className="sm:col-span-2">
                 <DetailItem label="Current Address" value={student.currentAddress || student.address} />

@@ -23,8 +23,18 @@ export const registerSchema = z.object({
   qualificationBoard: z.string().min(2, "Enter board name").max(120),
   qualificationMarks: z.string().min(1, "Enter marks percentage").max(10),
   qualificationYear: z.string().regex(/^\d{4}$/, "Enter a valid 4-digit passing year"),
-  permanentAddress: z.string().min(5, "Enter permanent address").max(1000),
-  currentAddress: z.string().min(5, "Enter current address").max(1000),
+  permVillage: z.string().min(1, "Enter permanent village").max(120),
+  permPost: z.string().min(1, "Enter permanent post office").max(120),
+  permPS: z.string().min(1, "Enter permanent police station").max(120),
+  permDistrict: z.string().min(1, "Enter permanent district").max(120),
+  permState: z.string().min(1, "Enter permanent state").max(120),
+  permPinCode: z.string().regex(/^\d{6}$/, "Enter a valid permanent PIN code"),
+  currVillage: z.string().min(1, "Enter current village").max(120),
+  currPost: z.string().min(1, "Enter current post office").max(120),
+  currPS: z.string().min(1, "Enter current police station").max(120),
+  currDistrict: z.string().min(1, "Enter current district").max(120),
+  currState: z.string().min(1, "Enter current state").max(120),
+  currPinCode: z.string().regex(/^\d{6}$/, "Enter a valid current PIN code"),
 }).refine((d) => d.password === d.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
@@ -199,4 +209,3 @@ export const updateStudentProfileSchema = z.object({
   permanentAddress: z.string().min(5, "Enter permanent address").max(1000),
   currentAddress: z.string().min(5, "Enter current address").max(1000),
 });
-

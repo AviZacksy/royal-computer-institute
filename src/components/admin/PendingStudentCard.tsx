@@ -80,9 +80,6 @@ export function PendingStudentCard({
               ))}
             </Select>
           </Field>
-          <Field label="Enrollment no. (optional)" htmlFor={`enr-${student.id}`}>
-            <Input id={`enr-${student.id}`} name="enrollmentNumber" placeholder="Auto-generated if empty" />
-          </Field>
           <Button type="submit" variant="accent" disabled={pending || courses.length === 0}>
             Approve
           </Button>

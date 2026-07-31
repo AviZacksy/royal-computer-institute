@@ -6,6 +6,7 @@ import { PanelPage } from "@/components/panels/PanelPage";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { getFileUrl } from "@/lib/storage";
 import { ResetStudentPasswordForm } from "@/components/admin/ResetStudentPasswordForm";
+import { DeleteStudentButton } from "@/components/admin/DeleteStudentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -81,6 +82,14 @@ export default async function StudentProfilePage(props: { params: Promise<{ id: 
           </div>
           
           <ResetStudentPasswordForm studentId={student.id} />
+
+          <div className="rounded-xl border border-red-200 bg-red-50/50 p-6 shadow-sm">
+            <h3 className="text-sm font-extrabold text-red-900 mb-2">Danger Zone</h3>
+            <p className="text-xs text-red-700 mb-4 font-medium">
+              Deleting this student will permanently erase their profile, user credentials, payments, and certificates. This action cannot be undone.
+            </p>
+            <DeleteStudentButton id={student.id} studentName={student.name} redirectTo="/admin/students" variant="button" />
+          </div>
         </div>
 
         {/* Right Column: Full Details */}

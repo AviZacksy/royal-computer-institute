@@ -6,8 +6,22 @@ import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { ButtonLink } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/format";
 import { getPublicCourseById, getPublicEnquiryCourses } from "@/lib/public-content";
+import { buildMetadata } from "@/lib/seo/metadata-builder";
+import { BreadcrumbSchema, CourseSchema } from "@/components/seo/Schemas";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(props: { params: Promise<{ courseId: string }> }) {
+  const { courseId } = await props.params;
+  const course = await getPublicCourseById(courseId);
+  if (!course) return {};
+
+  return buildMetadata({
+    title: `${course.name} Course Details, Fees & Duration`,
+    description: `${course.name} computer coaching course details: syllabus, duration, fees, eligibility, and career scope at Royal Computer Institute, Motihari, Bihar.`,
+    path: `/courses/${courseId}`,
+  });
+}
 
 export default async function CourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await props.params;
@@ -21,8 +35,16 @@ export default async function CourseDetailPage(props: { params: Promise<{ course
   const price = course.oneTimeFee || course.totalFee;
   const hasFeeComparison = Boolean(course.actualFee && course.actualFee !== price);
 
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Courses", url: "/courses" },
+    { name: course.name, url: `/courses/${courseId}` },
+  ];
+
   return (
     <div className="bg-[var(--ui-surface)]">
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <CourseSchema name={course.name} description={course.description} duration={course.duration} />
       <section className="bg-[var(--ui-primary)] py-10 text-white sm:py-20">
         <div className="mx-auto grid max-w-screen-2xl gap-8 px-4 lg:grid-cols-[1fr_420px] lg:px-8">
           <div className="flex flex-col justify-center">

@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/auth";
 import { DataTable, PanelPage } from "@/components/panels/PanelPage";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { AssignCourseForm } from "@/components/admin/AssignCourseForm";
+import { DeleteStudentButton } from "@/components/admin/DeleteStudentButton";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,7 @@ export default async function AdminStudentsPage() {
                 currentCourseId={s.courseId}
               />
             )}
+            <DeleteStudentButton id={s.id} studentName={s.name} variant="link" />
           </div>
         ])}
       />

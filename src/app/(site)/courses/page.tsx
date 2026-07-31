@@ -3,8 +3,16 @@ import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { formatCurrency } from "@/lib/format";
 import { getPublicCourses } from "@/lib/public-content";
+import { buildMetadata } from "@/lib/seo/metadata-builder";
+import { BreadcrumbSchema } from "@/components/seo/Schemas";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
+  title: "Professional Computer Courses in Motihari | DCA, ADCA & Tally Coaching",
+  description: "Explore computer courses at Royal Computer Institute, Motihari, Bihar. Learn DCA, ADCA, Tally Prime with GST, Python, Web Development, and typing classes with certification.",
+  path: "/courses",
+});
 
 function getCourseInitials(name: string): string {
   const initials = name
@@ -20,8 +28,14 @@ function getCourseInitials(name: string): string {
 export default async function CoursesPage() {
   const courses = await getPublicCourses();
 
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Courses", url: "/courses" },
+  ];
+
   return (
     <div className="w-full">
+      <BreadcrumbSchema items={breadcrumbItems} />
       <section className="relative overflow-hidden bg-[var(--ui-primary)] py-12 text-white sm:py-32">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:48px_48px]" />
         <div className="absolute right-0 top-0 -mr-[300px] -mt-[300px] h-[600px] w-[600px] rounded-full bg-[var(--ui-secondary)]/30 blur-[120px]" />

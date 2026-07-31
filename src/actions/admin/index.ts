@@ -1,4 +1,4 @@
-export { reviewStudentAction, assignCourseAction } from "./students";
+export { reviewStudentAction, assignCourseAction, deleteStudentAction } from "./students";
 export { saveCourseAction, deleteCourseAction, toggleCourseStatusAction } from "./courses";
 export { updateEnquiryStatusAction } from "./enquiries";
 export { saveGalleryItemAction, deleteGalleryItemAction, toggleGalleryItemAction } from "./gallery";

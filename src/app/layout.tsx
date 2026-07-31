@@ -20,10 +20,13 @@ const bebas = Bebas_Neue({
   weight: ["400"],
 });
 
-export const metadata: Metadata = {
-  title: "Royal Computer Institute",
-  description: "Royal Computer Institute — courses, admission, exams, and certificates.",
-};
+import { buildMetadata } from "@/lib/seo/metadata-builder";
+
+export const metadata = buildMetadata({
+  title: "Royal Computer Institute | Best Computer Coaching in Motihari",
+  description: "Royal Computer Institute in Motihari, East Champaran, Bihar, is an ISO 9001:2015 certified center. We offer DCA, ADCA, Tally Prime with GST, Python, and Web Development courses.",
+  path: "",
+});
 
 export default function RootLayout({
   children,

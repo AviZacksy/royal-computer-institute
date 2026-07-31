@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { requireAdminContext } from "@/lib/admin-context";
 import { generateEnrollmentNumber, generateAdmissionNumber } from "@/lib/format";
 import { assignCourseSchema, studentApprovalSchema } from "@/lib/validations";
+import { getStorageProvider, STORAGE_BUCKETS } from "@/lib/storage";
 
 import type { ActionState } from "./types";
 
@@ -52,20 +53,32 @@ export async function reviewStudentAction(
         return { error: "Selected course is not available" };
       }
 
-      let enrollment = enrollmentNumber?.trim() || generateEnrollmentNumber();
-      const taken = await db.studentProfile.findFirst({
-        where: { instituteId: session.instituteId, enrollmentNumber: enrollment },
-      });
-      if (taken) {
-        enrollment = generateEnrollmentNumber();
+      let enrollment = "";
+      if (enrollmentNumber?.trim()) {
+        enrollment = enrollmentNumber.trim();
+      } else {
+        let isUnique = false;
+        while (!isUnique) {
+          enrollment = generateEnrollmentNumber();
+          const taken = await db.studentProfile.findFirst({
+            where: { instituteId: session.instituteId, enrollmentNumber: enrollment },
+          });
+          if (!taken) {
+            isUnique = true;
+          }
+        }
       }
 
-      let admissionNum = generateAdmissionNumber();
-      const admTaken = await db.studentProfile.findFirst({
-        where: { instituteId: session.instituteId, admissionNumber: admissionNum },
-      });
-      if (admTaken) {
+      let admissionNum = "";
+      let isAdmUnique = false;
+      while (!isAdmUnique) {
         admissionNum = generateAdmissionNumber();
+        const admTaken = await db.studentProfile.findFirst({
+          where: { instituteId: session.instituteId, admissionNumber: admissionNum },
+        });
+        if (!admTaken) {
+          isAdmUnique = true;
+        }
       }
 
       await db.studentProfile.update({
@@ -212,6 +225,75 @@ export async function resetStudentPasswordAction(
 
     return { success: "Password reset successfully. Tell the student the new password." };
   } catch {
+    return { error: "Something went wrong. Please try again." };
+  }
+}
+
+export async function deleteStudentAction(studentId: string): Promise<ActionState> {
+  try {
+    const session = await requireAdminContext();
+    if (!studentId) {
+      return { error: "Student ID is required" };
+    }
+
+    const student = await db.studentProfile.findFirst({
+      where: { id: studentId, instituteId: session.instituteId },
+      include: {
+        payments: {
+          include: { receipt: true },
+        },
+      },
+    });
+
+    if (!student) {
+      return { error: "Student not found" };
+    }
+
+    const storage = getStorageProvider();
+
+    // 1. Gather all files to clean up from storage
+    const docKeys = [
+      student.photoStorageKey,
+      student.marksheetStorageKey,
+      student.aadhaarStorageKey,
+      student.signatureStorageKey,
+      student.admissionFormStorageKey,
+    ].filter(Boolean) as string[];
+
+    const paymentKeys = student.payments
+      .map((p) => p.screenshotStorageKey)
+      .filter(Boolean) as string[];
+
+    const receiptKeys = student.payments
+      .map((p) => p.receipt?.storageKey)
+      .filter((k) => k && k !== "HTML_RENDER") as string[];
+
+    // 2. Safely delete storage files (catch errors so database deletion is not blocked)
+    for (const key of docKeys) {
+      await storage.delete(STORAGE_BUCKETS.documents, key).catch(() => undefined);
+    }
+    for (const key of paymentKeys) {
+      await storage.delete(STORAGE_BUCKETS.payments, key).catch(() => undefined);
+    }
+    for (const key of receiptKeys) {
+      await storage.delete(STORAGE_BUCKETS.documents, key).catch(() => undefined);
+    }
+
+    // 3. Delete the associated User record, cascading to delete the profile and all linked records
+    await db.user.delete({
+      where: { id: student.userId },
+    });
+
+    // 4. Revalidate all relevant cache paths
+    revalidatePath("/admin/students");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/fees");
+    revalidatePath("/admin/payments");
+    revalidatePath("/admin/documents");
+
+    return { success: "Student deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting student:", error);
     return { error: "Something went wrong. Please try again." };
   }
 }

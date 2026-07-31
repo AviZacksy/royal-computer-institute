@@ -5,8 +5,16 @@ import { CourseCard } from "@/components/site/CourseCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getPublicCourses } from "@/lib/public-content";
 import { formatCurrency } from "@/lib/format";
+import { buildMetadata } from "@/lib/seo/metadata-builder";
+import { EducationalOrganizationSchema } from "@/components/seo/Schemas";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
+  title: "Royal Computer Institute | Best Computer Coaching in Motihari, Bihar",
+  description: "ISO 9001:2015 certified center in Motihari, East Champaran, Bihar. Join DCA, ADCA, Tally Prime with GST, Python, and Web Development courses with practical training.",
+  path: "/",
+});
 
 const GALLERY_IMAGES = [
   "/gallery/WhatsApp Image 2026-06-26 at 3.39.46 PM.jpeg",
@@ -22,6 +30,7 @@ export default async function Home() {
 
   return (
     <div className="w-full">
+      <EducationalOrganizationSchema />
       <section className="relative w-full min-h-[520px] md:min-h-[620px] overflow-hidden flex flex-col justify-between pt-16 pb-8 md:pt-20 md:pb-12">
         <Image src="/hero-bg.jpg" alt="Computer lab" fill className="object-cover object-center"/>
         <div className="absolute inset-0 bg-gradient-to-b from-[#001f3f]/90 via-[#001f5f]/80 to-[#001f9f]/90"></div>

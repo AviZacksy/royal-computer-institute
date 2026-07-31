@@ -31,6 +31,7 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Buffer> {
   const doc = await PDFDocument.create();
   const boldFont = await doc.embedFont(StandardFonts.HelveticaBold);
   const backgroundPaths = [
+    path.join(process.cwd(), "public", "fee-reciept.jpg"),
     path.join(process.cwd(), "public", "online-receipt.jpg"),
     path.join(process.cwd(), "public", "online-receipt .jpg"),
     path.join(process.cwd(), "public", "receipt-bg..jpeg"),
@@ -67,13 +68,14 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Buffer> {
     });
   };
 
-  text(fitText(data.studentName, 42), 100, 52);
-  text(fitText(data.fatherName || "-", 42), 54, 64);
+  text(fitText(data.studentName, 42), 97, 54);
+  text(fitText(data.fatherName || "-", 42), 54, 65);
   text(formatCurrency(data.totalFee), 49, 77);
   text(formatCurrency(data.amount), 108, 77);
   text(formatCurrency(data.dueAmount), 170, 77);
-  text(formatDate(data.paymentDate), 35, 89);
-  text(data.transactionId ? "ONLINE" : "CASH", 120, 89);
+  text(formatDate(data.paymentDate), 35, 88);
+  text(data.transactionId ? "ONLINE" : "CASH", 120, 88);
+  text(data.receiptNumber, 165, 42, mmToPt(3.5));
 
   const stampPath = path.join(process.cwd(), "public", "stamp.png");
   if (fs.existsSync(stampPath)) {

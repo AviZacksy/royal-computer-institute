@@ -41,12 +41,27 @@ export async function registerAction(formData: FormData) {
     aadhaarNumber: formData.get("aadhaarNumber"),
     email: formData.get("email"),
     phone: formData.get("phone"),
+    parentsMobile: formData.get("parentsMobile"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
     courseId: formData.get("courseId"),
     qualification: formData.get("qualification"),
-    permanentAddress: formData.get("permanentAddress"),
-    currentAddress: formData.get("currentAddress"),
+    qualificationSchool: formData.get("qualificationSchool"),
+    qualificationBoard: formData.get("qualificationBoard"),
+    qualificationMarks: formData.get("qualificationMarks"),
+    qualificationYear: formData.get("qualificationYear"),
+    permVillage: formData.get("permVillage"),
+    permPost: formData.get("permPost"),
+    permPS: formData.get("permPS"),
+    permDistrict: formData.get("permDistrict"),
+    permState: formData.get("permState"),
+    permPinCode: formData.get("permPinCode"),
+    currVillage: formData.get("currVillage"),
+    currPost: formData.get("currPost"),
+    currPS: formData.get("currPS"),
+    currDistrict: formData.get("currDistrict"),
+    currState: formData.get("currState"),
+    currPinCode: formData.get("currPinCode"),
   });
 
   if (!parsed.success) {
@@ -64,9 +79,20 @@ export async function registerAction(formData: FormData) {
     if (error) return { error };
   }
 
-  const { confirmPassword: _confirmPassword, ...data } = parsed.data;
+  const { 
+    confirmPassword: _confirmPassword, 
+    permVillage, permPost, permPS, permDistrict, permState, permPinCode,
+    currVillage, currPost, currPS, currDistrict, currState, currPinCode,
+    ...data 
+  } = parsed.data;
+
+  const permanentAddress = `Village: ${permVillage}, Post: ${permPost}, P.S: ${permPS}, District: ${permDistrict}, State: ${permState}, Pin Code: ${permPinCode}`;
+  const currentAddress = `Village: ${currVillage}, Post: ${currPost}, P.S: ${currPS}, District: ${currDistrict}, State: ${currState}, Pin Code: ${currPinCode}`;
+
   const result = await registerStudent({
     ...data,
+    permanentAddress,
+    currentAddress,
     files: files as {
       photo: File;
       marksheet: File;

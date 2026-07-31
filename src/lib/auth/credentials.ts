@@ -91,9 +91,14 @@ export async function registerStudent(data: {
   aadhaarNumber: string;
   email: string;
   phone: string;
+  parentsMobile: string;
   password: string;
   courseId: string;
-  qualification: string;
+  qualification: "10TH" | "12TH" | "GRADUATION" | "POST_GRADUATION";
+  qualificationSchool: string;
+  qualificationBoard: string;
+  qualificationMarks: string;
+  qualificationYear: string;
   permanentAddress: string;
   currentAddress: string;
   files: {
@@ -185,6 +190,11 @@ export async function registerStudent(data: {
             admissionFormStorageKey: admissionFormKey,
             admissionDetails: {
               aadhaarNumber: data.aadhaarNumber,
+              parentsMobile: data.parentsMobile.trim(),
+              qualificationSchool: data.qualificationSchool.trim(),
+              qualificationBoard: data.qualificationBoard.trim(),
+              qualificationMarks: data.qualificationMarks.trim(),
+              qualificationYear: data.qualificationYear.trim(),
             },
             courseId: course.id,
             status: "PENDING",

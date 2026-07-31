@@ -19,6 +19,7 @@ export default async function PaymentSlipDocument({
       student: {
         include: { course: true }
       },
+      receipt: true,
     }
   });
 
@@ -56,6 +57,7 @@ export default async function PaymentSlipDocument({
   const fatherName = payment.student.fatherName || payment.student.motherName || "";
   const paymentDate = payment.createdAt.toLocaleDateString('en-IN');
   const paymentMode = payment.transactionId ? "ONLINE" : "CASH";
+  const receiptNumber = payment.receipt?.receiptNumber || "";
 
   return (
     <div className="print-wrapper" style={{
@@ -122,14 +124,14 @@ export default async function PaymentSlipDocument({
 
         /* POSITIONS FROM DEV TOOLS */
         .field-student-name {
-          left: 100mm;
-          top: 52mm;
+          left: 97mm;
+          top: 54mm;
           width: 80mm;
         }
 
         .field-father-name {
           left: 54mm;
-          top: 64mm;
+          top: 65mm;
           width: 60mm;
         }
 
@@ -156,12 +158,20 @@ export default async function PaymentSlipDocument({
 
         .field-date {
           left: 35mm;
-          top: 89mm;
+          top: 88mm;
         }
 
         .field-payment-mode {
           left: 120mm;
-          top: 89mm;
+          top: 88mm;
+        }
+
+        .field-receipt-number {
+          left: 165mm;
+          top: 42mm;
+          font-weight: 700;
+          font-size: 3.5mm;
+          color: #000;
         }
 
         .signature-box {
@@ -200,7 +210,7 @@ export default async function PaymentSlipDocument({
 
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="receipt-sheet" src="/online-receipt.jpg" alt="Receipt design" />
+        <img className="receipt-sheet" src="/fee-reciept.jpg" alt="Receipt design" />
 
         <div className="receipt-field field-student-name">{payment.student.name}</div>
         <div className="receipt-field field-father-name">{fatherName}</div>
@@ -210,6 +220,7 @@ export default async function PaymentSlipDocument({
         <div className="receipt-field field-due-amount">Rs. {dueAmount}</div>
         <div className="receipt-field field-date">{paymentDate}</div>
         <div className="receipt-field field-payment-mode">{paymentMode}</div>
+        <div className="receipt-field field-receipt-number">{receiptNumber}</div>
 
         <div className="stamp-box">
           {/* eslint-disable-next-line @next/next/no-img-element */}

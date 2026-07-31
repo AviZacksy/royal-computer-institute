@@ -37,7 +37,7 @@ export default async function AdmissionPage() {
       </section>
 
       <section className="bg-white py-12 sm:py-20">
-        <div className="mx-auto max-w-screen-xl px-4 lg:px-8">
+        <div className="w-full px-4 lg:px-12">
           <StudentAdmissionForm courses={courses} />
         </div>
       </section>

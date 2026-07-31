@@ -24,31 +24,49 @@ export default async function AdmissionFormDocument({
   const formatDate = (date?: Date | null) =>
     date ? date.toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" }) : "";
 
-  const splitDate = (date?: Date | null) => ({
-    day: date ? date.toLocaleDateString("en-IN", { day: "2-digit" }) : "",
-    month: date ? date.toLocaleDateString("en-IN", { month: "2-digit" }) : "",
-    year: date ? date.toLocaleDateString("en-IN", { year: "numeric" }) : "",
-  });
-
   const parseAddress = (addr: string) => {
     const result = { village: "", post: "", ps: "", district: "", state: "", pin: "" };
     if (!addr) return result;
+
+    // Structured regex matches
     const vMatch = addr.match(/village[\s\-:]+([^,]+)/i);
-    if (vMatch) result.village = vMatch[1].trim();
     const pMatch = addr.match(/post[\s\-:]+([^,]+)/i);
-    if (pMatch) result.post = pMatch[1].trim();
     const psMatch = addr.match(/p\.?s\.?[\s\-:]+([^,]+)/i);
-    if (psMatch) result.ps = psMatch[1].trim();
     const dMatch = addr.match(/district[\s\-:]+([^,]+)/i);
-    if (dMatch) result.district = dMatch[1].trim();
     const sMatch = addr.match(/state[\s\-:]+([^,]+)/i);
-    if (sMatch) result.state = sMatch[1].trim();
     const pinMatch = addr.match(/(?:pin(?:code)?|zip)[\s\-:]*(\d{6})/i) || addr.match(/\b(\d{6})\b/);
+
+    if (vMatch) result.village = vMatch[1].trim();
+    if (pMatch) result.post = pMatch[1].trim();
+    if (psMatch) result.ps = psMatch[1].trim();
+    if (dMatch) result.district = dMatch[1].trim();
+    if (sMatch) result.state = sMatch[1].trim();
     if (pinMatch) result.pin = pinMatch[1].trim();
+
+    // Comma-separated token extraction fallback
+    const cleanAddr = addr.replace(/(?:village|post|p\.?s\.?|district|state)[\s\-:]+/gi, "");
+    const parts = cleanAddr.split(",").map((p) => p.trim()).filter(Boolean);
+
+    if (!result.village && parts[0]) {
+      result.village = parts[0];
+    }
+    if (!result.post && parts[1]) {
+      result.post = parts[1];
+    }
+    if (!result.district) {
+      if (parts[2]) {
+        result.district = parts[2].replace(/\b\d{6}\b/, "").trim();
+      } else if (addr.toLowerCase().includes("motihari")) {
+        result.district = "EAST CHAMPARAN";
+      }
+    }
+    if (!result.state) {
+      result.state = "BIHAR";
+    }
+
     return result;
   };
 
-  const dob = splitDate(student.dateOfBirth);
   const addr = parseAddress(student.address || student.currentAddress || "");
   const admissionDate = formatDate(student.admissionDate);
 
@@ -116,9 +134,9 @@ export default async function AdmissionFormDocument({
 
         .student-sign {
           position: absolute;
-          left: 9%;
-          bottom: 10.8%;
-          width: 30mm;
+          left: 10%;
+          bottom: 6.8%;
+          width: 29mm;
           height: 10mm;
           object-fit: contain;
         }
@@ -126,16 +144,10 @@ export default async function AdmissionFormDocument({
         .director-sign {
           position: absolute;
           right: 18.5%;
-          bottom: 8.5%;
+          bottom: 3.8%;
           width: 31mm;
-          height: 26mm;
+          height: 27mm;
           object-fit: contain;
-        }
-
-        .letter-boxes {
-          --ls: 12.6px;
-          --fs: 19px;
-          font-family: "Courier New", monospace;
         }
       `}</style>
 
@@ -144,10 +156,12 @@ export default async function AdmissionFormDocument({
       </div>
 
       <div className="admission-overlay">
-        <div data-field="admission-number" className="admission-field" style={{ top: "17.1%", left: "22.8%", width: "25%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        {/* Admission No */}
+        <div data-field="admission-number" className="admission-field" style={{ top: "17.5%", left: "22.8%", width: "25%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {student.admissionNumber || ""}
         </div>
-        <div data-field="admission-date" className="admission-field" style={{ top: "17.1%", right: "2.5%", width: "17%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        {/* Admission Date */}
+        <div data-field="admission-date" className="admission-field" style={{ top: "17.5%", left: "80.5%", width: "17%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {admissionDate}
         </div>
 
@@ -156,84 +170,100 @@ export default async function AdmissionFormDocument({
           <img className="admission-photo" src={photoUrl} alt="Student" />
         )}
 
-        <div data-field="student-name" className="admission-field" style={{ top: "23%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        {/* Student Name */}
+        <div data-field="student-name" className="admission-field" style={{ top: "23.4%", left: "25.5%", width: "51%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {student.name}
         </div>
-        <div data-field="father-name" className="admission-field" style={{ top: "26.75%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        {/* Father's Name */}
+        <div data-field="father-name" className="admission-field" style={{ top: "27.1%", left: "25.5%", width: "51%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {student.fatherName || ""}
         </div>
-        <div data-field="mother-name" className="admission-field" style={{ top: "30.15%", left: "25.5%", width: "49%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        {/* Mother's Name */}
+        <div data-field="mother-name" className="admission-field" style={{ top: "30.7%", left: "25.5%", width: "51%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {student.motherName || ""}
         </div>
 
-        <div data-field="dob-day" className="admission-field" style={{ top: "33.85%", left: "25.3%", width: "5%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
-          {dob.day}
+        {/* DOB & Gender */}
+        <div data-field="date-of-birth" className="admission-field" style={{ top: "34.6%", left: "25.5%", width: "16%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+          {formatDate(student.dateOfBirth)}
         </div>
-        <div data-field="dob-month" className="admission-field" style={{ top: "33.85%", left: "29.5%", width: "5%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
-          {dob.month}
-        </div>
-        <div data-field="dob-year" className="admission-field" style={{ top: "33.85%", left: "32.8%", width: "8%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
-          {dob.year}
-        </div>
-        <div data-field="gender" className="admission-field" style={{ top: "33.85%", left: "64.5%", width: "16%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
+        <div data-field="gender" className="admission-field" style={{ top: "34.4%", left: "64.5%", width: "12%", "--fs": "17px", "--ls": "0" } as CSSProperties}>
           {student.gender || ""}
         </div>
 
-        <div data-field="student-mobile" className="admission-field letter-boxes" style={{ top: "37.2%", left: "33.2%", width: "33%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
-          {student.phone || ""}
+        {/* Student Mobile Number (grid boxes alignment) */}
+        <div id="student-mobile" data-field="student-mobile" style={{ top: "36.9%", left: "33.1%", width: "29.2%", display: "flex", justifyContent: "space-around", position: "absolute" } as CSSProperties}>
+          {(student.phone || "").padEnd(10, " ").split("").slice(0, 10).map((digit, idx) => (
+            <span key={idx} style={{ width: "7%", display: "inline-block", textAlign: "center", fontSize: "23px", fontWeight: "bold", pointerEvents: "none" }}>
+              {digit}
+            </span>
+          ))}
         </div>
-        <div data-field="parents-mobile" className="admission-field letter-boxes" style={{ top: "48.2%", left: "38.2%", width: "31%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
-          {details.parentsMobile || ""}
+
+        {/* Parents Mobile Number (grid boxes alignment) */}
+        <div id="parents-mobile" data-field="parents-mobile" style={{ top: "40.3%", left: "33.1%", width: "29.2%", display: "flex", justifyContent: "space-around", position: "absolute" } as CSSProperties}>
+          {(details.parentsMobile || "").padEnd(10, " ").split("").slice(0, 10).map((digit, idx) => (
+            <span key={idx} style={{ width: "7%", display: "inline-block", textAlign: "center", fontSize: "23px", fontWeight: "bold", pointerEvents: "none" }}>
+              {digit}
+            </span>
+          ))}
         </div>
-        <div data-field="aadhaar" className="admission-field letter-boxes" style={{ top: "52.1%", left: "27.1%", width: "30%", "--fs": "19px", "--ls": "12.6px" } as CSSProperties}>
+
+        {/* Aadhaar Number */}
+        <div id="student-aadhaar" data-field="aadhaar" className="admission-field" style={{ top: "44.9%", left: "27.5%", width: "39%", "--fs": "19px", "--ls": "3px" } as CSSProperties}>
           {details.aadhaarNumber || ""}
         </div>
-        <div data-field="email" className="admission-field admission-small" style={{ top: "45%", left: "70.2%", width: "21%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        {/* Email ID */}
+        <div id="student-email" data-field="email" className="admission-field" style={{ top: "48.5%", left: "25.5%", width: "39%", "--fs": "13px", "--ls": "0" } as CSSProperties}>
           {student.email || ""}
         </div>
 
-        <div data-field="village" className="admission-field admission-small" style={{ top: "51.7%", left: "17.2%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        {/* Full Address - Row 1 */}
+        <div data-field="village" className="admission-field admission-small" style={{ top: "55.1%", left: "17.2%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.village}
         </div>
-        <div data-field="post" className="admission-field admission-small" style={{ top: "51.7%", left: "45.5%", width: "18%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="post" className="admission-field admission-small" style={{ top: "55.1%", left: "45.5%", width: "18%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.post}
         </div>
-        <div data-field="ps" className="admission-field admission-small" style={{ top: "51.7%", left: "69%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="ps" className="admission-field admission-small" style={{ top: "55.1%", left: "69.0%", width: "19%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.ps}
         </div>
-        <div data-field="district" className="admission-field admission-small" style={{ top: "54.6%", left: "15.2%", width: "21%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+
+        {/* Full Address - Row 2 */}
+        <div data-field="district" className="admission-field admission-small" style={{ top: "58.5%", left: "16.5%", width: "20%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.district}
         </div>
-        <div data-field="state" className="admission-field admission-small" style={{ top: "54.6%", left: "42.8%", width: "20%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="state" className="admission-field admission-small" style={{ top: "58.5%", left: "45.0%", width: "18%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.state}
         </div>
-        <div data-field="pin" className="admission-field admission-small" style={{ top: "54.6%", left: "79.6%", width: "13%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="pin" className="admission-field admission-small" style={{ top: "58.5%", left: "79.6%", width: "13%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {addr.pin}
         </div>
 
-        <div data-field="course-name" className="admission-field admission-small" style={{ top: "57.5%", left: "25.5%", width: "34%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        {/* Course Details */}
+        <div data-field="course-name" className="admission-field admission-small" style={{ top: "61.9%", left: "25.5%", width: "34%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {student.course?.name || ""}
         </div>
-        <div data-field="duration" className="admission-field admission-small" style={{ top: "57.5%", left: "56.3%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="duration" className="admission-field admission-small" style={{ top: "61.5%", left: "56.5%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {student.course?.duration || ""}
         </div>
-        <div data-field="batch-time" className="admission-field admission-small" style={{ top: "57.5%", left: "82.2%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="batch-time" className="admission-field admission-small" style={{ top: "61.9%", left: "84.5%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
           {details.batchTime || ""}
         </div>
 
-        <div data-field="qualification" className="admission-field admission-small" style={{ top: "73.8%", left: "8.5%", width: "12%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="qualification" className="admission-field admission-small" style={{ top: "71.1%", left: "6.5%", width: "12%", "--fs": "14px", "--ls": "0" } as CSSProperties}>
           {student.qualification || ""}
         </div>
-        <div data-field="qualification-school" className="admission-field admission-small" style={{ top: "73.8%", left: "23.3%", width: "33%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="qualification-school" className="admission-field admission-small" style={{ top: "71.1%", left: "23.3%", width: "33%", "--fs": "14px", "--ls": "0" } as CSSProperties}>
           {details.qualificationSchool || ""}
         </div>
-        <div data-field="qualification-board" className="admission-field admission-small" style={{ top: "73.8%", left: "58.9%", width: "11%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="qualification-board" className="admission-field admission-small" style={{ top: "71.1%", left: "58.9%", width: "11%", "--fs": "14px", "--ls": "0" } as CSSProperties}>
           {details.qualificationBoard || ""}
         </div>
-        <div data-field="qualification-marks" className="admission-field admission-small" style={{ top: "73.8%", left: "72%", width: "9%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="qualification-marks" className="admission-field admission-small" style={{ top: "71.1%", left: "72%", width: "9%", "--fs": "14px", "--ls": "0" } as CSSProperties}>
           {details.qualificationMarks || ""}
         </div>
-        <div data-field="qualification-year" className="admission-field admission-small" style={{ top: "73.8%", left: "83.3%", width: "10%", "--fs": "11px", "--ls": "0" } as CSSProperties}>
+        <div data-field="qualification-year" className="admission-field admission-small" style={{ top: "71.1%", left: "83.3%", width: "10%", "--fs": "14px", "--ls": "0" } as CSSProperties}>
           {details.qualificationYear || ""}
         </div>
 

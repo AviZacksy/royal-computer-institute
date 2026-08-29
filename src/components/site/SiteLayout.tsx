@@ -194,7 +194,11 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-4 text-sm text-slate-400">
                 <li className="flex gap-3">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[var(--ui-accent)]" />
-                  <span>{INSTITUTE.addressLines.join(", ")}</span>
+                  <span className="flex flex-col gap-1">
+                    {INSTITUTE.addressLines.map((line, i) => (
+                      <span key={i}>{line}</span>
+                    ))}
+                  </span>
                 </li>
                 <li className="flex gap-3">
                   <Phone className="h-5 w-5 shrink-0 text-[var(--ui-accent)]" />

@@ -8,8 +8,8 @@ export const INSTITUTE = {
   email: "instituteroyalcomputer52@gmail.com",
   instagramHandle: "@royal_raj353",
   addressLines: [
-    "Stone Clinic, Shastri Nagar, Women's College Road",
-    "Motihari",
+    "Head Office: Bhawanipur Zirat infront of stone clinic motihari",
+    "Branch: Ramsharan Gate Chandmari Motihari",
   ],
   timingDisplay: "06:00–10:00, 15:00–18:00",
   directorName: "Suraj Kumar Shrivastava",

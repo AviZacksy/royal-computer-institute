@@ -7,7 +7,13 @@ const CONTACT_ITEMS = [
   {
     icon: "📍",
     label: "Address",
-    value: INSTITUTE.addressLines.join(", "),
+    value: (
+      <>
+        {INSTITUTE.addressLines.map((line, i) => (
+          <span key={i} className="block">{line}</span>
+        ))}
+      </>
+    ),
   },
   {
     icon: "📞",
